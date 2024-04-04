@@ -1,18 +1,33 @@
 import { createRouter, createWebHistory } from "vue-router";
-import EventList from "../views/EventList.vue";
-import EventPage from '../views/EventPage.vue'; // Import EventPage
 
 const routes = [
   {
-    path: "/",
-    name: "EventList",
-    component: EventList,
+    path: '/',
+    component: () => import('@/layouts/default/LayoutDefault.vue'),
+    children: [
+      {
+        path: "",
+        name: "EventList",
+        component: () => import(/* webpackChunkName: "EventList" */ '@/views/EventList.vue'),
+      },
+      {
+        path: 'event', // The URL path for EventPage
+        name: 'EventPage',
+        component: () => import(/* webpackChunkName: "EventPage" */ '@/views/EventPage.vue'),
+      },
+    ]
   },
   {
-    path: '/event', // The URL path for EventPage
-    name: 'EventPage',
-    component: EventPage
-  },
+    path: '/pro',
+    component: () => import('@/layouts/pro/LayoutPro.vue'),
+    children: [
+      {
+        path: 'events/create', // The URL path for EventCreate
+        name: 'EventCreate',
+        component: () => import(/* webpackChunkName: "EventCreate" */ '@/views/EventCreate.vue'),
+      }
+    ]
+  }
   // other routes...
 ];
 
