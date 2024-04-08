@@ -2,8 +2,7 @@
 import { defineStore } from 'pinia'
 import { auth, functions, httpsCallable } from '../plugins/firebase'
 import { useFirebaseStore } from "@/store/firebase";
-
-import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
+import { onAuthStateChanged, signOut, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword, updateProfile, getIdTokenResult, signInWithEmailAndPassword } from 'firebase/auth'
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -33,8 +32,23 @@ export const useAuthStore = defineStore('auth', {
                 this.error.code = error.code;
             }
         },
-        async loginWithEmail() {
+        async loginWithEmail(email, password) {
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                if (user) {
+                    this.user = {
+                        displayName: user.displayName,
+                        email: user.email,
+                        uid: user.uid,
+                        photoURL: user.photoURL
+                    }
+                    this.loggedIn = true;
+                }
 
+            } catch (error) {
+                console.log({ error })
+            }
         },
         async registerWithEmail2(user, password) {
             try {
@@ -99,6 +113,13 @@ export const useAuthStore = defineStore('auth', {
             console.log("setCurrentUser", user)
             this.user = user;
             this.loggedIn = user ? true : false;
+        },
+        async getUserClaims() {
+            const user = await this.getCurrentUser();
+            console.log({ user })
+            const idToken = auth.currentUser ? await getIdTokenResult(auth.currentUser) : null
+            console.log({ idToken })
+            return idToken;
         }
     }
 })

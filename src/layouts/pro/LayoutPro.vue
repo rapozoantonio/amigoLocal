@@ -1,14 +1,15 @@
 <template>
-    <div class="min-h-screen">
-        <default-bar />
-        <default-view />
-    </div>
+    <v-app>
+        <pro-bar />
+        <pro-view />
+        <pro-footer />
+        <loading-overlay />
+    </v-app>
 </template>
 
 <script setup>
-import DefaultBar from "./AppBar.vue";
-import DefaultView from "./MainView.vue";
+import ProBar from "./ProAppBar.vue";
+import ProView from "./ProView.vue";
+import ProFooter from "./ProFooter.vue";
+import LoadingOverlay from "@/components/interface/LoadingOverlay.vue";
 </script>
-
-<style lang="scss" scoped>
-</style>

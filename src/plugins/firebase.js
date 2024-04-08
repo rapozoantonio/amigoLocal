@@ -7,14 +7,13 @@ import { getFunctions, connectFunctionsEmulator, httpsCallable } from "firebase/
 // import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyB52zq22w8i3VaNhWg7ukAE0v-ErxULRng",
-    authDomain: "vue-advisor.firebaseapp.com",
-    projectId: "vue-advisor",
-    storageBucket: "vue-advisor.appspot.com",
-    messagingSenderId: "245816893129",
-    appId: "1:245816893129:web:4fe402468b1684d9d3b718",
-    measurementId: "G-P61HFFJZH0"
-
+    apiKey: import.meta.env.VITE_CHATGPT_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 

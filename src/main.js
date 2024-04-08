@@ -1,50 +1,27 @@
-/* eslint-disable */
-import { createApp } from 'vue';
-import App from './App.vue'; // Assuming App.vue is your root component
-import PrimeVue from 'primevue/config';
-import ToastService from 'primevue/toastservice';
-import router from './router';
 
-// Import PrimeVue styles
-import 'primeflex/primeflex.css'; // Corrected path
-import 'primevue/resources/themes/md-dark-indigo/theme.css'; // Default theme
-import 'primevue/resources/primevue.min.css';
-import 'primeicons/primeicons.css';
+// Components
+// import 'dotenv/config'
 
-// PRIMEVUE COMPONENTES
-import InputText from 'primevue/inputtext';
-import Button from 'primevue/button';
-import RadioButton from 'primevue/radiobutton';
-import Calendar from 'primevue/calendar'
-import Dropdown from 'primevue/dropdown'
-import Textarea from 'primevue/textarea'
-
-import { createPinia } from 'pinia'
-
-// Import your custom global styles, ensure this comes last
-import './assets/styles.css';
-import './assets/theme.css';
-
-const pinia = createPinia()
-const app = createApp(App);
-
-app.use(pinia)
-app.use(router); // Use the router
-app.use(ToastService);
-// Use PrimeVue
-app.use(PrimeVue, { ripple: true }); // You can set global PrimeVue options here
-
-app.component('InputText', InputText);
-app.component('Button', Button);
-app.component('RadioButton', RadioButton);
-app.component('Calendar', Calendar);
-app.component('Dropdown', Dropdown);
-app.component('Textarea', Textarea);
-
+import App from './App.vue'
+// Composables
+import { createApp } from 'vue'
+// Plugins
 import { registerPlugins } from '@/plugins'
+
+
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
+
+const app = createApp(App)
+
 registerPlugins(app)
+app.component('VueDatePicker', VueDatePicker);
 
-// Other global configurations (e.g., router, store) can be added here
-// ...
+import "@/styles/settings.scss";
 
-app.mount('#app');
+
+app.mount('#app')
+
+
+
+

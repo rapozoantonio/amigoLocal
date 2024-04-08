@@ -1,14 +1,15 @@
 <template>
-    <div>
-        <default-bar />
+    <v-app>
         <default-view />
-    </div>
+        <default-bar />
+        <default-footer />
+        <loading-overlay />
+    </v-app>
 </template>
 
 <script setup>
-import DefaultBar from "./AppBar.vue";
-import DefaultView from "./MainView.vue";
+import DefaultBar from "./DefaultAppBar.vue";
+import DefaultView from "./DefaultView.vue";
+import DefaultFooter from "./DefaultFooter.vue";
+import LoadingOverlay from "@/components/interface/LoadingOverlay.vue";
 </script>
-
-<style lang="scss" scoped>
-</style>

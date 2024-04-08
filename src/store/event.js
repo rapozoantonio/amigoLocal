@@ -11,11 +11,11 @@ export const useEventStore = defineStore('event', () => {
     const event = ref(
         {
             name: null,
-            startDate: null,
-            startTime: null,
-            endDate: null,
-            endTime: null,
-            localName: null,
+            startDate: new Date().toISOString().split("T")[0],
+            startTime: "19:00",
+            endDate: new Date().toISOString().split("T")[0],
+            endTime: "23:59",
+            location: null,
             country: "BR",
             region: null,
             genres: null,
@@ -24,13 +24,15 @@ export const useEventStore = defineStore('event', () => {
             description: null,
             age: "+18",
             website: [{
-                name: "",
+                name: "website",
                 url: ""
             }],
             medias: [""],
             flyerFront: null,
             flyerBack: null,
-            image: null
+            image: null,
+            featured: false,
+            approved: false,
         }
     );
     const files = ref({
@@ -38,6 +40,8 @@ export const useEventStore = defineStore('event', () => {
         flyerBack: null,
         image: null
     })
+
+
     const genres = ref([
         { name: "Rock", value: "rock" },
         { name: "Pop", value: "pop" },
@@ -63,31 +67,15 @@ export const useEventStore = defineStore('event', () => {
     })
 
     const rules = {
-        // BASIC
         name: { required },
         startDate: { required },
-        startTime: { required },
-        // LINEUP
-        lineup: { required },
-        genres: { required },
-        // DETAILS
-        description: { required }
-        // PROMOTIONAL
+        obj: {
+            param: { required }
+        }
 
     }
 
-
-
-    const $v = useVuelidate(rules, event);
-
-    const completed = computed(() => {
-        return {
-            1: !$v.value.name.$invalid && !$v.value.startDate.$invalid && !$v.value.startTime.$invalid,
-            2: !$v.value.lineup.$invalid,
-            3: !$v.value.description.$invalid && !$v.value.age.$invalid,
-            4: !$v.value.$invalid && !$v.value.startDate.$invalid && !$v.value.startTime.$invalid,
-        }
-    })
+    const $v = useVuelidate(rules, event)
 
     async function createEvent() {
         const appStore = useAppStore();
@@ -154,7 +142,8 @@ export const useEventStore = defineStore('event', () => {
             medias: [""],
             flyerFront: null,
             flyerBack: null,
-            image: null
+            image: null,
+            following: 0
         }
         files.value = {
             flyerFront: null,
@@ -175,5 +164,5 @@ export const useEventStore = defineStore('event', () => {
         }
     });
 
-    return { event, genres, ages, files, sectionBasicComplete, createEvent, $reset, sections, $v, completed }
+    return { event, genres, ages, files, sectionBasicComplete, createEvent, $reset, sections, $v }
 })

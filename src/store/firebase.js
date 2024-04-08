@@ -1,6 +1,6 @@
 // Utilities
 import { defineStore } from 'pinia'
-import { collection, doc, setDoc, serverTimestamp, query, getDocs, getDoc, where } from "firebase/firestore";
+import { collection, addDoc, doc, setDoc, serverTimestamp, query, getDocs, getDoc, where } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from 'firebase/storage';
 import { firestore, auth, storage } from '@/plugins/firebase';
 import Swal from 'sweetalert2';
@@ -117,7 +117,7 @@ export const useFirebaseStore = defineStore('firebase', () => {
 
 
 
-    async function postDocument(col, document) {
+    async function postDocument(col, document, config) {
         console.log("postDocument");
         let fireDocument = null;
         if (document.id) {
@@ -156,7 +156,7 @@ export const useFirebaseStore = defineStore('firebase', () => {
             const promises = operations.map(async ([col, id, document]) => {
                 const fireDocument = doc(firestore, `${col}/${id}`);
                 const docRef = await setDoc(fireDocument, document, { merge: true });
-                return { ok: true, data: docRef }
+                return { ok: true }
             })
             try {
                 const response = await Promise.all(promises);
@@ -188,7 +188,7 @@ export const useFirebaseStore = defineStore('firebase', () => {
                 icon: "success"
             });
             return {
-                ok: true, data: docRef
+                ok: true
             }
         } catch (error) {
             notifyError(Error)
@@ -199,49 +199,49 @@ export const useFirebaseStore = defineStore('firebase', () => {
             }
         }
     }
-    // async function postDocument2(col, document) {
-    //     // document.created_at = serverTimestamp();
-    //     // document.updated_at = serverTimestamp();
-    //     // document.time = Date.now();
-    //     // document.created_by = auth.currentUser ? { uid: auth.currentUser.uid, email: auth.currentUser.email } : null;
-    //     // document.updated_by = auth.currentUser ? { uid: auth.currentUser.uid, email: auth.currentUser.email } : null;
-    //     const fireDocument = doc(firestore, col, document.id).withConverter(documentConverter);
-    //     console.log({ fireDocument, id: fireDocument.id });
+    async function postDocument2(col, document) {
+        // document.created_at = serverTimestamp();
+        // document.updated_at = serverTimestamp();
+        // document.time = Date.now();
+        // document.created_by = auth.currentUser ? { uid: auth.currentUser.uid, email: auth.currentUser.email } : null;
+        // document.updated_by = auth.currentUser ? { uid: auth.currentUser.uid, email: auth.currentUser.email } : null;
+        const fireDocument = doc(firestore, col, document.id).withConverter(documentConverter);
+        console.log({ fireDocument, id: fireDocument.id });
 
 
-    //     try {
-    //         if (document.id) {
-    //             const docRef = await setDoc(fireDocument, document);
-    //             Swal.fire({
-    //                 title: "Good job!",
-    //                 text: "Document added",
-    //                 icon: "success"
-    //             });
-    //             return {
-    //                 ok: true, data: docRef
-    //             }
+        try {
+            if (document.id) {
+                const docRef = await setDoc(fireDocument, document);
+                Swal.fire({
+                    title: "Good job!",
+                    text: "Document added",
+                    icon: "success"
+                });
+                return {
+                    ok: true
+                }
 
-    //         }
-    //         else {
-    //             const docRef = await addDoc(collection(firestore, col), document);
-    //             Swal.fire({
-    //                 title: "Good job!",
-    //                 text: "Document added",
-    //                 icon: "success"
-    //             });
-    //             return {
-    //                 ok: true, data: docRef
-    //             }
-    //         }
-    //     } catch (error) {
-    //         notifyError(error)
-    //         console.log({ error })
-    //         return {
-    //             ok: false,
-    //             error,
-    //         }
-    //     }
-    // }
+            }
+            else {
+                const docRef = await addDoc(collection(firestore, col), document);
+                Swal.fire({
+                    title: "Good job!",
+                    text: "Document added",
+                    icon: "success"
+                });
+                return {
+                    ok: true
+                }
+            }
+        } catch (error) {
+            notifyError(error)
+            console.log({ error })
+            return {
+                ok: false,
+                error,
+            }
+        }
+    }
     async function getCollection(data) {
         const items = [];
         const queries = Object.entries(data.query);
@@ -294,76 +294,76 @@ export const useFirebaseStore = defineStore('firebase', () => {
             }
         }
     }
-    // async function getCollection2(data) {
-    //     const items = [];
-    //     const queries = Object.entries(data.query);
-    //     console.log({ queries })
-    //     const queryItens = queries.map((q) => {
-    //         const operator = /\[gt\]/.test(q[0]) ? ">" : /\[gte\]/.test(q[0]) ? ">=" : /\[lt\]/.test(q[0]) ? "<" : /\[lte\]/.test(q[0]) ? "<=" : "==";
-    //         const key = q[0].replace(/\[gte\]/, "").replace(/\[lte\]/, "").replace(/\[gt\]/, "").replace(/\[lt\]/, "");
-    //         const value = Number(q[1]) ? Number(q[1]) : q[1];
-    //         console.log({ operator, key, value })
-    //         return where(key, operator, value)
-    //     })
-    //     console.log({ queryItens });
-    //     try {
-    //         if (data.collection) {
-    //             // const q = query(collection(firestore, "products"), where("price", "==", 11));
-    //             let q;
-    //             if (queryItens.length > 0) {
-    //                 q = query(collection(firestore, "products"), ...queryItens);
-    //                 console.log({ q }, "connquery")
-    //             } else {
-    //                 q = query(collection(firestore, "products"));
-    //                 console.log({ q }, "sinquery")
+    async function getCollection2(data) {
+        const items = [];
+        const queries = Object.entries(data.query);
+        console.log({ queries })
+        const queryItens = queries.map((q) => {
+            const operator = /\[gt\]/.test(q[0]) ? ">" : /\[gte\]/.test(q[0]) ? ">=" : /\[lt\]/.test(q[0]) ? "<" : /\[lte\]/.test(q[0]) ? "<=" : "==";
+            const key = q[0].replace(/\[gte\]/, "").replace(/\[lte\]/, "").replace(/\[gt\]/, "").replace(/\[lt\]/, "");
+            const value = Number(q[1]) ? Number(q[1]) : q[1];
+            console.log({ operator, key, value })
+            return where(key, operator, value)
+        })
+        console.log({ queryItens });
+        try {
+            if (data.collection) {
+                // const q = query(collection(firestore, "products"), where("price", "==", 11));
+                let q;
+                if (queryItens.length > 0) {
+                    q = query(collection(firestore, "products"), ...queryItens);
+                    console.log({ q }, "connquery")
+                } else {
+                    q = query(collection(firestore, "products"));
+                    console.log({ q }, "sinquery")
 
-    //             }
-    //             const querySnapshot = await getDocs(q);
-    //             console.log("getdocs", querySnapshot)
-    //             querySnapshot.forEach((document) => {
-    //                 console.log(document.data())
-    //                 items.push(document.data())
-    //             })
-    //             // Swal.fire({
-    //             //     title: "Documents fetched",
-    //             //     text: "number of documents: " + items.length,
-    //             //     icon: "success"
-    //             // });
-    //             return {
-    //                 ok: true, data: items
-    //             }
+                }
+                const querySnapshot = await getDocs(q);
+                console.log("getdocs", querySnapshot)
+                querySnapshot.forEach((document) => {
+                    console.log(document.data())
+                    items.push(document.data())
+                })
+                // Swal.fire({
+                //     title: "Documents fetched",
+                //     text: "number of documents: " + items.length,
+                //     icon: "success"
+                // });
+                return {
+                    ok: true, data: items
+                }
 
-    //         }
-    //     } catch (error) {
-    //         notifyError(error)
-    //         console.log({ error })
-    //         return {
-    //             ok: false,
-    //             error,
-    //         }
-    //     }
-    // }
-    // async function getDocumentById2(data) {
-    //     try {
-    //         const docRef = await getDoc(doc(firestore, data.collection, data.id).withConverter(documentConverter));
-    //         const document = docRef.data();
-    //         // document.created_at = new Date(document.created_at.toDate()).toLocaleString("pt-BR", { timeZone: 'Europe/Madrid' });
-    //         // document.updated_at = new Date(document.updated_at.toDate()).toLocaleString("pt-BR", { timeZone: 'Europe/Madrid' });
-    //         console.log({ document })
-    //         return {
-    //             ok: true,
-    //             data: document
-    //         }
+            }
+        } catch (error) {
+            notifyError(error)
+            console.log({ error })
+            return {
+                ok: false,
+                error,
+            }
+        }
+    }
+    async function getDocumentById2(data) {
+        try {
+            const docRef = await getDoc(doc(firestore, data.collection, data.id).withConverter(documentConverter));
+            const document = docRef.data();
+            // document.created_at = new Date(document.created_at.toDate()).toLocaleString("pt-BR", { timeZone: 'Europe/Madrid' });
+            // document.updated_at = new Date(document.updated_at.toDate()).toLocaleString("pt-BR", { timeZone: 'Europe/Madrid' });
+            console.log({ document })
+            return {
+                ok: true,
+                data: document
+            }
 
-    //     } catch (error) {
-    //         notifyError(error)
-    //         console.log({ error })
-    //         return {
-    //             ok: false,
-    //             error,
-    //         }
-    //     }
-    // }
+        } catch (error) {
+            notifyError(error)
+            console.log({ error })
+            return {
+                ok: false,
+                error,
+            }
+        }
+    }
 
     function notifyError(error) {
         Swal.fire({
