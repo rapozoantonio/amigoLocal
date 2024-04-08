@@ -12,7 +12,7 @@ export const useChatgptStore = defineStore('chatgpt', (
             myHeaders.append("Authorization", "Bearer " + import.meta.env.VITE_CHATGPT_KEY);
 
             const payload = {
-                model: "gpt-3.5-turbo-0125",
+                model: import.meta.env.VITE_CHATGPT_MODEL,
                 messages: [
                     {
                         role: "system",
@@ -33,7 +33,7 @@ export const useChatgptStore = defineStore('chatgpt', (
                 body: raw,
                 redirect: "follow"
             };
-            const response = await fetch("https://api.openai.com/v1/chat/completions", requestOptions);
+            const response = await fetch(import.meta.env.VITE_CHATGPT_URL, requestOptions);
             const result = await response.json();
             console.log({ result })
             return result
