@@ -9,7 +9,6 @@
     "lint": "eslint . --fix --ignore-path .gitignore"
   },
   "dependencies": {
-    "@googlemaps/js-api-loader": "^1.16.6",
     "@mdi/font": "7.0.96",
     "@sweetalert2/theme-dark": "^5.0.16",
     "@vuelidate/core": "^2.0.3",
