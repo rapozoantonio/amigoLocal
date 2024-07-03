@@ -27,19 +27,19 @@ export default {
           size: "lg",
         },
         {
+          id: "birthday",
+          label: "Birthday",
+          type: "date",
+          size: "lg",
+          rules: ["required"],
+        },
+        {
           id: "language",
           label: "Language",
           type: "select",
           size: "lg",
           rules: ["required"],
           initial: "pt",
-        },
-        {
-          id: "birthday",
-          label: "Birthday",
-          type: "date",
-          size: "lg",
-          rules: ["required"],
         },
         {
           id: "gender",

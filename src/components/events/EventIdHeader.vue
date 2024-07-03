@@ -16,10 +16,20 @@
                         {{ event.location.region.name || event.location.region }}
                     </v-btn></v-col>
                 <v-col cols="12" class="pt-0 d-flex align-center">
-                    <h1 class="text-h2 font-weight-bold">{{ event.name }}</h1>
+                    <v-row>
+                        <v-col cols="auto">
+                            <h1 class="text-h2 font-weight-bold">{{ event.name }}</h1>
+                        </v-col>
+                        <v-spacer></v-spacer>
+
+                        <v-col cols="auto"> <follow-button @follow="follow" @unfollow="unfollow" entity="events"
+                                :entity_id="event.id"></follow-button></v-col>
+                    </v-row>
+                    <!-- <h1 class="text-h2 font-weight-bold">{{ event.name }}</h1>
                     <v-spacer></v-spacer>
                     <follow-button @follow="follow" @unfollow="unfollow" entity="events"
                         :entity_id="event.id"></follow-button>
+                         -->
                 </v-col>
             </v-row>
             <v-row class="mb-5">
@@ -56,7 +66,7 @@
                             event.producer?.name }}</router-link>
                     </div>
                 </v-col>
-                <v-col cols="12" md="2" class="d-flex flex-column">
+                <v-col cols="6" md="2" class="d-flex flex-column">
                     <p class="text-caption text-grey">Interesed</p>
                     <div class="d-flex justify-space-between align-center">
                         <span class="text-h6">{{ event.followers }}</span>

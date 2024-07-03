@@ -16,9 +16,9 @@
                     </v-col> -->
 
 
-                    <v-col cols="12">
+                    <v-col cols="12" v-if="event.links">
                         <p class="text-caption text-grey">
-                            Enlaces promocionales
+                            Links
                         </p>
                         <div v-for="link in event.links" :key="link.name">
                             <a link class="link" target="_blank"
@@ -30,7 +30,7 @@
 
 
 
-                    <v-col cols="12">
+                    <v-col cols="12" v-if="event.price">
                         <p class="text-caption text-grey">Preços</p>
                         <p v-for="{ name, value } in event.price" :key="name">{{ name }}: R$ {{ value }}</p>
                     </v-col>
