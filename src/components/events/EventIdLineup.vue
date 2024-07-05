@@ -19,24 +19,38 @@
             </v-col>
             <v-col cols="auto">
                 <span class="text-caption mr-4">Compartir</span>
-                <v-hover>
-                    <template v-slot:default="{ isHovering, props }">
-                        <v-btn class="ml-2" v-bind="props" size="small" color="white"
-                            :variant="isHovering ? 'elevated' : 'outlined'" icon><v-icon>mdi-facebook</v-icon></v-btn>
-                    </template>
-                </v-hover>
-                <v-hover>
-                    <template v-slot:default="{ isHovering, props }">
-                        <v-btn class="ml-2" v-bind="props" size="small" color="white"
-                            :variant="isHovering ? 'elevated' : 'outlined'" icon><v-icon>mdi-twitter</v-icon></v-btn>
-                    </template>
-                </v-hover>
-                <v-hover>
-                    <template v-slot:default="{ isHovering, props }">
-                        <v-btn class="ml-2" v-bind="props" size="small" color="white"
-                            :variant="isHovering ? 'elevated' : 'outlined'" icon><v-icon>mdi-whatsapp</v-icon></v-btn>
-                    </template>
-                </v-hover>
+                <s-facebook :window-features="{}" :share-options="shareOptions" :use-native-behavior="false"
+                    @popup-close="onClose" @popup-open="onOpen" @popup-block="onBlock" @popup-focus="onFocus">
+
+                    <v-hover>
+                        <template v-slot:default="{ isHovering, props }">
+                            <v-btn class="ml-2" v-bind="props" size="small" color="white"
+                                :variant="isHovering ? 'elevated' : 'outlined'"
+                                icon><v-icon>mdi-facebook</v-icon></v-btn>
+                        </template>
+                    </v-hover>
+                </s-facebook>
+
+                <s-twitter :window-features="windowFeatures" :share-options="shareOptions"
+                    :use-native-behavior="useNativeBehavior" @popup-close="onClose" @popup-open="onOpen"
+                    @popup-block="onBlock" @popup-focus="onFocus"> <v-hover>
+                        <template v-slot:default="{ isHovering, props }">
+                            <v-btn class="ml-2" v-bind="props" size="small" color="white"
+                                :variant="isHovering ? 'elevated' : 'outlined'"
+                                icon><v-icon>mdi-twitter</v-icon></v-btn>
+                        </template>
+                    </v-hover></s-twitter>
+
+                <s-whats-app :window-features="windowFeatures" :share-options="shareOptionsWS"
+                    :use-native-behavior="useNativeBehavior" @popup-close="onClose" @popup-open="onOpen"
+                    @popup-block="onBlock" @popup-focus="onFocus"> <v-hover>
+                        <template v-slot:default="{ isHovering, props }">
+                            <v-btn class="ml-2" v-bind="props" size="small" color="white"
+                                :variant="isHovering ? 'elevated' : 'outlined'"
+                                icon><v-icon>mdi-whatsapp</v-icon></v-btn>
+                        </template>
+                    </v-hover></s-whats-app>
+
             </v-col>
         </v-row>
         <v-row>
@@ -56,7 +70,31 @@
 </template>
 
 <script setup>
+import { ref } from 'vue';
+
+import {
+  SFacebook,
+  STwitter,
+  SWhatsApp,
+} from 'vue-socials';
+
 const { event } = defineProps(["event"]);
+
+const shareOptions = ref({
+    url: "https://vue-advisor.web.app",
+    quote: 'Quote',
+    hashtag: "#Jubilus"
+})
+
+const shareOptionsWS = ref({
+    text: "See this event"
+})
+
+function onClose() { }
+function onOpen() { }
+function onBlock() { }
+function onFocus() { }
+
 </script>
 
 <style lang="scss" scoped></style>
