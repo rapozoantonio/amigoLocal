@@ -37,7 +37,7 @@ export default {
         {
           id: "birthday",
           label: "Birthday",
-          type: "date",
+          type: "date+18",
           size: "lg",
           rules: ["required"],
         },

@@ -34,8 +34,9 @@
 
 
         <!-- TEXT, DATE, TIME -->
-        <template v-if="['text', 'date', 'time'].includes(type)">
-            <v-text-field :type="type" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+        <template v-if="['text', 'date', 'time', 'date+18'].includes(type)">
+            <v-text-field :type="type === 'date+18' ? 'date' : type" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :min="type === 'date+18' ? minDate : null">
             </v-text-field>
         </template>
 
@@ -171,8 +172,11 @@ import {
   computed,
   inject,
   onMounted,
+  onUpdated,
   readonly,
   ref,
+  watch,
+  watchEffect,
 } from 'vue';
 
 import FieldCountry from '../fields/FieldCountry.vue';
@@ -245,6 +249,15 @@ const col = computed(() => {
     return size === "xs" ? "6" : size === "sm" ? "12" : size === "md" ? "12" : "12"
 })
 
+const minDate = computed(() => {
+    const today = new Date();
+    const minYear = today.getFullYear() - 18;
+    const minDate = new Date();
+    minDate.setFullYear(minYear);
+    const minDateString = minDate.toISOString().split('T')[0];
+    return minDateString;
+})
+
 const md = computed(() => {
     if (typeof size === "number") {
         return size
@@ -263,7 +276,9 @@ const attrs = computed(() => {
         },
         required: rules.find(i => i === 'required'),
         multiple: !!multiple,
-        disabled: readOnly ? true : false
+        disabled: readOnly ? true : false,
+        baseColor: highlighted.value ? "yellow" : null,
+        bgColor: highlighted.value ? "#ffeb3b12" : null,
     }
 })
 
@@ -275,14 +290,15 @@ const showLabelLeft = computed(() => {
     return labelType === 'left' && !["checkbox", "switch"].includes(type)
 })
 
+const highlighted = ref(false)
+
 onMounted(() => {
     // console.log(model.value[id], initial);
     if (!model.value[id] && initial) {
         model.value[id] = initial;
+        highlighted.value = true;
     }
 })
-
-
 
 
 </script>
