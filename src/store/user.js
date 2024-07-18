@@ -1,13 +1,16 @@
-import { ref, watch } from "vue";
+import {
+  ref,
+  watch,
+} from 'vue';
 
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged } from 'firebase/auth';
 // Utilities
-import { defineStore } from "pinia";
-import { useRouter } from "vue-router";
+import { defineStore } from 'pinia';
+import { useRouter } from 'vue-router';
 
-import { auth } from "@/plugins/firebase";
+import { auth } from '@/plugins/firebase';
 
-import { useFirebaseStore } from "./firebase";
+import { useFirebaseStore } from './firebase';
 
 export const useUserStore = defineStore("user", () => {
   const user = ref(null);
@@ -16,6 +19,7 @@ export const useUserStore = defineStore("user", () => {
     promoters: null,
     locations: null,
   });
+  const usernameLocked = ref(false);
   const firebaseStore = useFirebaseStore();
   const router = useRouter();
 
@@ -68,6 +72,11 @@ export const useUserStore = defineStore("user", () => {
             userState.uid
           );
           if (response.ok) {
+            console.log({ response }, response.data.username);
+            if (response.data.username) {
+              console.log("locking username");
+              usernameLocked.value = true;
+            }
             user.value = response.data;
             await getFollows(userState.uid);
           }
@@ -89,7 +98,7 @@ export const useUserStore = defineStore("user", () => {
   watch(
     () => user.value?.name,
     (newValue) => {
-      if (newValue) {
+      if (newValue && !usernameLocked.value) {
         user.value.username = newValue;
       }
     }
