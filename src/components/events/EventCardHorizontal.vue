@@ -28,8 +28,8 @@
                 </p>
             </v-col>
             <v-col cols="auto" align-self="end">
-                <v-btn v-if="event.code" size="x-small" rounded="pill" color="red-darken-4"><v-icon
-                        start>mdi-ticket</v-icon>{{ event.code }}</v-btn>
+                <v-btn v-if="event.promoter?.code" size="x-small" rounded="pill" color="red-darken-4"><v-icon
+                        start>mdi-ticket</v-icon>{{ event.promoter?.code }}</v-btn>
             </v-col>
         </v-row>
     </v-card>

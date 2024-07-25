@@ -37,6 +37,14 @@ export default {
           size: "lg",
           rules: ["required"],
         },
+
+        {
+          id: "code",
+          label: "Promoter Code",
+          type: "custom-username",
+          size: "lg",
+          rules: ["required"],
+        },
         {
           id: "country",
           label: "Country",

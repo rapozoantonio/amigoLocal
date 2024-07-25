@@ -13,6 +13,9 @@
                 <v-list-item-subtitle>
                     {{ promoter?.email }}
                 </v-list-item-subtitle>
+                <v-list-item-subtitle>
+                    {{ promoter?.code }}
+                </v-list-item-subtitle>
             </v-list-item>
         </v-list>
     </div>
