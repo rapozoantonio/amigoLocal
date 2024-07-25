@@ -37,8 +37,6 @@ export default {
           id: "language",
           label: "Language",
           type: "select",
-          size: "lg",
-          rules: ["required"],
           initial: "pt",
         },
         {

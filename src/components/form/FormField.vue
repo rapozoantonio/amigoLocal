@@ -34,8 +34,9 @@
 
 
         <!-- TEXT, DATE, TIME -->
-        <template v-if="['text', 'date', 'time'].includes(type)">
-            <v-text-field :type="type" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+        <template v-if="['text', 'date', 'time', 'date+18'].includes(type)">
+            <v-text-field :type="type === 'date+18' ? 'date' : type" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :max="type === 'date+18' ? minDate : null">
             </v-text-field>
         </template>
 
@@ -89,15 +90,16 @@
 
         <!-- AUTOCOMPLETE -->
         <template v-else-if="type === 'autocomplete'">
-            <v-autocomplete v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }" :items="items" closable-chips
-                auto-select-first :clear-on-select="true" chips item-title="name" multiple item-value="value">
+            <v-autocomplete @update:focused="updateInput" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"
+                :items="items" closable-chips auto-select-first :clear-on-select="true" chips item-title="name" multiple
+                item-value="value">
             </v-autocomplete>
         </template>
 
         <!-- AUTOCOMPLETE -->
         <template v-else-if="type === 'select'">
-            <v-autocomplete v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }" :items="items" auto-select-first
-                :clear-on-select="true" item-title="name" item-value="value">
+            <v-autocomplete @update:focused="updateInput" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"
+                :items="items" auto-select-first :clear-on-select="true" item-title="name" item-value="value">
             </v-autocomplete>
         </template>
 
@@ -168,11 +170,14 @@
 
 <script setup>
 import {
-  computed,
-  inject,
-  onMounted,
-  readonly,
-  ref,
+    computed,
+    inject,
+    onMounted,
+    onUpdated,
+    readonly,
+    ref,
+    watch,
+    watchEffect,
 } from 'vue';
 
 import FieldCountry from '../fields/FieldCountry.vue';
@@ -191,6 +196,12 @@ const model = defineModel("model");
 const files = defineModel("files");
 
 const showPassword = ref(false);
+
+const initialValue = ref(null);
+
+const changed = computed(() => {
+    return model.value[id] !== initialValue.value
+})
 
 
 const { id, size, type, rules, label, labelType, field, items, initial, icon, multiple, text, prepend, readOnly } = defineProps({
@@ -245,11 +256,45 @@ const col = computed(() => {
     return size === "xs" ? "6" : size === "sm" ? "12" : size === "md" ? "12" : "12"
 })
 
+function updateInput(event) {
+    console.log("updateInput", event);
+    dirty.value = true;
+}
+
+const minDate = computed(() => {
+    const today = new Date();
+    const minYear = today.getFullYear() - 18;
+    const minDate = new Date();
+    minDate.setFullYear(minYear);
+    const minDateString = minDate.toISOString().split('T')[0];
+    return minDateString;
+})
+
 const md = computed(() => {
     if (typeof size === "number") {
         return size
     }
     return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
+})
+
+const stateColor = computed(() => {
+    if ((changed.value || dirty.value) && model.value) {
+        return {
+            base: "teal",
+            bg: "#0096880d"
+        }
+    }
+    if (highlighted.value) {
+        return {
+            base: "yellow",
+            bg: "#ffeb3b12"
+        }
+    }
+    return {
+        base: null,
+        bg: null
+    }
+
 })
 
 const attrs = computed(() => {
@@ -263,7 +308,10 @@ const attrs = computed(() => {
         },
         required: rules.find(i => i === 'required'),
         multiple: !!multiple,
-        disabled: readOnly ? true : false
+        disabled: readOnly ? true : false,
+        baseColor: stateColor.value.base,
+        bgColor: stateColor.value.bg,
+        color: stateColor.value.base || "primary",
     }
 })
 
@@ -275,11 +323,18 @@ const showLabelLeft = computed(() => {
     return labelType === 'left' && !["checkbox", "switch"].includes(type)
 })
 
+const highlighted = ref(false);
+const dirty = ref(false);
+
 onMounted(() => {
     // console.log(model.value[id], initial);
     if (!model.value[id] && initial) {
         model.value[id] = initial;
+        highlighted.value = true;
+        initialValue.value = initial;
+        return;
     }
+    initialValue.value = model.value[id];
 })
 
 

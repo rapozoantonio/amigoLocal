@@ -126,9 +126,9 @@ export const useEventsStore = defineStore("events", () => {
     if (region) {
       queries.push(where("location.region.id", "==", region));
     }
-    queries.push(
-      where("startDate", ">=", new Date().toISOString().split("T")[0])
-    );
+    // queries.push(
+    //   where("startDate", ">=", new Date().toISOString().split("T")[0])
+    // );
     // queries.push(where("createdAt", "<", new Date()))
 
     try {

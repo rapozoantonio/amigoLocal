@@ -2,6 +2,7 @@ import { ref } from "vue";
 
 import {
   createUserWithEmailAndPassword,
+  getAdditionalUserInfo,
   getIdTokenResult,
   GoogleAuthProvider,
   onAuthStateChanged,
@@ -30,9 +31,21 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function loginWithGoogle() {
     const provider = new GoogleAuthProvider();
+    provider.addScope("https://www.googleapis.com/auth/user.birthday.read");
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log({ result });
+      console.log({ result, token: result.user.accessToken });
+
+      const scope = await fetch(
+        "https://www.googleapis.com/auth/user.birthday.read",
+        {
+          headers: { Authorization: "Bearer " + result.user.accessToken },
+          mode: "no-cors",
+        }
+      );
+      const birthday = await scope.json();
+      console.log("birthday", birthday);
+      console.log("additional", getAdditionalUserInfo(result));
       return result.user;
       // const { displayName, email, uid, photoURL } = result.user;
       // user.value = {
@@ -51,6 +64,7 @@ export const useAuthStore = defineStore("auth", () => {
       //   router.push(atob(route.query.redirect));
       // }
     } catch (error) {
+      console.log({ error });
       error.value.message = error.message;
       error.value.code = error.code;
       return null;
