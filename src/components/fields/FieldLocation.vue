@@ -96,7 +96,6 @@ function closeDialog() {
 }
 
 function changeLocation(e) {
-    console.log({ e });
     const loc = locations.value.find((l) => l.id === e);
     if (loc) {
         location.value.name = loc.name;
@@ -119,7 +118,6 @@ function changeLocation(e) {
 async function createAndAssociate() {
 
     const response = await locationStore.createLocation(false);
-    console.log({ response })
     if (response.ok) {
         // emit("create", response.data.document)
         associateLocation(response.data.document)

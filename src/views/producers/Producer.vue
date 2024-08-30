@@ -59,7 +59,7 @@ const producersStore = useProducersStore();
 const { producer } = storeToRefs(producersStore);
 
 onMounted(() => {
-    console.log("onmounted producer")
+    
     producersStore.getProducerById(id);
 })
 

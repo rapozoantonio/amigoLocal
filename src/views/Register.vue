@@ -112,7 +112,7 @@ import { useAuthStore } from '@/store/auth';
 
 const auth = useAuthStore();
 const router = useRouter();
-console.log({ auth });
+
 
 const emailConfirm = ref(null);
 const showPassword = ref(false);
@@ -150,7 +150,7 @@ async function submitRegister() {
             user.value.password
         );
 
-        console.log({ registerResponse })
+        
         if (!registerResponse.ok) {
             Swal.fire({
                 icon: "error",
@@ -162,7 +162,7 @@ async function submitRegister() {
         router.push({ name: 'pro-profile' });
 
     } catch (error) {
-        console.log("register", { error });
+        
     } finally {
         loading.value = false;
     }

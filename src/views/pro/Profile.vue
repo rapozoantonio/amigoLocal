@@ -142,10 +142,10 @@ const firebaseStore = useFirebaseStore();
 
 async function saveProfile(event) {
     try {
-        console.log("saveProfile")
+        
         loading.value = true;
         const results = await event;
-        console.log({ results })
+        
         // if (!results.valid) {
         //     document.querySelector("#" + results.errors[0].id).focus();
         //     return false;
@@ -157,11 +157,11 @@ async function saveProfile(event) {
             response.notify("", "Your personal settings is successfully updated")
         }
 
-        console.log({ response })
+        
 
 
     } catch (error) {
-        console.log("profile", { error });
+        
     } finally {
         loading.value = false;
     }

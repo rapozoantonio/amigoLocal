@@ -95,9 +95,9 @@ function removeFollower() {
 onMounted(async () => {
 
     const response = await eventStore.getEventsByProducerId(id);
-    console.log("producer", response)
+    
     if (response.ok) {
-        console.log("data:", response.data);
+        
         events.value = response.data;
         nextEvents.value = eventStore.eventsDateList(response.data);
     }

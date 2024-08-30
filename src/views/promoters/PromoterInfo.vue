@@ -84,9 +84,9 @@ const nextEvents = ref(null);
 onMounted(async () => {
 
     const response = await eventStore.getEventsByPromoterId(id);
-    console.log("promoter", response)
+    
     if (response.ok) {
-        console.log("data:", response.data);
+        
         events.value = response.data;
         nextEvents.value = eventStore.eventsDateList(response.data);
     }

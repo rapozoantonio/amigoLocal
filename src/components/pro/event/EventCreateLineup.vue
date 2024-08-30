@@ -54,7 +54,7 @@ async function submitForm(e) {
         document.querySelector("#" + results.errors[0].id).focus();
         return false;
     }
-    console.log("submitForm");
+    
     next();
 }
 </script>

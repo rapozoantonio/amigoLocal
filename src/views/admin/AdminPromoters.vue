@@ -145,10 +145,10 @@ const headers = [
 ]
 
 async function grantAdminRole() {
-    console.log("grantAdminRole");
+    
     const user = users.value.find((u) => selectedUser.value === u.uid);
     if (!user) return;
-    console.log("user");
+    
     user.role = "admin";
     user.admin = true;
     const updateUserCustomClaims = httpsCallable(
@@ -156,7 +156,7 @@ async function grantAdminRole() {
         "updateUserCustomClaims"
     );
     const response = await updateUserCustomClaims(user);
-    console.log({ response });
+    
 }
 
 function closeDialog() {
@@ -171,16 +171,16 @@ async function updateUserRole(uid, customClaims) {
     try {
         loading.value = true;
         const updateRole = httpsCallable(functions, "updateRole");
-        console.log({ uid, customClaims });
+        
         const response = await updateRole({ uid, customClaims });
-        console.log({ response });
+        
         if (response.data.ok) {
             dialog.value.item.customClaims = response.data.data.customClaims
             dialog.value.item = null;
             dialog.value.opened = false;
         }
     } catch (error) {
-        console.log({ error })
+        
     }
     finally {
         loading.value = false;
@@ -191,7 +191,7 @@ async function updateUserRole(uid, customClaims) {
 async function getAllUsers() {
     const getUsers = httpsCallable(functions, "getAllUsers");
     const response = await getUsers();
-    console.log({ response });
+    
     users.value = response.data.data;
 }
 
@@ -217,7 +217,7 @@ async function createPromoter(promoter) {
         appStore.loadingText = "Creating promoter..."
         promoter.createMethod = "admin-panel"
         const response = await firebaseStore.postDocument("promoters", promoter, "promoters");
-        console.log("role:", dialog.value.item?.customClaims.role)
+        
         if (dialog.value.item?.customClaims.role !== "admin") {
             await updateUserRole(promoter.id, { role: "pro", levelAccess: 3, admin: false },)
         }
@@ -227,7 +227,7 @@ async function createPromoter(promoter) {
         }
 
     } catch (error) {
-        console.log({ error })
+        
     } finally {
         dialog.value.opened = false;
         dialog.value.item = null;

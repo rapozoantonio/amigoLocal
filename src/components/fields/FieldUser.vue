@@ -84,7 +84,6 @@ function closeDialog() {
 async function createAndAssociate() {
 
     const response = await userStore.createUser(false);
-    console.log({ response })
     if (response.ok) {
         // emit("create", response.data.document)
         associateUser(response.data.document)
@@ -93,7 +92,6 @@ async function createAndAssociate() {
 }
 
 function changeUser(e) {
-    console.log({ e });
     const user = users.value.find((p) => p.id === e);
     if (user) {
         model.value = { name: user.name, id: user.id };

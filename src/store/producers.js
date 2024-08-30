@@ -25,9 +25,9 @@ export const useProducersStore = defineStore("producers", () => {
     try {
       const q = query(collection(firestore, "producers"));
       const querySnapshot = await getDocs(q);
-      console.log({ querySnapshot });
+      
       //   querySnapshot.forEach((document) => {
-      //     console.log(document.data());
+      //     
       //     events.value.push(document.data());
       //   });
       producers.value = querySnapshot.docs.map((d) => d.data());
@@ -36,7 +36,7 @@ export const useProducersStore = defineStore("producers", () => {
         data: { producers: producers.value },
       };
     } catch (error) {
-      console.log({ error });
+      
       notifyError(error);
       return {
         ok: false,
@@ -54,7 +54,7 @@ export const useProducersStore = defineStore("producers", () => {
         producer.value = documentSnapshot.data();
       }
     } catch (error) {
-      console.log({ error });
+      
       notifyError(error);
       return {
         ok: false,
@@ -72,7 +72,7 @@ export const useProducersStore = defineStore("producers", () => {
   }
 
   async function init() {
-    console.log("init producers");
+    
     await getProducers();
   }
 

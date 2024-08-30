@@ -63,7 +63,7 @@ export const useLocationStore = defineStore("location", () => {
         return response;
       }
     } catch (error) {
-      console.log({ error });
+      
       return error;
     }
   }

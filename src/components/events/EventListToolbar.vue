@@ -44,7 +44,6 @@ import EventListGenreSelector from './EventListGenreSelector.vue';
 
 const route = useRoute();
 
-console.log({ route })
 </script>
 
 <style lang="scss" scoped></style>

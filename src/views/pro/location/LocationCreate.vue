@@ -238,9 +238,9 @@ const { location } = storeToRefs(locationStore);
 
 
 function handleChangePosition(pos) {
-    console.log("marker", markerRef.value)
-    console.log("position", markerRef.value.marker.position)
-    console.log(pos)
+    
+    
+    
 }
 
 function handlePositionChange({ latLng }) {
@@ -253,11 +253,11 @@ function handlePositionChange({ latLng }) {
 
 async function createLocation(event) {
     const { valid, errors } = await event
-    console.log("form", form.value)
+    
 
     if (valid) {
         const response = await locationStore.createLocation();
-        console.log({ response })
+        
     }
     else {
         document.querySelector("#" + errors[0].id).focus();
@@ -275,14 +275,14 @@ async function initGoogleMaps() {
         apiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY,
         version: "weekly",
     });
-    console.log('loader', loader);
-    // console.log("inputAddress", inputAddress.value);
+    
+    // 
     const input = document.querySelector("#address");
-    console.log("input", input);
+    
     const Places = await loader.importLibrary('places');
-    console.log("Places", Places)
+    
     const autocomplete = new Places.Autocomplete(input);
-    console.log('autocomplete', autocomplete);
+    
 
     function returnAddressComponent(components, include, type = "long_name") {
         const comp = components.find(c => c.types.includes(include));
@@ -296,13 +296,13 @@ async function initGoogleMaps() {
 
     autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
-        console.log('place', place);
+        
 
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
         center.value.lat = lat;
         center.value.lng = lng;
-        console.log({ lat, lng });
+        
         mapRef.value.map.panTo({ lat, lng });
         location.value.name = place.name;
         location.value.address = returnAddressComponent(place.address_components, "route") + " " + returnAddressComponent(place.address_components, "street_number");

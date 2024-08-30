@@ -218,7 +218,7 @@ const { id } = defineProps(["id"]);
 onMounted(async () => {
     eventStore.$reset();
     const response = await firebaseStore.getDocumentById("events", id);
-    console.log({ response })
+    
     if (response.ok) {
         event.value = response.data;
     } s

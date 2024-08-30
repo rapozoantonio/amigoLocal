@@ -215,7 +215,7 @@ async function useAssistente() {
         appStore.loadingText = "Converting text...";
 
         const response = await chatgptStore.fetchEventAssistente(text.value);
-        console.log({ response });
+        
         const content = JSON.parse(response.choices[0].message.content);
 
         event.value = {
@@ -223,7 +223,7 @@ async function useAssistente() {
             ...content,
         };
     } catch (error) {
-        console.log({ error });
+        
     } finally {
         appStore.loading = false;
         appStore.loadingText = null;

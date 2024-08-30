@@ -257,7 +257,7 @@ const col = computed(() => {
 })
 
 function updateInput(event) {
-    console.log("updateInput", event);
+    
     dirty.value = true;
 }
 
@@ -327,7 +327,7 @@ const highlighted = ref(false);
 const dirty = ref(false);
 
 onMounted(() => {
-    // console.log(model.value[id], initial);
+    // 
     if (!model.value[id] && initial) {
         model.value[id] = initial;
         highlighted.value = true;

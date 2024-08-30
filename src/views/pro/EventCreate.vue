@@ -116,13 +116,13 @@ const rules = ref({
 //     stepper.value.prev();
 // }
 async function submit() {
-    console.log("submit");
+    
     const response = await eventStore.createEvent();
     if (response.ok) {
         eventStore.$reset();
         step.value = 1;
     }
-    console.log("submitForm");
+    
 }
 </script>
 

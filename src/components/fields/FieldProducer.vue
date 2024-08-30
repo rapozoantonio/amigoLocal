@@ -112,7 +112,6 @@ function closeDialog() {
 async function createAndAssociate() {
 
     const response = await producerStore.createProducer(false);
-    console.log({ response })
     if (response.ok) {
         // emit("create", response.data.document)
         associateProducer(response.data.document)
@@ -123,7 +122,6 @@ async function createAndAssociate() {
 
 
 function changeProducer(e) {
-    console.log({ e });
     const prod = producers.value.find((p) => p.id === e);
     if (prod) {
         model.value = { name: prod.name, username: prod.username, id: prod.id };

@@ -84,13 +84,13 @@ const rules = ref({
 
 
 async function submit() {
-    console.log("submit");
+    
     // const response = await eventStore.createEvent();
     // if (response.ok) {
     //     eventStore.$reset();
     //     step.value = 1;
     // }
-    console.log("submitForm");
+    
 }
 
 const { id } = defineProps(["id"]);
@@ -98,7 +98,7 @@ const { id } = defineProps(["id"]);
 onMounted(async () => {
     eventStore.$reset();
     const response = await eventStore.getEventById(id);
-    console.log({ response })
+    
     if (response.ok) {
         event.value = response.data;
     } s

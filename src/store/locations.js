@@ -19,9 +19,9 @@ export const useLocationsStore = defineStore("locations", () => {
     try {
       const q = query(collection(firestore, "locations"));
       const querySnapshot = await getDocs(q);
-      console.log({ querySnapshot });
+      
       //   querySnapshot.forEach((document) => {
-      //     console.log(document.data());
+      //     
       //     events.value.push(document.data());
       //   });
       locations.value = querySnapshot.docs.map((d) => d.data());
@@ -30,7 +30,7 @@ export const useLocationsStore = defineStore("locations", () => {
         data: { locations: locations.value },
       };
     } catch (error) {
-      console.log({ error });
+      
       notifyError(error);
       return {
         ok: false,
@@ -48,7 +48,7 @@ export const useLocationsStore = defineStore("locations", () => {
         location.value = documentSnapshot.data();
       }
     } catch (error) {
-      console.log({ error });
+      
       notifyError(error);
       return {
         ok: false,

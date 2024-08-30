@@ -58,7 +58,7 @@ async function checkIfRequestAlreadyExists() {
         }
         return false;
     } catch (error) {
-        console.log({ error });
+        
         return false;
     }
 }
@@ -70,7 +70,7 @@ async function submitRequest() {
             response.notify("Request sent", "Your request has been sent to be approved");
         }
     } catch (error) {
-        console.log("promoterRequest", { error })
+        
     }
 }
 

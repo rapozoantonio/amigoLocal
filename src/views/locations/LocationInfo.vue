@@ -72,9 +72,9 @@ const eventsCount = ref(null);
 onMounted(async () => {
 
     const response = await eventStore.getEventsByLocationId(id);
-    console.log("location", response)
+    
     if (response.ok) {
-        console.log("data:", response.data);
+        
         // events.value = response.data;
         // nextEvents.value = eventStore.eventsDateList(response.data);
     }

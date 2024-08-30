@@ -68,7 +68,7 @@ exports.registerUser = functions.auth.user().onCreate(async (user) => {
       userDocument.name = user.displayName;
     }
 
-    console.log({ user });
+    
 
     await admin
       .firestore()
@@ -76,7 +76,7 @@ exports.registerUser = functions.auth.user().onCreate(async (user) => {
       .doc(user.uid)
       .set(userDocument, { merge: true });
   } catch (error) {
-    console.log({ error });
+    
   }
 });
 
@@ -84,12 +84,12 @@ exports.deleteUser = functions.auth.user().onDelete(async (user) => {
   try {
     await admin.firestore().collection("users").doc(user.uid).delete();
   } catch (error) {
-    console.log({ error });
+    
   }
 });
 
 exports.getAllUsers = functions.https.onCall(async () => {
-  console.log("getAllUsers");
+  
   try {
     const userRecords = await auth.listUsers(100);
     const users = userRecords.users.map((user) => user.toJSON());
@@ -101,9 +101,9 @@ exports.getAllUsers = functions.https.onCall(async () => {
 
 exports.updateRole = functions.https.onCall(async ({ uid, customClaims }) => {
   try {
-    console.log({ customClaims });
+    
     await auth.setCustomUserClaims(uid, customClaims);
-    console.log("after customClaims");
+    
 
     await admin
       .firestore()
@@ -112,7 +112,7 @@ exports.updateRole = functions.https.onCall(async ({ uid, customClaims }) => {
       .update({ customClaims });
     return { data: { customClaims }, ok: true };
   } catch (error) {
-    console.log({ error });
+    
     return { error, ok: false };
   }
 });

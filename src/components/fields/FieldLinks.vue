@@ -38,7 +38,6 @@ const { fieldAttrs, rules } = inject("$helpers");
 // const { model } = defineProps(["model"]);
 
 function addLink() {
-    console.log(links.value, links)
     if (!links.value || !Array.isArray(links.value)) {
         links.value = [{ name: "", url: "" }];
         return

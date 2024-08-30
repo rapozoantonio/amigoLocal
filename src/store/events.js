@@ -53,12 +53,12 @@ export const useEventsStore = defineStore("events", () => {
   });
 
   const nextEvents = computed(() => {
-    console.log("events", events.value);
+    
     if (events.value) {
       events.value.sort((a, b) => {
         return a.startDate.localeCompare(b.startDate);
       });
-      console.log(events.value.map((e) => e.startDate));
+      
 
       const nextEventsResult = filteredEvents.value.reduce(
         (nextEvents, event) => {
@@ -87,7 +87,7 @@ export const useEventsStore = defineStore("events", () => {
 
   const eventsDateList = computed(() => {
     return (eventsList) => {
-      console.log({ eventsList });
+      
       return !eventsList
         ? null
         : eventsList.reduce((nextEvents, event) => {
@@ -134,9 +134,9 @@ export const useEventsStore = defineStore("events", () => {
     try {
       const q = query(collection(firestore, "events"), ...queries);
       const querySnapshot = await getDocs(q);
-      console.log({ querySnapshot });
+      
       //   querySnapshot.forEach((document) => {
-      //     console.log(document.data());
+      //     
       //     events.value.push(document.data());
       //   });
       events.value = querySnapshot.docs.map((d) => d.data());
@@ -148,7 +148,7 @@ export const useEventsStore = defineStore("events", () => {
         data: { events: events.value },
       };
     } catch (error) {
-      console.log({ error });
+      
       notifyError(error);
       return {
         ok: false,
@@ -173,9 +173,9 @@ export const useEventsStore = defineStore("events", () => {
     try {
       const q = query(collection(firestore, "events"), ...queries);
       const querySnapshot = await getDocs(q);
-      console.log({ querySnapshot });
+      
       //   querySnapshot.forEach((document) => {
-      //     console.log(document.data());
+      //     
       //     events.value.push(document.data());
       //   });
       events.value = querySnapshot.docs.map((d) => d.data());
@@ -184,7 +184,7 @@ export const useEventsStore = defineStore("events", () => {
         data: events.value,
       };
     } catch (error) {
-      console.log({ error });
+      
       notifyError(error);
       return {
         ok: false,
@@ -209,9 +209,9 @@ export const useEventsStore = defineStore("events", () => {
     try {
       const q = query(collection(firestore, "events"), ...queries);
       const querySnapshot = await getDocs(q);
-      console.log({ querySnapshot });
+      
       //   querySnapshot.forEach((document) => {
-      //     console.log(document.data());
+      //     
       //     events.value.push(document.data());
       //   });
       events.value = querySnapshot.docs.map((d) => d.data());
@@ -220,7 +220,7 @@ export const useEventsStore = defineStore("events", () => {
         data: events.value,
       };
     } catch (error) {
-      console.log({ error });
+      
       notifyError(error);
       return {
         ok: false,
@@ -245,9 +245,9 @@ export const useEventsStore = defineStore("events", () => {
     try {
       const q = query(collection(firestore, "events"), ...queries);
       const querySnapshot = await getDocs(q);
-      console.log({ querySnapshot });
+      
       //   querySnapshot.forEach((document) => {
-      //     console.log(document.data());
+      //     
       //     events.value.push(document.data());
       //   });
       events.value = querySnapshot.docs.map((d) => d.data());
@@ -256,7 +256,7 @@ export const useEventsStore = defineStore("events", () => {
         data: { events: events.value },
       };
     } catch (error) {
-      console.log({ error });
+      
       notifyError(error);
       return {
         ok: false,
@@ -272,10 +272,10 @@ export const useEventsStore = defineStore("events", () => {
       const documentSnapshot = await getDoc(doc(firestore, "events/" + id));
       if (!documentSnapshot.empty) {
         event.value = documentSnapshot.data();
-        console.log("event", documentSnapshot.data());
+        
       }
     } catch (error) {
-      console.log({ error });
+      
       notifyError(error);
       return {
         ok: false,

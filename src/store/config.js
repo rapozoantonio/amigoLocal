@@ -24,10 +24,10 @@ export const useConfigStore = defineStore("config", () => {
       const response = await firebaseStore.getDocumentById("config", "event");
       if (response.ok) {
         eventConfig.value = response.data;
-        console.log("configEvent", response.data);
+        
       }
     } catch (error) {
-      console.log({ error });
+      
     }
   }
 
@@ -39,10 +39,10 @@ export const useConfigStore = defineStore("config", () => {
         eventConfig.value
       );
       if (response.ok) {
-        console.log(response);
+        
       }
     } catch (error) {
-      console.log({ error });
+      
     }
   }
 

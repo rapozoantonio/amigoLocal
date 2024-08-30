@@ -84,7 +84,7 @@ function addGenre() {
 }
 
 function removeGenre() {
-    console.log("removed")
+    
 }
 
 function addAge() {
