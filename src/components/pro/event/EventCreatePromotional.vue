@@ -91,7 +91,7 @@ const eventStore = useEventStore();
 const { event, files } = storeToRefs(eventStore);
 const emit = defineEmits(["submit"]);
 
-console.log({ files });
+
 // const formValid = ref(false);
 
 const imagePreview = computed(() => {

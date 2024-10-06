@@ -443,15 +443,15 @@ async function useAssistente(callback) {
         appStore.loading = true;
         appStore.loadingText = "Converting text...";
         const response = await chatgptStore.getBulkEventList(text.value);
-        console.log({ response });
+        
         const content = JSON.parse(response.choices[0].message.content);
 
         if (content.events) {
             events.value = content.events;
         }
-        console.log({ content })
+        
     } catch (error) {
-        console.log({ error });
+        
     } finally {
         appStore.loading = false;
         appStore.loadingText = null;
@@ -460,7 +460,7 @@ async function useAssistente(callback) {
 }
 
 function onClickFinish() {
-    console.log("finished")
+    
 }
 
 

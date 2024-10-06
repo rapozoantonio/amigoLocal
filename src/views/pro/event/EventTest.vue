@@ -21,7 +21,7 @@ const { genres } = storeToRefs(configStore);
 const { id } = defineProps(["id"]);
 
 function submitEvent() {
-    console.log("submit Event");
+    
     eventStore.updateEvent();
 }
 
@@ -32,7 +32,7 @@ onBeforeMount(async () => {
             event.value = data;
         }
     } catch (error) {
-        console.log({ error })
+        
     }
 })
 

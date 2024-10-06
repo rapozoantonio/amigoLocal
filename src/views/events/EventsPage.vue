@@ -43,11 +43,11 @@ watch(() => route.query.genre, (newValue) => {
 })
 
 onMounted(() => {
-    console.log("============== onmounted eventlist", country.toUpperCase(), region);
+    
     if (route.query.genre) {
         selectedGenres.value = typeof route.query.genre === "string" ? [route.query.genre] : route.query.genre
     }
-    console.log({ selectedGenres });
+    
     eventsStore.getEventsByRegion(country.toUpperCase(), region);
 });
 </script>

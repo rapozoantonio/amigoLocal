@@ -24,9 +24,9 @@ export const useUserStore = defineStore("user", () => {
   const router = useRouter();
 
   async function getUser(uid) {
-    console.log("getUser");
+    
     const response = await firebaseStore.getDocumentById("users", uid);
-    console.log(response?.data);
+    
     if (response.ok) {
       user.value = response.data;
     }
@@ -46,14 +46,14 @@ export const useUserStore = defineStore("user", () => {
       "users/" + uid + "/follows",
       entity
     );
-    console.log(entityFollows?.data);
+    
     if (entityFollows.ok) {
       follows.value[entity] = entityFollows.data?.following;
     }
   }
 
   function resetUser() {
-    console.log("resetUser");
+    
     user.value = null;
     follows.value = {
       events: null,
@@ -64,7 +64,7 @@ export const useUserStore = defineStore("user", () => {
 
   async function init() {
     const unsubscribe = onAuthStateChanged(auth, async (userState) => {
-      console.log("init onauthchange user");
+      
       if (userState) {
         try {
           const response = await firebaseStore.getDocumentById(
@@ -72,22 +72,22 @@ export const useUserStore = defineStore("user", () => {
             userState.uid
           );
           if (response.ok) {
-            console.log({ response }, response.data.username);
+            
             if (response.data.username) {
-              console.log("locking username");
+              
               usernameLocked.value = true;
             }
             user.value = response.data;
             await getFollows(userState.uid);
           }
         } catch (error) {
-          console.log("init auth", { error });
+          
           resetUser();
         } finally {
-          console.log("user", user.value);
+          
         }
       } else {
-        console.log("else userstate", user.value);
+        
         resetUser();
       }
     });

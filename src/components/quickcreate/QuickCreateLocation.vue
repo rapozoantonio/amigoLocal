@@ -68,10 +68,10 @@ const form = ref(null);
 
 async function createAndAssociate(event) {
     const { valid, errors } = await event
-    console.log("form", form.value)
+    
     if (valid) {
         const response = await locationStore.createLocation(false);
-        console.log({ response })
+        
         if (response.ok) {
             emit("create", response.data.document)
         }

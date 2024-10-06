@@ -110,7 +110,6 @@ function closeDialog() {
 async function createAndAssociate() {
 
     const response = await promoterStore.createPromoter(false);
-    console.log({ response })
     if (response.ok) {
         // emit("create", response.data.document)
         associatePromoter(response.data.document)
@@ -119,7 +118,6 @@ async function createAndAssociate() {
 }
 
 function changePromoter(e) {
-    console.log({ e });
     const prod = promoters.value.find((p) => p.id === e);
     if (prod) {
         model.value = { name: prod.name, username: prod.username, id: prod.id };

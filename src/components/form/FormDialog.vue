@@ -130,14 +130,14 @@ async function submitForm(event) {
     try {
         loading.value = true;
         const results = await event;
-        console.log({ results })
+        
         if (!results.valid) {
             document.querySelector("#" + results.errors[0].id).focus();
             return false;
         }
         emit("submit", model.value);
     } catch (error) {
-        console.log("profile", { error });
+        
     } finally {
         loading.value = false;
     }

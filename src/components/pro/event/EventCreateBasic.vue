@@ -127,9 +127,9 @@ const { event, $v } = storeToRefs(eventStore);
 const { countries, regions } = storeToRefs(configStore);
 // const { locations } = storeToRefs(locationsStore);
 const { fieldAttrs } = inject("$helpers");
-console.log({ fieldAttrs });
 
-console.log({ $v });
+
+
 
 // const formValid = ref(false);
 const localDefined = ref(true);
@@ -141,7 +141,7 @@ async function submitForm(e) {
         document.querySelector("#" + results.errors[0].id).focus();
         return false;
     }
-    console.log("submitForm");
+    
     next();
 }
 
@@ -150,9 +150,9 @@ watch(() => event.value.location.country, () => {
 })
 
 // function changeLocation(e) {
-//     console.log({ e });
+//     
 //     const location = locations.value.find((l) => l.id === e);
-//     console.log({ location });
+//     
 //     if (location) {
 //         event.value.location = {
 //             name: location.name,

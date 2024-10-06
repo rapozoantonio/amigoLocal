@@ -194,18 +194,18 @@ async function submitForm() {
             step.value = 1;
         }
         else {
-            console.log("not a valid form");
+            
         }
 
     } catch (error) {
-        console.log("formSteps", { error });
+        
     }
 }
 
 async function nextStep(index, callback) {
-    console.log({ index })
+    
     const results = await formEl.value[index].validate();
-    console.log({ results })
+    
     if (!results.valid) {
         document.querySelector("#" + results.errors[0].id).focus();
         return false;

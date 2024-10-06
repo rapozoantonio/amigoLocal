@@ -125,14 +125,14 @@ async function saveProfile(event) {
 
 
     } catch (error) {
-        console.log("profile", { error });
+        
     } finally {
         loading.value = false;
     }
 }
 
 function updateViewMode(viewmode) {
-    console.log("view", { viewmode })
+    
 }
 
 

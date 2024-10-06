@@ -19,12 +19,12 @@ const { id } = defineProps(["id"]);
 
 
 async function submitEvent() {
-    console.log("submitEvent");
+    
     const response = await eventStore.createEvent();
     if (response.ok) {
         eventStore.$reset();
     }
-    console.log("submitForm");
+    
 }
 
 

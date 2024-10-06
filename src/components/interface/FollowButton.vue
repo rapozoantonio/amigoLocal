@@ -60,7 +60,7 @@ async function follow() {
         emit("follow")
         return true
     } catch (error) {
-        console.log({ error })
+        
         return false
     }
 
@@ -71,7 +71,7 @@ async function unfollow() {
         await firebase.removeFollow(entity, entity_id, auth.user);
         await userStore.getFollows(auth.user.uid);
         // if (entity === "events" && event.value) {
-        //     console.log("in if un")
+        //     
         //     event.value.followers = event.value.followers - 1
         // }
         // if (entity === "locations" && location.value) {
@@ -80,7 +80,7 @@ async function unfollow() {
         emit("unfollow")
         return true
     } catch (error) {
-        console.log({ error })
+        
         return false
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <form-steps v-model:opened="opened" @submit="submitEvent" title="Editar Evento" action="Save event" labelType="up"
-        :schema="eventSchema" :items="{ genres }" v-model:model="event" v-model:files="files">
+        :schema="eventSchema" :items="{ genres, categories: eventCategories }" v-model:model="event" v-model:files="files">
         <template #header-prepend v-if="!$vuetify.display.xs">
             <div class="w-100 px-4">
                 <event-create-gpt-assistence block variant="elevated" action="Use AI" title="Jubilus Copilot"
@@ -40,16 +40,16 @@ import { useEventStore } from '@/store/event';
 const eventStore = useEventStore();
 const configStore = useConfigStore();
 const opened = ref(true);
-const { event, files } = storeToRefs(eventStore);
-const { genres } = storeToRefs(configStore);
+const { event, files, eventCategories } = storeToRefs(eventStore);
+const { genres  } = storeToRefs(configStore);
 
 async function submitEvent() {
-    console.log("submit");
+    
     const response = await eventStore.createEvent();
     if (response.ok) {
         eventStore.$reset();
     }
-    console.log("submitForm");
+    
 }
 
 

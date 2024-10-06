@@ -103,7 +103,6 @@ function unfollow() {
     event.value.followers--
 }
 
-console.log({ helpers })
 
 
 </script>
