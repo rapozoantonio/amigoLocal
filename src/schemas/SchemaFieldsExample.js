@@ -53,16 +53,6 @@ export default {
           label:
             "Eu aceito os <a class='text-primary' href='https://cooltra.com' target='_blank' >termos e condiçoes</a> de uso do serviço.",
         },
-        // {
-        //   id: "divider-location",
-        //   type: "divider",
-        //   label: "Location",
-        // },
-        // {
-        //   id: "header-location",
-        //   type: "header",
-        //   label: "Location",
-        // },
         {
           id: "location",
           type: "custom-location",
@@ -102,7 +92,12 @@ export default {
           size: "lg",
           label: "Description",
         },
-
+        {
+          id: "categories",
+          type: "autocomplete",
+          size: "md",
+          label: "Categories",
+        },
         {
           id: "image",
           type: "image",

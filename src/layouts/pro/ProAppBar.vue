@@ -56,14 +56,14 @@
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
-        <v-app-bar flat color="white" density="compact">
+        <v-app-bar flat density="compact">
             <v-container>
                 <v-row align="center">
                     <v-col cols="auto">
                         <v-app-bar-nav-icon v-if="xs" @click="opened = !opened"></v-app-bar-nav-icon>
 
                         <v-btn v-else variant="plain" icon size="small">
-                            <v-icon icon="mdi-rocket" /> </v-btn>
+                            <v-icon icon="mdi-ticket" /> </v-btn>
 
                     </v-col>
                     <v-col v-if="!xs">

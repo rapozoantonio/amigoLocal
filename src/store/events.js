@@ -23,7 +23,6 @@ export const useEventsStore = defineStore("events", () => {
 
   const filteredEvents = computed(() => {
     if (!events.value) return null;
-
     if (selectedGenres.value && selectedGenres.value.length > 0) {
       return events.value.filter((e) => {
         return e.genres.some((g) => selectedGenres.value.includes(g));
@@ -63,8 +62,8 @@ export const useEventsStore = defineStore("events", () => {
       const nextEventsResult = filteredEvents.value.reduce(
         (nextEvents, event) => {
           // Transform startDate to short date format
-          const options = { weekday: "short", day: "numeric", month: "short" };
-          const date = new Intl.DateTimeFormat("en-US", options)
+          const options = { weekday: "short", day: "2-digit", month: "short" };
+          const date = new Intl.DateTimeFormat("pt-BR", options)
             .format(new Date(event.startDate))
             .toUpperCase();
 
@@ -92,12 +91,8 @@ export const useEventsStore = defineStore("events", () => {
         ? null
         : eventsList.reduce((nextEvents, event) => {
             // Transform startDate to short date format
-            const options = {
-              weekday: "short",
-              day: "numeric",
-              month: "short",
-            };
-            const date = new Intl.DateTimeFormat("en-US", options)
+            const options = { weekday: "short", day: "2-digit", month: "short" };
+            const date = new Intl.DateTimeFormat("pt-BR", options)
               .format(new Date(event.startDate))
               .toUpperCase();
 
@@ -126,19 +121,10 @@ export const useEventsStore = defineStore("events", () => {
     if (region) {
       queries.push(where("location.region.id", "==", region));
     }
-    // queries.push(
-    //   where("startDate", ">=", new Date().toISOString().split("T")[0])
-    // );
-    // queries.push(where("createdAt", "<", new Date()))
 
     try {
       const q = query(collection(firestore, "events"), ...queries);
       const querySnapshot = await getDocs(q);
-      
-      //   querySnapshot.forEach((document) => {
-      //     
-      //     events.value.push(document.data());
-      //   });
       events.value = querySnapshot.docs.map((d) => d.data());
       events.value.sort((a, b) => {
         return a.startDate.localeCompare(b.startDate);
@@ -164,7 +150,6 @@ export const useEventsStore = defineStore("events", () => {
     events.value = null;
     const queries = [];
     queries.push(where("promoter.id", "==", promoterId));
-
     // queries.push(
     //   where("startDate", ">=", new Date().toISOString().split("T")[0])
     // );
