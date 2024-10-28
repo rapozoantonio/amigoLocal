@@ -161,7 +161,7 @@ import { useAuthStore } from '@/store/auth';
 
 const auth = useAuthStore();
 
-console.log({ auth });
+
 
 const emailConfirm = ref(null);
 const showPassword = ref(false);
@@ -217,17 +217,17 @@ async function submitRegister(event) {
             registeredUser,
             user.value.password
         );
-        console.log(registerResponse);
+        
         // await registerResponse.notify();
-        console.log("registrado");
+        
 
         const loginUser = await auth.loginWithEmail(
             registeredUser.email,
             user.value.password
         );
-        console.log({ loginUser });
+        
     } catch (error) {
-        console.log({ error });
+        
     } finally {
         loading.value = false;
     }

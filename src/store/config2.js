@@ -11,7 +11,7 @@ export const useConfigStore = defineStore("config", () => {
 
   async function getCountries() {
     try {
-      console.log("getcountries");
+      
       const response = await fetch("https://restcountries.com/v3.1/all");
       const json = await response.json();
       json.sort((a, b) => {
@@ -31,9 +31,9 @@ export const useConfigStore = defineStore("config", () => {
       });
 
       countries.value = countriesArray;
-      console.log({ countriesArray });
+      
     } catch (error) {
-      console.log({ error });
+      
     }
   }
 
@@ -44,7 +44,7 @@ export const useConfigStore = defineStore("config", () => {
         regions.value = response.data;
       }
     } catch (error) {
-      console.log({ error });
+      
     }
   }
 

@@ -7,6 +7,7 @@ import {
 import { defineStore } from 'pinia';
 
 import $genres from '@/assets/genres';
+import $eventCategories from '@/assets/eventCategories';
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 
@@ -33,14 +34,13 @@ export const useEventStore = defineStore("event", () => {
       city: null,
     },
     genres: null,
+    categories: null,
     lineup: null,
     price: null,
     description: null,
     age: "+18",
     links: null,
     medias: null,
-    flyerFront: null,
-    flyerBack: null,
     image: null,
     promoter: firebaseStore.getCurrentUser(),
     producer: null,
@@ -52,6 +52,8 @@ export const useEventStore = defineStore("event", () => {
   });
 
   const genres = ref($genres);
+  const eventCategories = ref($eventCategories);
+  
   const ages = ref([
     { name: "+18", value: "+18" },
     { name: "+19", value: "+19" },
@@ -84,7 +86,7 @@ export const useEventStore = defineStore("event", () => {
       const id = firebaseStore.getPostDocRef("events").id;
 
       const entries = Object.entries(files.value);
-      console.log({ entries });
+      
 
       const filesToUpload = entries.reduce((total, [name, value]) => {
         if (!value) return total;
@@ -106,10 +108,10 @@ export const useEventStore = defineStore("event", () => {
 
         return total;
       }, []);
-      console.log({ filesToUpload });
+      
 
       const pictures = await firebaseStore.uploadPictures(filesToUpload);
-      console.log({ pictures });
+      
 
       pictures.forEach((p) => {
         event.value[p.name] = {
@@ -120,7 +122,7 @@ export const useEventStore = defineStore("event", () => {
       event.value.id = id;
 
       event.value.promoter = firebaseStore.getCurrentUser();
-      console.log("event", event.value);
+      
 
       const response = await firebaseStore.postDocument(
         "events",
@@ -133,7 +135,7 @@ export const useEventStore = defineStore("event", () => {
       );
       return { ok: true };
     } catch (error) {
-      console.log({ error });
+      
       return { ok: false, error };
     } finally {
       appStore.loading = false;
@@ -147,7 +149,7 @@ export const useEventStore = defineStore("event", () => {
     try {
       const id = event.value.id;
       const entries = Object.entries(files.value);
-      console.log({ entries });
+      
 
       const filesToUpload = entries.reduce((total, [name, value]) => {
         if (!value) return total;
@@ -169,10 +171,10 @@ export const useEventStore = defineStore("event", () => {
 
         return total;
       }, []);
-      console.log({ filesToUpload });
+      
 
       const pictures = await firebaseStore.uploadPictures(filesToUpload);
-      console.log({ pictures });
+      
 
       pictures.forEach((p) => {
         event.value[p.name] = {
@@ -192,7 +194,7 @@ export const useEventStore = defineStore("event", () => {
       }
       return { ok: false };
     } catch (error) {
-      console.log({ error });
+      
       return { ok: false, error };
     } finally {
       appStore.loading = false;
@@ -258,6 +260,7 @@ export const useEventStore = defineStore("event", () => {
     genres,
     ages,
     files,
+    eventCategories,
     sectionBasicComplete,
     createEvent,
     $reset,
@@ -265,5 +268,6 @@ export const useEventStore = defineStore("event", () => {
     $v,
     getEventById,
     updateEvent,
+    eventCategories
   };
 });

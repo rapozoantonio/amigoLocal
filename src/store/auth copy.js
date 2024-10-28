@@ -31,7 +31,7 @@ export const useAuthStore = defineStore("auth", {
       const provider = new GoogleAuthProvider();
       try {
         const result = await signInWithPopup(auth, provider);
-        console.log({ result });
+        
         const { displayName, email, uid } = result.user;
         this.user = {
           uid,
@@ -39,13 +39,13 @@ export const useAuthStore = defineStore("auth", {
           email,
         };
         this.loggedIn = true;
-        console.log(
+        
           `Successfully Logged In. Welcome ${displayName} (${email}) `
         );
-        console.log("route", this.route);
+        
         this.message = `Successfully Logged In. Welcome ${displayName} (${email}) `;
         if (this.route.query.redirect && this.route.query.redirect !== "") {
-          console.log("redirect");
+          
           this.router.push(atob(this.route.query.redirect));
         }
       } catch (error) {
@@ -72,10 +72,10 @@ export const useAuthStore = defineStore("auth", {
           if (this.route.query.redirect && this.route.query.redirect !== "") {
             this.router.push(atob(this.route.query.redirect));
           }
-          console.log({ user });
+          
         }
       } catch (error) {
-        console.log({ error });
+        
       }
     },
     async registerWithEmail(user, password) {
@@ -86,13 +86,13 @@ export const useAuthStore = defineStore("auth", {
           password
         );
         user.id = userCredential.user.uid;
-        console.log("credencials");
+        
         const firebase = useFirebaseStore();
         const firebaseResponse = await firebase.registerUser(user);
-        console.log("registeruser");
+        
 
         await updateProfile(userCredential.user, { displayName: user.name });
-        console.log("updateProfile");
+        
 
         return {
           ok: true,
@@ -100,7 +100,7 @@ export const useAuthStore = defineStore("auth", {
           notify: firebaseResponse.notify,
         };
       } catch (error) {
-        console.log({ error });
+        
         return {
           ok: false,
           error,
@@ -110,10 +110,10 @@ export const useAuthStore = defineStore("auth", {
     async registerWithEmail2(user, password) {
       const createUser = httpsCallable(functions, "createUser");
       const { data } = await createUser({ user, password });
-      console.log({ data });
+      
     },
     logout() {
-      console.log("logout");
+      
       signOut(auth)
         .then(() => {
           this.loggedIn = false;
@@ -129,7 +129,7 @@ export const useAuthStore = defineStore("auth", {
     getCurrentUser() {
       return new Promise((resolve) => {
         const unsubscribe = onAuthStateChanged(auth, (user) => {
-          console.log("onAuthStateChanged");
+          
           if (user) {
             this.loggedIn = true;
             this.user = {
@@ -148,7 +148,7 @@ export const useAuthStore = defineStore("auth", {
       });
     },
     setCurrentUser(user) {
-      console.log("setCurrentUser", user);
+      
       this.user = user;
       this.loggedIn = user ? true : false;
     },
@@ -163,7 +163,7 @@ export const useAuthStore = defineStore("auth", {
       if (this.user) {
         const firebase = useFirebaseStore();
         const response = await firebase.getDocumentById("users", this.user.uid);
-        console.log({ response });
+        
       }
     },
   },

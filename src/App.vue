@@ -22,7 +22,7 @@ onMounted(() => {
 
   mounted.value = true;
 })
-console.log("app")
+
 </script>
 
 <style>

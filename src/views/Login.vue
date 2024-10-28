@@ -135,10 +135,10 @@ async function loginEmail() {
         try {
             errors.value = null;
             const response = await auth.loginWithEmail(login.value.email, login.value.password);
-            console.log({ response })
+            
 
         } catch (error) {
-            console.log("catch", { error })
+            
             errors.value = error.message;
         }
     }
@@ -151,7 +151,7 @@ async function loginGoogle() {
 
 
     if (route.query.redirect && route.query.redirect !== "") {
-        console.log("redirect");
+        
         router.push(atob(route.query.redirect));
     }
 }

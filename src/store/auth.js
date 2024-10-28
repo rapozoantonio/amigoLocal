@@ -34,7 +34,7 @@ export const useAuthStore = defineStore("auth", () => {
     provider.addScope("https://www.googleapis.com/auth/user.birthday.read");
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log({ result, token: result.user.accessToken });
+      
 
       const scope = await fetch(
         "https://www.googleapis.com/auth/user.birthday.read",
@@ -44,8 +44,8 @@ export const useAuthStore = defineStore("auth", () => {
         }
       );
       const birthday = await scope.json();
-      console.log("birthday", birthday);
-      console.log("additional", getAdditionalUserInfo(result));
+      
+      
       return result.user;
       // const { displayName, email, uid, photoURL } = result.user;
       // user.value = {
@@ -55,16 +55,16 @@ export const useAuthStore = defineStore("auth", () => {
       //   photoURL,
       // };
       // loggedIn.value = true;
-      // console.log(`Successfully Logged In. Welcome ${displayName} (${email}) `);
-      // console.log("route", route);
+      // 
+      // 
       // message.value = `Successfully Logged In. Welcome ${displayName} (${email}) `;
       // return user.value;
       // if (route.query.redirect && route.query.redirect !== "") {
-      //   console.log("redirect");
+      //   
       //   router.push(atob(route.query.redirect));
       // }
     } catch (error) {
-      console.log({ error });
+      
       error.value.message = error.message;
       error.value.code = error.code;
       return null;
@@ -75,7 +75,7 @@ export const useAuthStore = defineStore("auth", () => {
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      console.log({ result });
+      
       const { displayName, email, uid, photoURL } = result.user;
       user.value = {
         uid,
@@ -84,12 +84,12 @@ export const useAuthStore = defineStore("auth", () => {
         photoURL,
       };
       loggedIn.value = true;
-      console.log(`Successfully Logged In. Welcome ${displayName} (${email}) `);
-      console.log("route", route);
+      
+      
       message.value = `Successfully Logged In. Welcome ${displayName} (${email}) `;
       return user.value;
       // if (route.query.redirect && route.query.redirect !== "") {
-      //   console.log("redirect");
+      //   
       //   router.push(atob(route.query.redirect));
       // }
     } catch (error) {
@@ -119,7 +119,7 @@ export const useAuthStore = defineStore("auth", () => {
         return userState;
       }
     } catch (error) {
-      console.log({ error });
+      
       throw new Error(error.message);
     }
   }
@@ -131,12 +131,12 @@ export const useAuthStore = defineStore("auth", () => {
         password
       );
       userState.id = userCredential.user.uid;
-      console.log("credencials");
+      
       const firebaseResponse = await firebase.registerUser(userState);
-      console.log("registeruser");
+      
 
       await updateProfile(userCredential.user, { displayName: userState.name });
-      console.log("updateProfile");
+      
 
       return {
         ok: true,
@@ -144,7 +144,7 @@ export const useAuthStore = defineStore("auth", () => {
         notify: firebaseResponse.notify,
       };
     } catch (error) {
-      console.log({ error });
+      
       return {
         ok: false,
         error,
@@ -152,7 +152,7 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
   async function logout() {
-    console.log("logout");
+    
     try {
       await signOut(auth);
       loggedIn.value = false;
@@ -167,7 +167,7 @@ export const useAuthStore = defineStore("auth", () => {
   function getCurrentUser() {
     return new Promise((resolve) => {
       const unsubscribe = onAuthStateChanged(auth, async (userState) => {
-        console.log("onAuthStateChanged", userState);
+        
         if (userState) {
           const { claims } = await getIdTokenResult(userState);
           loggedIn.value = true;
@@ -191,7 +191,7 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   function setCurrentUser(userState) {
-    console.log("setCurrentUser", userState);
+    
     user.value = userState;
     loggedIn.value = userState ? true : false;
   }
@@ -207,14 +207,14 @@ export const useAuthStore = defineStore("auth", () => {
     if (user.value) {
       const firebase = useFirebaseStore();
       const response = await firebase.getDocumentById("users", user.value.uid);
-      console.log({ response });
+      
     }
   }
 
   function init() {
-    console.log("init AuthStore");
+    
     onAuthStateChanged(auth, async (userState) => {
-      console.log("onAuthStateChanged init", userState);
+      
       if (userState) {
         const { claims } = await getIdTokenResult(userState);
         loggedIn.value = true;

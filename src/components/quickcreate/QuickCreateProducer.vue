@@ -71,10 +71,10 @@ const files = ref({})
 
 async function createAndAssociate(event) {
     const { valid, errors } = await event
-    console.log("form", form.value)
+    
     if (valid) {
         const response = await producerStore.createProducer(false);
-        console.log({ response })
+        
         if (response.ok) {
             emit("create", response.data.document)
         }
@@ -88,7 +88,7 @@ async function createAndAssociate(event) {
 async function createAndAssociate2(event) {
 
     const response = await producerStore.createProducer(false);
-    console.log({ response })
+    
     if (response.ok) {
         emit("create", response.data.document)
     }

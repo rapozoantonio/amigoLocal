@@ -51,7 +51,7 @@ export const useProducerStore = defineStore("producer", () => {
         return response;
       }
     } catch (error) {
-      console.log({ error });
+      
       return error;
     }
   }

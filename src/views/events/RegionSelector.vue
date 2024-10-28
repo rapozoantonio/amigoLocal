@@ -106,7 +106,7 @@ const featuredCountries = computed(() => {
 function selectCountry(code) {
     selectedCountry.value = code;
     selectedRegion.value = null;
-    console.log(divider.value, divider.value.$el);
+    
     divider.value.$el.scrollIntoView()
 }
 
@@ -121,10 +121,10 @@ function goToEvents() {
 
 
 onMounted(() => {
-    console.log("mounted");
+    
 
     if (!countries.value) {
-        console.log("not countries");
+        
         configStore.init();
     }
 });

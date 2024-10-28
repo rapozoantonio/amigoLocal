@@ -70,7 +70,7 @@ import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/store/auth';
 
 const route = useRoute();
-console.log({ route })
+
 
 const initials = computed(() => {
     if (!auth.user || !auth.user.displayName) return null;

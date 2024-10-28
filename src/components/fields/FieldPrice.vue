@@ -31,7 +31,6 @@ const { fieldAttrs, rules } = inject("$helpers");
 const price = defineModel();
 
 function addPrice() {
-    console.log("add price")
     if (!price.value || !Array.isArray(price.value)) {
         price.value = [{ name: null, value: null }];
         return

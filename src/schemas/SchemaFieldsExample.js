@@ -1,7 +1,6 @@
 export default {
   name: "events",
   sections: [
-   
     {
       name: "Basic Info",
       index: 1,
@@ -39,7 +38,31 @@ export default {
           type: "time",
           size: "sm",
         },
-      
+        {
+          id: "termsAndConditions",
+          type: "checkbox",
+          size: "lg",
+          label:
+            "Eu aceito os <a class='text-primary' href='https://cooltra.com' target='_blank' >termos e condiçoes</a> de uso do serviço.",
+        },
+        {
+          id: "optinEmail",
+          type: "switch",
+          size: "lg",
+
+          label:
+            "Eu aceito os <a class='text-primary' href='https://cooltra.com' target='_blank' >termos e condiçoes</a> de uso do serviço.",
+        },
+        // {
+        //   id: "divider-location",
+        //   type: "divider",
+        //   label: "Location",
+        // },
+        // {
+        //   id: "header-location",
+        //   type: "header",
+        //   label: "Location",
+        // },
         {
           id: "location",
           type: "custom-location",
@@ -49,30 +72,30 @@ export default {
       ],
     },
     {
-      name: "Details & LineUp",
+      name: "Line Up",
       index: 2,
       type: "section",
       fields: [
         {
-          id: "genres",
-          label: "Genres",
-          type: "autocomplete",
-          size: "sm",
-          rules: ["required"],
-        },
-        {
-          id: "categories",
-          label: "Categories",
-          type: "autocomplete",
-          size: "sm",
-        },
-        {
           id: "lineup",
           label: "Line Up",
           type: "textarea",
-          size: "lg",
+          size: "md",
         },
-   
+        {
+          id: "genres",
+          label: "Genres",
+          type: "autocomplete",
+          size: "md",
+          rules: ["required"],
+        },
+      ],
+    },
+    {
+      name: "Details",
+      index: 3,
+      type: "section",
+      fields: [
         {
           id: "description",
           type: "textarea",
@@ -83,20 +106,26 @@ export default {
         {
           id: "image",
           type: "image",
-          size: "lg",
-          label: "Image",
-        },
-        {
-          id: "producer",
-          type: "custom-producer",
           size: "sm",
-          label: "Producer",
+          label: "Image",
         },
         {
           id: "promoter",
           type: "custom-promoter",
           size: "sm",
           label: "Promoter",
+        },
+        {
+          id: "producer",
+          type: "custom-producer",
+          size: "lg",
+          label: "Producer",
+        },
+        {
+          id: "price",
+          type: "custom-price",
+          size: "md",
+          label: "Price",
         },
       ],
     },
@@ -106,10 +135,16 @@ export default {
       type: "section",
       fields: [
         {
-          id: "price",
-          type: "custom-price",
+          id: "flyerFront",
+          type: "image",
           size: "md",
-          label: "Price",
+          label: "Flyer Front",
+        },
+        {
+          id: "flyerBack",
+          type: "image",
+          size: "md",
+          label: "Flyer Back",
         },
         {
           id: "links",

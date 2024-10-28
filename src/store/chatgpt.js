@@ -57,10 +57,10 @@ export const useChatgptStore = defineStore("chatgpt", () => {
         requestOptions
       );
       const result = await response.json();
-      console.log({ result });
+      
       return result;
     } catch (error) {
-      console.log({ error });
+      
       return error;
     }
   }
@@ -101,10 +101,10 @@ export const useChatgptStore = defineStore("chatgpt", () => {
         requestOptions
       );
       const result = await response.json();
-      console.log({ result });
+      
       return result;
     } catch (error) {
-      console.log({ error });
+      
       return error;
     }
   }

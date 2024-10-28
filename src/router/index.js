@@ -418,7 +418,7 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  console.log("beforeEach");
+  
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
@@ -453,8 +453,8 @@ router.beforeEach(async (to, from, next) => {
 });
 
 // router.beforeEach(async (to, from, next) => {
-//   console.log({ from });
-//   console.log("beforeEach");
+//   
+//   
 //   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 //   const auth = useAuthStore();
 //   const token = await auth.getUserClaims();
@@ -468,19 +468,19 @@ router.beforeEach(async (to, from, next) => {
 //       }
 //     }
 //   }
-//   console.log({ token });
-//   console.log({ requiresAuth });
+//   
+//   
 //   if (!requiresAuth) {
-//     console.log("next !requiresAuth");
+//     
 //     next();
 //     return;
 //   }
-//   console.log("before useAuthStore");
-//   console.log({ auth });
+//   
+//   
 //   const user = await auth.getCurrentUser();
-//   console.log({ user });
+//   
 //   if (!user) {
-//     console.log("next !login");
+//     
 //     next({ name: "login", query: { redirect: btoa(to.fullPath) } });
 //     return;
 //   }

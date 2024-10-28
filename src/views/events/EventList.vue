@@ -33,7 +33,7 @@ const eventsStore = useEventsStore();
 const { events } = storeToRefs(eventsStore);
 
 const route = useRoute();
-console.log({ route });
+
 
 onMounted(() => {
     eventsStore.getEventsByRegion("BR");

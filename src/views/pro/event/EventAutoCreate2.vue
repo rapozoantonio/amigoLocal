@@ -346,7 +346,7 @@ async function checkIfLocationExists(name) {
         return await firebaseStore.getDocumentByName("locations", name);
 
     } catch (error) {
-        console.log({ error });
+        
         return false
     }
 
@@ -358,16 +358,16 @@ async function useAssistente(callback) {
         appStore.loadingText = "Converting text...";
 
         const response = await chatgptStore.fetchEventAssistente(text.value);
-        console.log({ response });
+        
         const content = JSON.parse(response.choices[0].message.content);
-        console.log({ content });
+        
         event.value = {
             ...eventStore.event,
             ...content,
         };
         if (content.location && content.location.name) {
             const location = await checkIfLocationExists(content.location.name);
-            console.log({ location })
+            
             if (location) {
                 event.value.location.id = location.id;
                 event.value.location.city = location.city;
@@ -383,7 +383,7 @@ async function useAssistente(callback) {
         }
 
     } catch (error) {
-        console.log({ error });
+        
     } finally {
         appStore.loading = false;
         appStore.loadingText = null;
@@ -392,7 +392,7 @@ async function useAssistente(callback) {
 }
 
 function onClickFinish() {
-    console.log("finished")
+    
 }
 
 function addPrice() {
@@ -410,14 +410,14 @@ function addLink() {
 }
 
 async function submit() {
-    console.log("submit");
+    
     const response = await eventStore.createEvent();
     if (response.ok) {
         eventStore.$reset();
         step.value = 1;
         text.value = null;
     }
-    console.log("submitForm");
+    
 }
 
 

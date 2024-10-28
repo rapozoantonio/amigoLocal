@@ -60,7 +60,7 @@ const { location } = storeToRefs(locationsStore);
 const route = useRoute();
 
 onMounted(() => {
-    console.log("moounted Location")
+    
     locationsStore.getLocationById(id)
 })
 
