@@ -23,7 +23,6 @@ export const useEventsStore = defineStore("events", () => {
 
   const filteredEvents = computed(() => {
     if (!events.value) return null;
-
     if (selectedGenres.value && selectedGenres.value.length > 0) {
       return events.value.filter((e) => {
         return e.genres.some((g) => selectedGenres.value.includes(g));
@@ -53,6 +52,7 @@ export const useEventsStore = defineStore("events", () => {
   });
 
   const nextEvents = computed(() => {
+    console.log("events.js>nextEvents");
     console.log("events", events.value);
     if (events.value) {
       events.value.sort((a, b) => {
@@ -63,8 +63,8 @@ export const useEventsStore = defineStore("events", () => {
       const nextEventsResult = filteredEvents.value.reduce(
         (nextEvents, event) => {
           // Transform startDate to short date format
-          const options = { weekday: "short", day: "numeric", month: "short" };
-          const date = new Intl.DateTimeFormat("en-US", options)
+          const options = { weekday: "long", day: "2-digit", month: "2-digit" };
+          const date = new Intl.DateTimeFormat("pt-BR", options)
             .format(new Date(event.startDate))
             .toUpperCase();
 
@@ -160,11 +160,13 @@ export const useEventsStore = defineStore("events", () => {
   }
 
   async function getEventsByPromoterId(promoterId) {
+    console.log("==========================eventsPromoter");
+    console.log(promoterId);
     loading.value = true;
     events.value = null;
     const queries = [];
     queries.push(where("promoter.id", "==", promoterId));
-
+    console.log(queries);
     // queries.push(
     //   where("startDate", ">=", new Date().toISOString().split("T")[0])
     // );
