@@ -30,8 +30,8 @@ export default {
     };
 
     helpers.toDate = (date) => {
-      const options = { weekday: "short", day: "numeric", month: "short" };
-      return new Intl.DateTimeFormat("en-US", options)
+      const options = { day: "2-digit", month: "short" };
+      return new Intl.DateTimeFormat("pt-BR", options)
         .format(new Date(date))
         .toUpperCase();
     };

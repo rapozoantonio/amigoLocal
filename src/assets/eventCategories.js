@@ -1,4 +1,6 @@
 export default [
   "open bar", 
-  "day party"
+  "day party",
+  "carnaval",
+  "reveillon"
 ];

@@ -36,10 +36,18 @@
             {{ event.location.region.name || event.location.region }}
           </v-btn>
         </v-col>
-        <v-col cols="12" class="pt-0 d-flex align-center">
+      </v-row>
+
+      <v-row class="pt-0 d-flex align-start">
+        <!-- Main column with promoter code -->
+        <v-col cols="12" md="10">
           <h1 class="text-h2 font-weight-bold flex-grow-1">
             {{ promoter.PromoterCode }}
           </h1>
+        </v-col>
+
+        <!-- Button column with follow button -->
+        <v-col cols="12" md="2" class="d-flex justify-end">
           <follow-button
             @follow="follow"
             @unfollow="unfollow"
@@ -48,7 +56,8 @@
           ></follow-button>
         </v-col>
       </v-row>
-      <v-row class="mb-5">
+
+      <v-row>
         <v-col cols="12" md="4">
           <p class="text-caption text-grey">Localização</p>
           <p class="text-caption">
@@ -88,9 +97,7 @@
           <p class="text-caption text-grey">Followers</p>
           <span class="text-h6">{{ promoter.Followers }}</span>
         </v-col>
-      </v-row>
-      <v-row>
-        <v-col>
+        <v-col cols="12" md="4">
           <p class="text-caption text-grey mb-2">Tipos de Música</p>
           <div class="d-flex">
             <v-chip
@@ -104,34 +111,6 @@
               <span class="text-white">{{ genre }}</span>
             </v-chip>
           </div>
-        </v-col>
-        <v-col cols="auto">
-          <span class="text-caption mr-4">Compartir</span>
-          <!-- Social Media Sharing Buttons -->
-          <v-btn
-            class="ml-2 bordered-icon"
-            @click="openInstagram"
-            color="transparent"
-            icon
-          >
-            <v-icon>mdi-instagram</v-icon>
-          </v-btn>
-          <v-btn
-            class="ml-2 bordered-icon"
-            @click="openInstagram"
-            color="transparent"
-            icon
-          >
-            <v-icon>mdi-instagram</v-icon>
-          </v-btn>
-          <v-btn
-            class="ml-2 bordered-icon"
-            @click="openWhatsapp"
-            color="transparent"
-            icon
-          >
-            <v-icon>mdi-whatsapp</v-icon>
-          </v-btn>
         </v-col>
       </v-row>
     </v-container>
@@ -197,7 +176,6 @@ function unfollow() {
 }
 
 onMounted(() => {
-  console.log("PromoterIdHeader.vue mounted", promoter);
 });
 </script>
 <style scoped>
