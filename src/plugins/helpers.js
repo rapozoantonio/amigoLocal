@@ -24,17 +24,29 @@ export default {
       rounded: "lg",
       variant: "outlined",
       density: "compact",
-      color: "primary",
+      color: "#3F51B5",
       // class: "mt-1",
       hideDetails: "auto",
     };
 
     helpers.toDate = (date) => {
-      const options = { day: "2-digit", month: "short" };
+      const parsedDate = new Date(date);
+      const currentYear = new Date().getFullYear();
+    
+      // Set date format options, adding the year if it's not the current year
+      const options = {
+        day: "2-digit",
+        month: "short",
+      };
+    
+      if (parsedDate.getFullYear() !== currentYear) {
+        options.year = "numeric";
+      }
+    
       return new Intl.DateTimeFormat("pt-BR", options)
-        .format(new Date(date))
+        .format(parsedDate)
         .toUpperCase();
-    };
+    };    
 
     helpers.rules = {
       required: (value) => {

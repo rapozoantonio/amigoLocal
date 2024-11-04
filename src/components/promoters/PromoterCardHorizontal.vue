@@ -13,12 +13,17 @@
       <v-col cols="3" sm="2" class="d-flex justify-center">
         <v-img
           height="60"
-          :src="event.image ? event.image.url : event.flyerFront ? event.flyerFront.url : '/img/placeholder_event_1.jpg'"
+          :src="
+            event.image
+              ? event.image.url
+              : event.flyerFront
+              ? event.flyerFront.url
+              : '/img/placeholder_event_1.jpg'
+          "
           class="rounded event-image"
           contain
         ></v-img>
       </v-col>
-
       <!-- Event Details (stacked layout for mobile) -->
       <v-col cols="9" sm="7" class="px-2">
         <!-- Event Name -->
@@ -32,8 +37,13 @@
         </div>
 
         <!-- Event Location -->
-        <div v-if="event.location?.name" class="d-flex align-center my-1 location">
-          <v-icon size="small" color="red">mdi-map-marker-outline</v-icon>
+        <div
+          v-if="event.location?.name"
+          class="d-flex align-center my-1 location"
+        >
+          <v-icon size="small" color="red"
+            >mdi-map-marker-radius-outline
+          </v-icon>
           <span class="text-caption ml-1">{{ event.location.name }}</span>
         </div>
       </v-col>
@@ -45,7 +55,7 @@
           v-if="event.promoter?.code"
           size="small"
           rounded="pill"
-          color="red darken-4"
+          color="primary"
           class="mb-1 promoter-button"
         >
           <v-icon size="small" left>mdi-ticket</v-icon>
@@ -54,7 +64,9 @@
 
         <!-- Followers Count -->
         <div class="d-flex align-center text-caption followers">
-          <v-icon size="small" color="red" class="mr-1">mdi-account-outline</v-icon>
+          <v-icon size="small" color="red" class="mr-1"
+            >mdi-account-multiple</v-icon
+          >
           <span>{{ event.followers }}</span>
         </div>
       </v-col>

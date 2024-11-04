@@ -7,7 +7,7 @@
                     <v-stepper editable v-model="step">
                         <template v-slot:default="{ next }">
                             <v-stepper-header>
-                                <v-stepper-item class="pa-4" title="AI" value="1" :color="step == 1 ? 'primary' : ''">
+                                <v-stepper-item class="pa-4" title="✨️AI" value="1" :color="step == 1 ? 'primary' : ''">
                                 </v-stepper-item>
                                 <v-divider class="mx-1"></v-divider>
                                 <v-stepper-item value="2" title="Evento" class="pa-4"
@@ -21,7 +21,7 @@
                                 <!-- VIRTUAL ASSISTENTE -->
                                 <v-stepper-window-item value="1">
                                     <v-card flat max-width="500" class="mx-auto">
-                                        <v-card-title> Create event with AI</v-card-title>
+                                        <v-card-title> Create event with ✨️AI</v-card-title>
                                         <v-card-subtitle>
                                             Cole o texto de divulgação e deixe que nossa assistente
                                             virtual te ajude a preencher os dados do evento
