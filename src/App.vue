@@ -28,7 +28,6 @@ onMounted(() => {
 <style>
 label.required:after {
   content: "*";
-  /* color: red; */
   top: 0px;
   position: absolute;
   right: -10px;

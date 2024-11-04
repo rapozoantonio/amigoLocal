@@ -15,11 +15,11 @@
                     {{ event.name }}
                 </router-link>
                 <p class="text-white text-caption pl-1 mt-2">
-                    <v-icon size="large" color="red">mdi-map-marker-outline</v-icon>
+                    <v-icon size="large" color="primaryIcon">mdi-map-marker-radius-outline</v-icon>
                     {{ event.location.name }}
                 </p>
                 <p class="text-white text-caption pl-1 mt-2">
-                    <v-icon size="large" color="red">mdi-account-outline</v-icon>
+                    <v-icon size="large" color="primaryIcon">mdi-account-multiple</v-icon>
                     {{ event.followers }}
                 </p>
             </div>

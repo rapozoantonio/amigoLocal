@@ -3,22 +3,15 @@
         <v-row class="mt-2">
             <v-col>
                 <p class="text-primary text-h3 font-weight-bold mb-5">
-                    / Lineup
+                    🎧 Line-up
                 </p>
                 <div>
                     <p v-html="event.lineup" class="text-h5 font-weight-bold mb-2">
                     </p>
-
-                    <!-- <p class="text-grey text-h5 font-weight-bold mb-2">
-                        Banda Sonara Valencia
-                    </p>
-                    <p class="text-h5 font-weight-bold mb-2">
-                        Samba do quintal
-                    </p> -->
                 </div>
             </v-col>
             <v-col cols="auto">
-                <span class="text-caption mr-4">Compartir</span>
+                <span class="text-caption mr-4">Compartilhar</span>
                 <s-facebook :window-features="{}" :share-options="shareOptions" :use-native-behavior="false"
                     @popup-close="onClose" @popup-open="onOpen" @popup-block="onBlock" @popup-focus="onFocus">
 

@@ -25,11 +25,6 @@
                         <v-col cols="auto"> <follow-button @follow="follow" @unfollow="unfollow" entity="events"
                                 :entity_id="event.id"></follow-button></v-col>
                     </v-row>
-                    <!-- <h1 class="text-h2 font-weight-bold">{{ event.name }}</h1>
-                    <v-spacer></v-spacer>
-                    <follow-button @follow="follow" @unfollow="unfollow" entity="events"
-                        :entity_id="event.id"></follow-button>
-                         -->
                 </v-col>
             </v-row>
             <v-row class="mb-5">
@@ -67,10 +62,9 @@
                     </div>
                 </v-col>
                 <v-col cols="6" md="2" class="d-flex flex-column">
-                    <p class="text-caption text-grey">Interesed</p>
+                    <p class="text-caption text-grey">Seguir</p>
                     <div class="d-flex justify-space-between align-center">
                         <span class="text-h6">{{ event.followers }}</span>
-
                     </div>
                 </v-col>
             </v-row>

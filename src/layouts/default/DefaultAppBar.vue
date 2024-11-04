@@ -54,7 +54,12 @@ import { useAuthStore } from "@/store/auth";
 const auth = useAuthStore();
 
 const items = ref([
-  { title: "Events", to: "/events" },
+  { title: "Todos os Eventos", to: "/events" },
+  { title: "Eventos Rio de Janeiro", to: "/events/BR/riodejaneiro" },
+  { title: "Eventos São Paulo", to: "/events/BR/saopaulo" },
+  { title: "Eventos em Outros Estados", to: "/events/BR/riodejaneiro" },
+  { title: "Carnaval", to: "/events/carnaval" },
+  { title: "Reveillon", to: "/events/reveillon" },
 ]);
 const { xs } = useDisplay();
 const opened = ref(false);

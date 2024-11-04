@@ -80,6 +80,5 @@ a {
 
 a:hover {
   text-decoration: none;
-  color: red;
 }
 </style>

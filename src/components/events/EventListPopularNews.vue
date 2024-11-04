@@ -10,7 +10,7 @@
                 <template v-for="(item, index) in newsItems" :key="item.id">
                     <v-list-item>
                         <template #prepend>
-                            <span class="text-h6 font-weight-bold text-red">{{
+                            <span class="text-h6 font-weight-bold text-primary">{{
                                 index + 1
                                 }}</span>
                         </template>
@@ -58,9 +58,5 @@ const newsItems = ref([
 <style lang="scss" scoped>
 a {
     color: white;
-}
-
-a:hover {
-    color: red;
 }
 </style>

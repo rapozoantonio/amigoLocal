@@ -1,39 +1,33 @@
 <template>
-    <section class="bg-grey-darken-4 flex-grow-1">
-        <v-container>
-            <v-row>
-                <v-col cols="12">
-                    <p class="text-caption ml-4 text-grey mt-2">
-                        Eventos em breve
-                    </p>
-                </v-col>
+  <section class="bg-grey-darken-4 flex-grow-1">
+    <v-container>
+      <v-row>
+        <v-col cols="12">
+          <p class="text-caption ml-4 text-grey mt-2">Eventos em breve</p>
+        </v-col>
+        <v-col cols="12">
+          <p class="text-h4 ml-4 mt-2 text-primary">🔥 Em Alta</p>
+        </v-col>
+      </v-row>
 
-                <!-- <v-col cols="12">
-                    <v-progress-linear indeterminate></v-progress-linear>
-                </v-col> -->
-                <v-col cols="12">
-                    <p class="text-h4 ml-4 text-red mt-2">/ Popular</p>
-                </v-col>
-            </v-row>
-
-            <v-row>
-                <v-col cols="12">
-                    <v-slide-group :center-active="true" show-arrows>
-                        <v-slide-group-item v-for="event in featuredEvents" :key="event.id"
-                            v-slot="{ isSelected, toggle }">
-                            <event-card-vertical class="mr-5" :event="event"></event-card-vertical>
-                        </v-slide-group-item>
-                    </v-slide-group>
-                </v-col>
-            </v-row>
-
-            <!-- <v-row>
-                <v-col v-for="event in featuredEvents" :key="event.id">
-                    <event-card-vertical :event="event"></event-card-vertical>
-                </v-col>
-            </v-row> -->
-        </v-container>
-    </section>
+      <v-row>
+        <v-col cols="12">
+          <v-slide-group :center-active="true" show-arrows>
+            <v-slide-group-item
+              v-for="event in featuredEvents"
+              :key="event.id"
+              v-slot="{ isSelected, toggle }"
+            >
+              <event-card-vertical
+                class="mr-5"
+                :event="event"
+              ></event-card-vertical>
+            </v-slide-group-item>
+          </v-slide-group>
+        </v-col>
+      </v-row>
+    </v-container>
+  </section>
 </template>
 
 <script setup>

@@ -79,6 +79,6 @@ a {
 
 a:hover {
   text-decoration: none;
-  color: red;
+  color: primary;
 }
 </style>

@@ -25,11 +25,11 @@
                         </div>
                     </v-col>
                     <v-col cols="3" class="d-flex flex-column">
-                        <p class="text-caption text-grey">Interesed</p>
+                        <p class="text-caption text-grey">Seguir</p>
                         <div class="d-flex justify-space-between align-center">
                             <span class="text-h6">{{ entity }}</span>
                             <v-btn color="primary" rounded="pill" variant="outlined">
-                                <v-icon start>mdi-account-plus-outline</v-icon>Interesed
+                                <v-icon start>mdi-account-plus-outline</v-icon>Seguir
                             </v-btn>
                         </div>
                     </v-col>

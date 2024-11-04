@@ -24,7 +24,7 @@
                             <v-tab class="text-subtitle-2 px-0 mr-4 w-min-0" variant="plain" slim exact
                                 :to="{ name: 'location-info' }">Información general</v-tab>
                             <v-tab class="text-subtitle-2 px-0 mr-4 w-min-0" exact variant="plain" slim
-                                :to="{ name: 'location-events' }">Proximos eventos</v-tab>
+                                :to="{ name: 'location-events' }">Próximos eventos</v-tab>
                             <v-tab class="text-subtitle-2 px-0 mr-4 w-min-0" variant="plain" slim exact
                                 :to="{ name: 'location-past-events' }">Eventos passados</v-tab>
                             <v-tab class="text-subtitle-2 px-0 mr-4 w-min-0" slim exact variant="plain"

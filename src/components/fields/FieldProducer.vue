@@ -1,58 +1,65 @@
 <template>
-    <div>
-        <v-autocomplete v-if="producers" v-bind="{ ...fieldAttrs, ...$attrs }" v-model="producer" :items="producers"
-            item-value="id" item-title="name" @update:modelValue="changeProducer" clearable>
-            <template #prepend-item>
-                <v-list-item density="compact">
-                    <v-list-item-subtitle>Producers</v-list-item-subtitle>
-                    <template #append>
+  <div>
+    <v-autocomplete
+      v-if="producers"
+      v-bind="{ ...fieldAttrs, ...$attrs }"
+      v-model="producer"
+      :items="producers"
+      item-value="id"
+      item-title="name"
+      @update:modelValue="changeProducer"
+      clearable
+    >
+      <template #prepend-item>
+        <v-list-item density="compact">
+          <v-list-item-subtitle>Producers</v-list-item-subtitle>
+          <template #append>
+            <v-btn variant="text" @click="openDialog" size="sm" color="primary">
+              Add Producer
+              <v-icon class="ml-2" end>mdi-plus-circle</v-icon>
+            </v-btn>
+          </template>
+        </v-list-item>
+        <v-divider class="mb-2"></v-divider>
+      </template>
+      <template v-slot:item="{ item, props }">
+        <v-list-item v-bind="props">
+          <v-list-item-subtitle
+            >{{ item.raw.username }} ({{
+              item.raw.country
+            }})</v-list-item-subtitle
+          >
+        </v-list-item>
+      </template>
+    </v-autocomplete>
 
-                        <v-btn variant="text" @click="openDialog" size="sm" color="primary">
-                            Add Producer
-                            <v-icon class="ml-2" end>mdi-plus-circle</v-icon>
-                        </v-btn>
-                    </template>
-                </v-list-item>
-                <v-divider class="mb-2"></v-divider>
+    <v-alert class="mt-4" variant="outlined" v-if="model">
+      <template #text>
+        <p class="text-h6">{{ model.name }}</p>
+        <p class="text-body-2">{{ model.username }}</p>
+      </template>
 
-                <!-- <div class="text-center">
-                                    <v-btn variant="plain">Add Producer</v-btn>
-                                </div> -->
-            </template>
-            <template v-slot:item="{ item, props }">
-                <v-list-item v-bind="props">
-                    <v-list-item-subtitle>{{ item.raw.username }} ({{ item.raw.country
-                        }})</v-list-item-subtitle>
-                </v-list-item>
-            </template>
-        </v-autocomplete>
+      <template #prepend>
+        <v-icon class="mt-4">mdi-account-multiple</v-icon>
+      </template>
 
-        <v-alert class="mt-4" variant="outlined" v-if="model">
-            <template #text>
-                <p class="text-h6">{{ model.name }}</p>
-                <p class="text-body-2">{{ model.username }}</p>
+      <template #close>
+        <v-btn icon="mdi-close" @click="changeProducer(null)"></v-btn>
+      </template>
+    </v-alert>
 
-            </template>
+    <form-dialog
+      v-model:opened="dialog"
+      v-if="newProducer"
+      @submit="createAndAssociate"
+      action="Create and Associate"
+      :schema="producerSchema"
+      v-model:model="newProducer"
+      labelType="in"
+      title="Add promoter"
+    ></form-dialog>
 
-            <template #prepend>
-                <v-icon class="mt-4">mdi-account-outline</v-icon>
-            </template>
-
-            <template #close>
-                <v-btn icon="mdi-close" @click="changeProducer(null)"></v-btn>
-            </template>
-        </v-alert>
-
-
-
-        <form-dialog v-model:opened="dialog" v-if="newProducer" @submit="createAndAssociate"
-            action="Create and Associate" :schema="producerSchema" v-model:model="newProducer" labelType="in"
-            title="Add promoter"></form-dialog>
-
-
-
-
-        <!-- <v-dialog v-model="dialog" v-if="false">
+    <!-- <v-dialog v-model="dialog" v-if="false">
             <v-card max-width="500" min-width="300" class="mx-auto">
                 <v-card-title class="d-flex justify-space-between">
                     <span>Create Producer</span>
@@ -65,27 +72,21 @@
                 </v-card-text>
             </v-card>
         </v-dialog> -->
-    </div>
-
+  </div>
 </template>
 
 <script setup>
-import {
-  defineModel,
-  inject,
-  ref,
-} from 'vue';
+import { defineModel, inject, ref } from "vue";
 
-import { storeToRefs } from 'pinia';
+import { storeToRefs } from "pinia";
 
-import QuickCreateProducer
-  from '@/components/quickcreate/QuickCreateProducer.vue';
-import producerSchema from '@/schemas/quickProducerSchema';
-import { useConfigStore } from '@/store/config';
-import { useProducerStore } from '@/store/producer';
-import { useProducersStore } from '@/store/producers';
+import QuickCreateProducer from "@/components/quickcreate/QuickCreateProducer.vue";
+import producerSchema from "@/schemas/quickProducerSchema";
+import { useConfigStore } from "@/store/config";
+import { useProducerStore } from "@/store/producer";
+import { useProducersStore } from "@/store/producers";
 
-import FormDialog from '../form/FormDialog.vue';
+import FormDialog from "../form/FormDialog.vue";
 
 const { fieldAttrs, rules } = inject("$helpers");
 
@@ -102,43 +103,37 @@ const producer = ref(null);
 const dialog = ref(false);
 
 function openDialog() {
-    dialog.value = true;
+  dialog.value = true;
 }
 
 function closeDialog() {
-    dialog.value = false;
+  dialog.value = false;
 }
 
 async function createAndAssociate() {
-
-    const response = await producerStore.createProducer(false);
-    if (response.ok) {
-        // emit("create", response.data.document)
-        associateProducer(response.data.document)
-    }
-
+  const response = await producerStore.createProducer(false);
+  if (response.ok) {
+    // emit("create", response.data.document)
+    associateProducer(response.data.document);
+  }
 }
 
-
-
 function changeProducer(e) {
-    const prod = producers.value.find((p) => p.id === e);
-    if (prod) {
-        model.value = { name: prod.name, username: prod.username, id: prod.id };
-    }
-    else {
-        model.value = null;
-        producer.value = null;
-    }
+  const prod = producers.value.find((p) => p.id === e);
+  if (prod) {
+    model.value = { name: prod.name, username: prod.username, id: prod.id };
+  } else {
+    model.value = null;
+    producer.value = null;
+  }
 }
 
 async function associateProducer(prod) {
-    await producersStore.pushProducer(prod);
-    producer.value = prod.id;
-    changeProducer(prod.id);
-    closeDialog();
+  await producersStore.pushProducer(prod);
+  producer.value = prod.id;
+  changeProducer(prod.id);
+  closeDialog();
 }
-
 </script>
 
 <style lang="scss" scoped></style>
