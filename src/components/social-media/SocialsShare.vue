@@ -14,150 +14,162 @@
     </template>
 
     <template v-slot:default="{ isActive }">
-      <v-card class="d-flex pa-2 pb-3">
-        <div class="d-flex flex-column ga-2 w-100 p-x-6">
-          <p class="text-h6">Compartilhar</p>
-          <v-divider :thickness="2"></v-divider>
+      <v-row class="fill-height justify-center align-center">
+        <v-col cols="12" md="4">
+          <v-card class="d-flex pa-4 pb-3">
+            <div class="d-flex flex-column ga-2 w-100 p-x-6">
+              <p class="text-h4">Compartilhar</p>
+              <v-divider :thickness="2" class="my-1"></v-divider>
 
-          <div
-            class="d-flex flex-row ga-4 mt-2 w-100 align-center justify-center"
-          >
-            <div class="d-flex flex-column ga-2 align-center justify-center">
-              <s-facebook
-                :window-features="{}"
-                :share-options="shareOptions"
-                :use-native-behavior="false"
+              <div
+                class="d-flex flex-row ga-4 mt-2 w-100 align-center justify-center"
               >
-                <v-hover>
-                  <template v-slot:default="{ isHovering, props }">
-                    <v-btn
-                      v-bind="props"
-                      size="small"
-                      color="white"
-                      :variant="isHovering ? 'elevated' : 'outlined'"
-                      icon
-                    >
-                      <v-icon>mdi-facebook</v-icon>
-                    </v-btn>
-                  </template>
-                </v-hover>
-              </s-facebook>
-              <p class="text-caption">Facebook</p>
+                <div
+                  class="d-flex flex-column ga-2 align-center justify-center"
+                >
+                  <s-facebook
+                    :window-features="{}"
+                    :share-options="shareOptions"
+                    :use-native-behavior="false"
+                  >
+                    <v-hover>
+                      <template v-slot:default="{ isHovering, props }">
+                        <v-btn
+                          v-bind="props"
+                          size="large"
+                          color="white"
+                          :variant="isHovering ? 'elevated' : 'outlined'"
+                          icon
+                        >
+                          <v-icon size="30">mdi-facebook</v-icon>
+                        </v-btn>
+                      </template>
+                    </v-hover>
+                  </s-facebook>
+                  <p >Facebook</p>
+                </div>
+
+                <div
+                  class="d-flex flex-column ga-2 align-center justify-center"
+                >
+                  <a
+                    href="https://www.tiktok.com/share/video/@username/1234567890"
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                  >
+                    <v-hover>
+                      <template v-slot:default="{ isHovering, props }">
+                        <v-btn
+                          v-bind="props"
+                          size="large"
+                          color="white"
+                          :variant="isHovering ? 'elevated' : 'outlined'"
+                          icon
+                        >
+                          <v-img
+                            :src="tiktokSvg"
+                            alt="TikTok Icon"
+                            style="width: 30px; height: 30px"
+                          />
+                        </v-btn>
+                      </template>
+                    </v-hover>
+                  </a>
+                  <p >TikTok</p>
+                </div>
+
+                <div
+                  class="d-flex flex-column ga-2 align-center justify-center"
+                >
+                  <a
+                    href="https://www.instagram.com/"
+                    target="_blank"
+                    rel="nofollow noopener noreferrer"
+                  >
+                    <v-hover>
+                      <template v-slot:default="{ isHovering, props }">
+                        <v-btn
+                          v-bind="props"
+                          size="large"
+                          color="white"
+                          :variant="isHovering ? 'elevated' : 'outlined'"
+                          icon
+                        >
+                          <v-img
+                            :src="InstagramSvg"
+                            alt="Instagram Icon"
+                            style="width: 30px; height: 30px"
+                          />
+                        </v-btn>
+                      </template>
+                    </v-hover>
+                  </a>
+                  <p >Instagram</p>
+                </div>
+
+                <div
+                  class="d-flex flex-column ga-2 align-center justify-center"
+                >
+                  <s-whats-app
+                    :window-features="windowFeatures"
+                    :share-options="shareOptionsWS"
+                  >
+                    <v-hover>
+                      <template v-slot:default="{ isHovering, props }">
+                        <v-btn
+                          v-bind="props"
+                          size="large"
+                          color="white"
+                          :variant="isHovering ? 'elevated' : 'outlined'"
+                          icon
+                        >
+                          <v-icon size="30">mdi-whatsapp</v-icon>
+                        </v-btn>
+                      </template>
+                    </v-hover>
+                  </s-whats-app>
+                  <p >WhatsApp</p>
+                </div>
+              </div>
+
+              <v-divider class="my-2" :thickness="2"></v-divider>
+
+              <v-row align="center" justify="center">
+                <v-col cols="12" md="11" class="d-flex flex-row mt-2">
+                  <v-text-field
+                    v-model="urlToShow"
+                    label="Pagina URL"
+                    readonly
+                    outlined
+                    
+                    @click="copyUrl"
+                  >
+                  </v-text-field>
+                  <v-btn
+                    variant="text"
+                    size="large"
+                    class="d-flex justify-center align-center"
+                    tile
+                    @click="copyUrl"
+                  >
+                    <v-icon size="29">mdi-content-copy</v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
             </div>
 
-            <div class="d-flex flex-column ga-2 align-center justify-center">
-              <a
-                href="https://www.tiktok.com/share/video/@username/1234567890"
-                target="_blank"
-                rel="nofollow noopener noreferrer"
-              >
-                <v-hover>
-                  <template v-slot:default="{ isHovering, props }">
-                    <v-btn
-                      v-bind="props"
-                      size="small"
-                      color="white"
-                      :variant="isHovering ? 'elevated' : 'outlined'"
-                      icon
-                    >
-                      <v-img
-                        :src="tiktokSvg"
-                        alt="TikTok Icon"
-                        style="width: 20px; height: 20px"
-                      />
-                    </v-btn>
-                  </template>
-                </v-hover>
-              </a>
-              <p class="text-caption">TikTok</p>
-            </div>
-
-            <div class="d-flex flex-column ga-2 align-center justify-center">
-              <a
-                href="https://www.instagram.com/"
-                target="_blank"
-                rel="nofollow noopener noreferrer"
-              >
-                <v-hover>
-                  <template v-slot:default="{ isHovering, props }">
-                    <v-btn
-                      v-bind="props"
-                      size="small"
-                      color="white"
-                      :variant="isHovering ? 'elevated' : 'outlined'"
-                      icon
-                    >
-                      <v-img
-                        :src="InstagramSvg"
-                        alt="Instagram Icon"
-                        style="width: 20px; height: 20px"
-                      />
-                    </v-btn>
-                  </template>
-                </v-hover>
-              </a>
-              <p class="text-caption">Instagram</p>
-            </div>
-
-            <div class="d-flex flex-column ga-2 align-center justify-center">
-              <s-whats-app
-                :window-features="windowFeatures"
-                :share-options="shareOptionsWS"
-              >
-                <v-hover>
-                  <template v-slot:default="{ isHovering, props }">
-                    <v-btn
-                      v-bind="props"
-                      size="small"
-                      color="white"
-                      :variant="isHovering ? 'elevated' : 'outlined'"
-                      icon
-                    >
-                      <v-icon>mdi-whatsapp</v-icon>
-                    </v-btn>
-                  </template>
-                </v-hover>
-              </s-whats-app>
-              <p class="text-caption">WhatsApp</p>
-            </div>
-          </div>
-
-          <v-divider class="my-2" :thickness="2"></v-divider>
-
-          <v-row align="center" justify="center">
-            <v-col cols="12" md="6" class="d-flex flex-row">
-              <v-text-field
-                v-model="urlToShow"
-                label="Pagina URL"
-                readonly
-                outlined
-                style="height: 60px"
-                @click="copyUrl"
-              >
-              </v-text-field>
-              <v-btn
-                variant="text"
-                style="height: 58px"
-                class="d-flex justify-center align-center"
-                tile
-                @click="copyUrl"
-              >
-                <v-icon>mdi-content-copy</v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </div>
-
-        <!-- Snackbar for URL copied notification -->
-        <v-snackbar
-          v-model="snackbar"
-          :timeout="3000"
-          color="black"
-          elevation="24"
-        >
-          Copiado com sucesso!
-        </v-snackbar>
-      </v-card>
+            <!-- Snackbar for URL copied notification -->
+            <v-snackbar
+              v-model="snackbar"
+              :timeout="3000"
+              color="black"
+              elevation="24"
+            >
+              Copiado com sucesso!
+            </v-snackbar>
+          </v-card></v-col
+        ></v-row
+      >
     </template>
   </v-dialog>
 
