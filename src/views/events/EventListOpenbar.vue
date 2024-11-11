@@ -44,7 +44,7 @@ onMounted(() => {
     if (route.query.genre) {
         selectedGenres.value = typeof route.query.genre === "string" ? [route.query.genre] : route.query.genre
     }
-    eventsStore.getEventsByRegion(country.toUpperCase(), region);
+    eventsStore.getEventsByCategories(country.toUpperCase(), region, ["open bar"]);
 });
 
 </script>

@@ -24,10 +24,24 @@ import EventListFeatured from '@/components/events/EventListFeatured.vue';
 import EventListNextEvents from '@/components/events/EventListNextEvents.vue';
 // import { ref } from "vue";
 import { useEventsStore } from '@/store/events';
+// URL PARAMS - route.params
+const { country, region } = defineProps(["country", "region"]);
 
 const eventsStore = useEventsStore();
 const { events, nextEvents, loading } = storeToRefs(eventsStore);
 
+onMounted(() => {
+    
+    if (route.query.genre) {
+        selectedGenres.value = typeof route.query.genre === "string" ? [route.query.genre] : route.query.genre
+    }
+
+    if (route.query.category) {
+        selectedGenres.value = typeof route.query.genre === "string" ? [route.query.genre] : route.query.genre
+    }
+    
+    eventsStore.getEventsByRegion(country.toUpperCase(), region);
+});
 
 </script>
 

@@ -536,6 +536,71 @@ export const useFirebaseStore = defineStore("firebase", () => {
     }
   }
 
+    // GET EVENTS BY CATEGORY
+    async function getEventsByCategory(data) {
+      const items = [];
+      const queries = Object.entries(data.query);
+      
+      const queryItems = queries.map((q) => {
+        const operator = /\[gt\]/.test(q[0])
+          ? ">"
+          : /\[gte\]/.test(q[0])
+          ? ">="
+          : /\[lt\]/.test(q[0])
+          ? "<"
+          : /\[lte\]/.test(q[0])
+          ? "<="
+          : "==";
+        const key = q[0]
+          .replace(/\[gte\]/, "")
+          .replace(/\[lte\]/, "")
+          .replace(/\[gt\]/, "")
+          .replace(/\[lt\]/, "");
+        const value = Number(q[1]) ? Number(q[1]) : q[1];
+        
+        return where(key, operator, value);
+      });
+      
+      try {
+        if (data.collection) {
+          // const timestamp = Timestamp.fromDate(new Date('2023-11-25'));
+  
+          // 
+          // const q = query(collection(firestore, "products"), where("created_at", ">", timestamp));
+          let q;
+          if (queryItems.length > 0) {
+            q = query(collection(firestore, data.collection), ...queryItems);
+            
+          } else {
+            q = query(collection(firestore, data.collection));
+            
+          }
+          const querySnapshot = await getDocs(q);
+          
+          querySnapshot.forEach((document) => {
+            
+            items.push(document.data());
+          });
+          // Swal.fire({
+          //     title: "Documents fetched",
+          //     text: "number of documents: " + items.length,
+          //     icon: "success"
+          // });
+          return {
+            ok: true,
+            data: items,
+          };
+        }
+      } catch (error) {
+        notifyError();
+        
+        return {
+          ok: false,
+          error,
+        };
+      }
+    }
+
   async function getCollection2(data) {
     const items = [];
     const queries = Object.entries(data.query);
@@ -683,5 +748,6 @@ export const useFirebaseStore = defineStore("firebase", () => {
     removeFollow,
     getDocumentByName,
     countDocuments,
+    getEventsByCategory
   };
 });

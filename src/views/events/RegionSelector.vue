@@ -83,9 +83,11 @@ import {
   ref,
 } from 'vue';
 
+
 import { storeToRefs } from 'pinia';
 
 import { useConfigStore } from '@/store/config';
+import router from '@/router';
 
 const configStore = useConfigStore();
 
@@ -118,15 +120,33 @@ function goToEvents() {
 
 }
 
+async function getUserRegion() {
+    const response = await fetch("https://ipinfo.io/79.153.219.49?token=3bbe5f169a430f");
+    const info = await response.json();
+
+    if(regions[info.country]){
+        const checkForRegion = regions[info.country].find(r => r.name === info.region);
+        if(checkForRegion) {
+            router.push({name: "events", params: {country: [info.country], region: checkForRegion.id}})
+        }
+    }
+    else {
+        router.push({name: "events", params: {country: "BR", region: "riodejaneiro"}})
+    }
 
 
-onMounted(() => {
+
+}
+
+
+
+onMounted(async() => {
     
-
     if (!countries.value) {
         
         configStore.init();
     }
+    await getUserRegion();
 });
 </script>
 

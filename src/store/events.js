@@ -118,6 +118,52 @@ export const useEventsStore = defineStore("events", () => {
     return snapshot.data().count;
   }
 
+  async function getEventsByCategories(country, region, categories) {
+    loading.value = true;
+    events.value = null;
+    const queries = [];
+    queries.push(where("location.country", "==", country));
+    if (region) {
+      queries.push(where("location.region.id", "==", region));
+    }
+    if(categories) {
+      queries.push(where("categories", "array-contains-any", categories));
+    }
+    // queries.push(
+    //   where("startDate", ">=", new Date().toISOString().split("T")[0])
+    // );
+    // queries.push(where("createdAt", "<", new Date()))
+
+    try {
+      const q = query(collection(firestore, "events"), ...queries);
+      const querySnapshot = await getDocs(q);
+      
+      //   querySnapshot.forEach((document) => {
+      //     
+      //     events.value.push(document.data());
+      //   });
+      events.value = querySnapshot.docs.map((d) => d.data());
+      events.value.sort((a, b) => {
+        return a.startDate.localeCompare(b.startDate);
+      });
+      return {
+        ok: true,
+        data: { events: events.value },
+      };
+    } catch (error) {
+      
+      notifyError(error);
+      return {
+        ok: false,
+        error,
+      };
+    } finally {
+      loading.value = false;
+    }
+  }
+
+
+
   async function getEventsByRegion(country, region) {
     loading.value = true;
     events.value = null;
@@ -300,6 +346,7 @@ export const useEventsStore = defineStore("events", () => {
 
   return {
     getEventsByRegion,
+    getEventsByCategories,
     featuredEvents,
     events: filteredEvents,
     nextEvents,
