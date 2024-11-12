@@ -1,21 +1,28 @@
 <template>
-    <div class="d-flex flex-column">
-        <!-- <h2>All events</h2> -->
-        <v-container v-if="!events">
-            <v-progress-circular color="primary"></v-progress-circular>
+    <section class="bg-grey-darken-4 flex-grow-1">
+        <v-container>
+            <v-row v-for="(events, day) in nextEvents" :key="day">
+                <v-col cols="12">
+                    <v-toolbar color="grey-darken-4" style="position: sticky; top: 48px; z-index: 999"
+                        density="compact">
+                        <v-toolbar-title>
+                            <p class="text-h5">
+                                <v-icon size="x-small">mdi-calendar</v-icon>
+                                {{ day }}
+                            </p>
+                        </v-toolbar-title>
+                    </v-toolbar>
+
+                    <event-card-horizontal v-for="event in events" :key="event.id"
+                        :event="event"></event-card-horizontal>
+                </v-col>
+            </v-row>
         </v-container>
-        <v-container v-else-if="events.length === 0">
-            <v-alert icon="mdi-calendar-remove-outline"> Não ha eventos </v-alert>
-        </v-container>
-
-        <event-list-featured v-if="events && events.length > 0"></event-list-featured>
-        <event-list-next-events v-if="events && events.length > 0"></event-list-next-events>
-
-
-    </div>
+    </section>
 </template>
 
 <script setup>
+
 import {
     onMounted,
     watch,
@@ -26,10 +33,15 @@ import { storeToRefs } from 'pinia';
 // COMPONENTS
 import EventListFeatured from '@/components/events/EventListFeatured.vue';
 import EventListNextEvents from '@/components/events/EventListNextEvents.vue';
+
+
+import EventCardHorizontal from '@/components/events/EventCardHorizontal.vue';
+
 import { useEventsStore } from '@/store/events';
 
 const route = useRoute();
 const eventsStore = useEventsStore();
+
 const { events, nextEvents, loading, selectedGenres } = storeToRefs(eventsStore);
 
 // URL PARAMS - route.params
@@ -47,6 +59,8 @@ onMounted(() => {
     eventsStore.getEventsByRegion(country.toUpperCase(), region);
 });
 
+
+const { nextEvents } = storeToRefs(eventsStore);
 </script>
 
 <style lang="scss" scoped>

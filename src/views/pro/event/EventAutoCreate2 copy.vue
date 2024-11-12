@@ -9,7 +9,7 @@
                             <v-stepper-vertical-item :complete="step > 1" subtitle="" title="Texto de divulgação"
                                 value="1">
                                 <v-card flat>
-                                    <v-card-title> Create event with AI</v-card-title>
+                                    <v-card-title> Create event with ✨️AI</v-card-title>
                                     <v-card-text>
                                         <p class="text-body-2">
                                             Cole o texto de divulgação e deixe que nossa assistente

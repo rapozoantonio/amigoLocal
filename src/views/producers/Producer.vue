@@ -23,7 +23,7 @@
                             <v-tab class="text-subtitle-2 px-0 mr-4 w-min-0" variant="plain" slim exact
                                 :to="{ name: 'producer-info' }">Información general</v-tab>
                             <v-tab class="text-subtitle-2 px-0 mr-4 w-min-0" exact variant="plain" slim
-                                :to="{ name: 'producer-events' }">Proximos eventos</v-tab>
+                                :to="{ name: 'producer-events' }">Próximos eventos</v-tab>
                             <v-tab class="text-subtitle-2 px-0 mr-4 w-min-0" variant="plain" slim exact
                                 :to="{ name: 'producer-past-events' }">Eventos passados</v-tab>
                             <v-tab class="text-subtitle-2 px-0 mr-4 w-min-0" slim exact variant="plain"

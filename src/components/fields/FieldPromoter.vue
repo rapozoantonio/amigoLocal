@@ -4,7 +4,7 @@
             <v-list-item>
                 <template #prepend>
                     <v-avatar color="primary">
-                        <v-icon>mdi-account-outline</v-icon>
+                        <v-icon>mdi-account-multiple</v-icon>
                     </v-avatar>
                 </template>
                 <v-list-item-title>

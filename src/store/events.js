@@ -23,7 +23,6 @@ export const useEventsStore = defineStore("events", () => {
 
   const filteredEvents = computed(() => {
     if (!events.value) return null;
-
     if (selectedGenres.value && selectedGenres.value.length > 0) {
       return events.value.filter((e) => {
         return e.genres.some((g) => selectedGenres.value.includes(g));
@@ -53,26 +52,38 @@ export const useEventsStore = defineStore("events", () => {
   });
 
   const nextEvents = computed(() => {
-    
     if (events.value) {
-      events.value.sort((a, b) => {
-        return a.startDate.localeCompare(b.startDate);
-      });
-      
+      // Sort events by startDate
+      events.value.sort((a, b) => a.startDate.localeCompare(b.startDate));
 
+      // Process and group events by date
       const nextEventsResult = filteredEvents.value.reduce(
         (nextEvents, event) => {
-          // Transform startDate to short date format
-          const options = { weekday: "short", day: "numeric", month: "short" };
-          const date = new Intl.DateTimeFormat("en-US", options)
-            .format(new Date(event.startDate))
+          const eventDate = new Date(event.startDate);
+          const currentYear = new Date().getFullYear();
+
+          // Adjust format options to include the year if it's different from the current year
+          const options = {
+            weekday: "short",
+            day: "2-digit",
+            month: "short",
+          };
+
+          if (eventDate.getFullYear() !== currentYear) {
+            options.year = "numeric";
+          }
+
+          // Format date with or without the year as needed
+          const date = new Intl.DateTimeFormat("pt-BR", options)
+            .format(eventDate)
             .toUpperCase();
 
+          // Add event to the grouped result
           if (nextEvents[date]) {
             nextEvents[date].push(event);
-            return nextEvents;
+          } else {
+            nextEvents[date] = [event];
           }
-          nextEvents[date] = [event];
 
           return nextEvents;
         },
@@ -87,25 +98,33 @@ export const useEventsStore = defineStore("events", () => {
 
   const eventsDateList = computed(() => {
     return (eventsList) => {
-      
       return !eventsList
         ? null
         : eventsList.reduce((nextEvents, event) => {
-            // Transform startDate to short date format
+            const eventDate = new Date(event.startDate);
+            const currentYear = new Date().getFullYear();
+
+            // Include the year in the format if the event is not in the current year
             const options = {
               weekday: "short",
-              day: "numeric",
+              day: "2-digit",
               month: "short",
+              ...(eventDate.getFullYear() !== currentYear && {
+                year: "numeric",
+              }),
             };
-            const date = new Intl.DateTimeFormat("en-US", options)
-              .format(new Date(event.startDate))
+
+            // Format the start date with or without the year as needed
+            const date = new Intl.DateTimeFormat("pt-BR", options)
+              .format(eventDate)
               .toUpperCase();
 
             if (nextEvents[date]) {
               nextEvents[date].push(event);
-              return nextEvents;
+            } else {
+              nextEvents[date] = [event];
             }
-            nextEvents[date] = [event];
+
             return nextEvents;
           }, {});
     };
@@ -172,19 +191,10 @@ export const useEventsStore = defineStore("events", () => {
     if (region) {
       queries.push(where("location.region.id", "==", region));
     }
-    // queries.push(
-    //   where("startDate", ">=", new Date().toISOString().split("T")[0])
-    // );
-    // queries.push(where("createdAt", "<", new Date()))
 
     try {
       const q = query(collection(firestore, "events"), ...queries);
       const querySnapshot = await getDocs(q);
-      
-      //   querySnapshot.forEach((document) => {
-      //     
-      //     events.value.push(document.data());
-      //   });
       events.value = querySnapshot.docs.map((d) => d.data());
       events.value.sort((a, b) => {
         return a.startDate.localeCompare(b.startDate);
@@ -194,7 +204,6 @@ export const useEventsStore = defineStore("events", () => {
         data: { events: events.value },
       };
     } catch (error) {
-      
       notifyError(error);
       return {
         ok: false,
@@ -210,7 +219,6 @@ export const useEventsStore = defineStore("events", () => {
     events.value = null;
     const queries = [];
     queries.push(where("promoter.id", "==", promoterId));
-
     // queries.push(
     //   where("startDate", ">=", new Date().toISOString().split("T")[0])
     // );
@@ -219,9 +227,9 @@ export const useEventsStore = defineStore("events", () => {
     try {
       const q = query(collection(firestore, "events"), ...queries);
       const querySnapshot = await getDocs(q);
-      
+
       //   querySnapshot.forEach((document) => {
-      //     
+      //
       //     events.value.push(document.data());
       //   });
       events.value = querySnapshot.docs.map((d) => d.data());
@@ -230,7 +238,6 @@ export const useEventsStore = defineStore("events", () => {
         data: events.value,
       };
     } catch (error) {
-      
       notifyError(error);
       return {
         ok: false,
@@ -255,9 +262,9 @@ export const useEventsStore = defineStore("events", () => {
     try {
       const q = query(collection(firestore, "events"), ...queries);
       const querySnapshot = await getDocs(q);
-      
+
       //   querySnapshot.forEach((document) => {
-      //     
+      //
       //     events.value.push(document.data());
       //   });
       events.value = querySnapshot.docs.map((d) => d.data());
@@ -266,7 +273,6 @@ export const useEventsStore = defineStore("events", () => {
         data: events.value,
       };
     } catch (error) {
-      
       notifyError(error);
       return {
         ok: false,
@@ -291,9 +297,9 @@ export const useEventsStore = defineStore("events", () => {
     try {
       const q = query(collection(firestore, "events"), ...queries);
       const querySnapshot = await getDocs(q);
-      
+
       //   querySnapshot.forEach((document) => {
-      //     
+      //
       //     events.value.push(document.data());
       //   });
       events.value = querySnapshot.docs.map((d) => d.data());
@@ -302,7 +308,6 @@ export const useEventsStore = defineStore("events", () => {
         data: { events: events.value },
       };
     } catch (error) {
-      
       notifyError(error);
       return {
         ok: false,
@@ -318,10 +323,8 @@ export const useEventsStore = defineStore("events", () => {
       const documentSnapshot = await getDoc(doc(firestore, "events/" + id));
       if (!documentSnapshot.empty) {
         event.value = documentSnapshot.data();
-        
       }
     } catch (error) {
-      
       notifyError(error);
       return {
         ok: false,

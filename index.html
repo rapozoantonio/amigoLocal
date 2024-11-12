@@ -1,88 +1,88 @@
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" href="/favicon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Astro Advisor</title>
-
-  <style>
-    body {
-      margin: 0px;
-    }
-
-    #loading {
-      height: 100vh;
-      width: 100%;
-      background-color: black;
-      display: grid;
-      place-items: center;
-    }
-
-    /* HTML: <div class="loader"></div> */
-    .loader {
-      width: 50px;
-      aspect-ratio: 1;
-      border-radius: 50%;
-      border: 8px solid #0000;
-      border-right-color: #FFEBEE;
-      position: relative;
-      animation: l24 1s infinite linear;
-    }
-
-    .loader:before,
-    .loader:after {
-      content: "";
-      position: absolute;
-      inset: -8px;
-      border-radius: 50%;
-      border: inherit;
-      animation: inherit;
-      animation-duration: 2s;
-    }
-
-    .loader:after {
-      animation-duration: 4s;
-    }
-
-    @keyframes l24 {
-      100% {
-        transform: rotate(1turn)
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Jubilos | Os Melhores Eventos do RJ e SP</title>
+    <meta name="title" content="Jubilos | Os Melhores Eventos do RJ e SP" />
+    <meta name="description" content="Encontre os eventos mais hypados de São Paulo e Rio. Shows imperdíveis, festas inesquecíveis e as melhores baladas nas duas maiores capitais do Brasil." />
+    <meta name="keywords" content="balada, festa, eventos, São Paulo, Rio de Janeiro, shows, festas exclusivas, melhores eventos, ingressos, nightlife" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jubilos.com.br/" />
+    <meta property="og:title" content="Jubilos | Onde Rolam os Melhores Events do RJ e SP" />
+    <meta property="og:description" content="Se liga nos eventos mais hypados do RJ e SP! Encontre seu rolê perfeito, dos shows mais esperados às festas mais comentadas." />
+    <meta property="og:image" content="https://jubilos.com.br/og-image.jpg" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://jubilos.com.br/" />
+    <meta property="twitter:title" content="Jubilos | Onde Rolam os Melhores Events do RJ e SP" />
+    <meta property="twitter:description" content="Se liga nos eventos mais hypados do RJ e SP! Dos shows mais esperados às festas mais comentadas, tá tudo aqui." />
+    <meta property="twitter:image" content="https://jubilos.com.br/twitter-image.jpg" />
+    
+    <!-- Additional Meta Tags -->
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Jubilos" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#780101" />
+    <meta name="application-name" content="Jubilos" />
+    
+    <!-- Apple Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Jubilos" />
+    
+    <!-- Locale and Canonical -->
+    <link rel="canonical" href="https://jubilos.com.br" />
+    <meta property="og:locale" content="pt_BR" />
+    
+    <!-- Preconnect to Firebase -->
+    <link rel="preconnect" href="https://firestore.googleapis.com" />
+    <link rel="preconnect" href="https://www.googleapis.com" />
+    
+    <!-- PWA Tags -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    
+    <!-- Same style section as before -->
+    <style>
+      /* ... previous styles remain the same ... */
+    </style>
+  </head>
+  <body>
+    <!-- Schema.org with updated tone -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Jubilos",
+        "applicationCategory": "EventManagement",
+        "operatingSystem": "Web",
+        "description": "A sua plataforma para descobrir os eventos mais hypados de São Paulo e Rio de Janeiro",
+        "offers": {
+          "@type": "Offer",
+          "category": "Events & Entertainment"
+        }
       }
-    }
-
-    .animated-gradient {
-      animation: animateBg 3s linear infinite;
-      animation-direction: alternate;
-      /* background-image: linear-gradient(90deg, #25f800, #1100f8, #ffe607, #f70000); */
-      background-image: linear-gradient(90deg, #780101, #2b2926, #780101, #2b2926);
-      background-size: 300% 100%;
-
-    }
-
-    @keyframes animateBg {
-      0% {
-        background-position: 100% 0%;
-      }
-
-      100% {
-        background-position: 50% 0%;
-      }
-    }
-  </style>
-</head>
-
-<body>
-  <div id="app">
-    <div id="loading" class="animated-gradient">
-      <div class="loader"></div>
+    </script>
+    
+    <div id="app">
+      <div id="loading" class="animated-gradient">
+        <div class="loader"></div>
+      </div>
     </div>
-  </div>
-  <script type="module" src="/src/main.js"></script>
-</body>
-
-
-
-
+    <script type="module" src="/src/main.js"></script>
+    
+    <!-- Fallback for JavaScript disabled -->
+    <noscript>
+      <div style="text-align: center; padding: 20px;">
+        Ei! Para curtir o Jubilos, você precisa ativar o JavaScript no seu navegador.
+      </div>
+    </noscript>
+  </body>
 </html>

@@ -127,7 +127,7 @@ const routes = [
         props: true,
         component: () =>
           import(
-            /* webpackChunkName: "promoter" */ "@/views/promoters/Promoter.vue"
+            /* webpackChunkName: "promoter" */ "@/views/promoters/PromoterId.vue"
           ),
         children: [
           {

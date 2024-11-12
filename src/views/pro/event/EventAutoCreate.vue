@@ -4,7 +4,7 @@
             <v-row>
                 <v-col cols="12">
                     <v-card class="mx-auto text-center">
-                        <v-card-title> Create event with AI</v-card-title>
+                        <v-card-title> Create event with ✨️AI</v-card-title>
                         <v-card-text>
                             <p class="text-body-2 mb-4">
                                 Cole o texto de divulgação e deixe que nossa assistente

@@ -2,5 +2,7 @@ export default [
   "carnaval",
   "reveillon",
   "open bar", 
-  "day party"
+  "day party",
+  "carnaval",
+  "reveillon"
 ];
