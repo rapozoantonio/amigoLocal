@@ -22,14 +22,43 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 
+import {
+    onMounted,
+    watch,
+} from 'vue';
+import { useRoute } from 'vue-router';
 import { storeToRefs } from 'pinia';
 
+// COMPONENTS
+import EventListFeatured from '@/components/events/EventListFeatured.vue';
+import EventListNextEvents from '@/components/events/EventListNextEvents.vue';
+
+
 import EventCardHorizontal from '@/components/events/EventCardHorizontal.vue';
+
 import { useEventsStore } from '@/store/events';
 
+const route = useRoute();
 const eventsStore = useEventsStore();
+
+const { events, nextEvents, loading, selectedGenres } = storeToRefs(eventsStore);
+
+// URL PARAMS - route.params
+const { country, region } = defineProps(["country", "region"]);
+
+
+watch(() => route.query.genre, (newValue) => {
+    selectedGenres.value = newValue
+})
+
+onMounted(() => {
+    if (route.query.genre) {
+        selectedGenres.value = typeof route.query.genre === "string" ? [route.query.genre] : route.query.genre
+    }
+    eventsStore.getEventsByRegion(country.toUpperCase(), region);
+});
+
 
 const { nextEvents } = storeToRefs(eventsStore);
 </script>

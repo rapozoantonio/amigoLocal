@@ -29,7 +29,7 @@ export default {
         },
         {
           id: "endDate",
-          label: "Start Date",
+          label: "End Date",
           type: "date",
           size: "sm",
         },
@@ -79,13 +79,6 @@ export default {
           size: "lg",
           label: "Description",
         },
-
-        {
-          id: "image",
-          type: "image",
-          size: "lg",
-          label: "Image",
-        },
         {
           id: "producer",
           type: "custom-producer",
@@ -102,9 +95,15 @@ export default {
     },
     {
       name: "Promotional",
-      index: 4,
+      index: 3,
       type: "section",
       fields: [
+        {
+          id: "image",
+          type: "image",
+          size: "lg",
+          label: "Image",
+        },
         {
           id: "price",
           type: "custom-price",

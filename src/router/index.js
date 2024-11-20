@@ -71,12 +71,30 @@ const routes = [
               ),
           },
           {
-            path: "bestpicks",
-            name: "events-bestpicks",
+            path: "openbar",
+            name: "events-openbar",
             props: true,
             component: () =>
               import(
-                /* webpackChunkName: "events-bestpicks" */ "@/views/events/EventListBestpicks.vue"
+                /* webpackChunkName: "events-openbar" */ "@/views/events/EventListOpenbar.vue"
+              ),
+          },
+          {
+            path: "carnaval",
+            name: "events-carnaval",
+            props: true,
+            component: () =>
+              import(
+                /* webpackChunkName: "events-carnaval" */ "@/views/events/EventListCarnaval.vue"
+              ),
+          },
+          {
+            path: "reveillon",
+            name: "events-reveillon",
+            props: true,
+            component: () =>
+              import(
+                /* webpackChunkName: "events-reveillon" */ "@/views/events/EventListReveillon.vue"
               ),
           },
         ],

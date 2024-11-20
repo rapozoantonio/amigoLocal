@@ -31,6 +31,7 @@
                             <v-form ref="formEl" v-model="formValid[index]" class="flex-grow-1">
                                 <!-- SECTION -->
                                 <v-card max-width="1000">
+                                    {{ formValid }}
 
                                     <!-- SLOT PREPEND INNER -->
                                     <v-card-text v-if="$slots['prepend-inner']">
@@ -188,6 +189,7 @@ const step = ref(1);
 const { xs } = useDisplay();
 
 async function submitForm() {
+    // await formEl.value[formEl.value.length - 1].validate();
     try {
         if (formValid.value.every(f => f)) {
             emit("submit");
