@@ -59,6 +59,8 @@ export const useEventStore = defineStore("event", () => {
     { name: "+19", value: "+19" },
     { name: "+20", value: "+20" },
     { name: "+21", value: "+21" },
+    { name: "+24", value: "+24" },
+    { name: "+30", value: "+30" },
   ]);
 
   const sections = ref({

@@ -58,9 +58,6 @@ onMounted(() => {
     }
     eventsStore.getEventsByRegion(country.toUpperCase(), region);
 });
-
-
-const { nextEvents } = storeToRefs(eventsStore);
 </script>
 
 <style lang="scss" scoped>
