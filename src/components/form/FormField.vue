@@ -17,19 +17,27 @@
 
 
 
-    <v-col v-else :cols="col" :md="md" :sm="md"
+    <v-col v-else :cols="col" :md="md" :sm="md" class="pt-1"
         :class="{ 'd-flex': labelType === 'left', required: rules.find(i => i === 'required') }">
         <p v-if="prepend" class="text-body-2">{{ prepend }}</p>
 
 
-        <p v-if="showLabelUp" class="mb-1 ml-2 text-caption" :for="id"> <v-icon start v-if="icon">{{
-            icon }}</v-icon>{{ label || name || id }}</p>
+        <p v-if="showLabelUp" class="mb-1 ml-2 text-caption" :for="id">
+            <v-icon start v-if="icon">
+                {{ icon }}
+            </v-icon>{{ label || name || id }}
+            <span class="ml-1" v-if="rules.find(i => i === 'required')">*</span>
+            <span class="ml-1" v-else><small>(opcional)</small></span>
+        </p>
         <p v-else-if="labelType === 'left'" class="mt-3 text-caption  text-right mr-3 field-label" :for="id"> <v-icon
                 start v-if="icon">{{
                     icon }}</v-icon><span v-if="showLabelLeft">
                 {{ label || name
                     || id }}
-            </span></p>
+            </span>
+            <span class="ml-1" v-if="rules.find(i => i === 'required')">*</span>
+            <span class="ml-1" v-else> (opcional)</span>
+        </p>
 
 
 
@@ -84,7 +92,7 @@
 
         <!-- TEXTAREA -->
         <template v-else-if="type === 'textarea'">
-            <v-textarea v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            <v-textarea auto-grow rows="2" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </v-textarea>
         </template>
 
@@ -146,7 +154,7 @@
             </field-location>
         </template>
 
-        <!-- CUSTOM-LOCATION -->
+        <!-- CUSTOM-PROMOTER -->
         <template v-else-if="type === 'custom-promoter'">
             <field-promoter v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </field-promoter>
@@ -156,6 +164,12 @@
         <template v-else-if="type === 'custom-links'">
             <field-links v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </field-links>
+        </template>
+
+        <!-- LIST -->
+        <template v-else-if="type === 'list'">
+            <field-list :labelType="labelType" :children="children" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :label="label"></field-list>
         </template>
 
         <!-- CUSTOM-USERNAME -->
@@ -190,6 +204,7 @@ import FieldProducer from '../fields/FieldProducer.vue';
 import FieldPromoter from '../fields/FieldPromoter.vue';
 import FieldRegion from '../fields/FieldRegion.vue';
 import FieldUsername from '../fields/FieldUsername.vue';
+import FieldList from '../fields/FieldList.vue';
 
 const { fieldAttrs, rules: fieldRules } = inject("$helpers");
 const model = defineModel("model");
@@ -229,6 +244,9 @@ const { id, size, type, rules, label, labelType, field, items, initial, icon, mu
     items: {
         type: Object, default: () => []
     },
+    children: {
+        type: Array, default: () => []
+    },
     initial: {
         type: null
     },
@@ -247,17 +265,33 @@ const { id, size, type, rules, label, labelType, field, items, initial, icon, mu
     readOnly: {
         type: null
     },
+    noGutters: {
+        type: [Boolean, null]
+    }
 })
 
 const col = computed(() => {
     if (typeof size === "number") {
         return size
     }
+    if (size === "auto") {
+        return size
+    }
     return size === "xs" ? "6" : size === "sm" ? "12" : size === "md" ? "12" : "12"
 })
 
+const md = computed(() => {
+    if (typeof size === "number") {
+        return size
+    }
+    if (size === "auto") {
+        return size
+    }
+    return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
+})
+
 function updateInput(event) {
-    
+
     dirty.value = true;
 }
 
@@ -270,26 +304,20 @@ const minDate = computed(() => {
     return minDateString;
 })
 
-const md = computed(() => {
-    if (typeof size === "number") {
-        return size
-    }
-    return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
-})
 
 const stateColor = computed(() => {
-    if ((changed.value || dirty.value) && model.value) {
-        return {
-            base: "teal",
-            bg: "#0096880d"
-        }
-    }
-    if (highlighted.value) {
-        return {
-            base: "yellow",
-            bg: "#ffeb3b12"
-        }
-    }
+    // if ((changed.value || dirty.value) && model.value) {
+    //     return {
+    //         base: "teal",
+    //         bg: "#0096880d"
+    //     }
+    // }
+    // if (highlighted.value) {
+    //     return {
+    //         base: "yellow",
+    //         bg: "#ffeb3b12"
+    //     }
+    // }
     return {
         base: null,
         bg: null
@@ -300,7 +328,7 @@ const stateColor = computed(() => {
 const attrs = computed(() => {
     return {
         rules: [...rules.map(r => fieldRules[r])],
-        label: labelType === 'in' ? label ? label : id : null,
+        label: labelType === 'in' ? label ? `${label}${rules.find(i => i === 'required') ? ' *' : ' (opcional)'}` : `${id}${rules.find(i => i === 'required') ? '*' : ' (opcional)'}` : null,
         field: id,
         class: {
             required: rules.find(i => i === 'required'),
@@ -311,7 +339,7 @@ const attrs = computed(() => {
         disabled: readOnly ? true : false,
         baseColor: stateColor.value.base,
         bgColor: stateColor.value.bg,
-        color: stateColor.value.base || "primary",
+        color: stateColor.value.base || "white",
     }
 })
 

@@ -78,7 +78,7 @@ const { schema, action, title, items, block, error } = defineProps({
         type: [String, null]
     },
     buttonPosition: {
-        type: String, default: "left"
+        type: String, default: "right"
     }
 });
 
@@ -92,7 +92,7 @@ async function submitForm(event) {
         }
         emit("submit");
     } catch (error) {
-        
+
     } finally {
         loading.value = false;
     }
