@@ -2,35 +2,26 @@
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-progress-circular
-          v-if="!countries"
-          indeterminate
-        ></v-progress-circular>
-        <template v-else>
+        <!-- <v-progress-circular v-if="!countries" indeterminate></v-progress-circular> -->
+
+        <v-card flat variant="plain">
+          <v-card-text class="text-center">
+            <p class="text-h5 mb-4">Buscando eventos na sua zona</p>
+            <v-progress-circular size="large" width="7" color="primary" indeterminate></v-progress-circular>
+
+          </v-card-text>
+        </v-card>
+        <template v-if="false">
           <p class="text-h5 mb-4 text-center">Escolha o país</p>
           <v-row dense justify="center">
-            <v-col
-              cols="12"
-              v-for="country in featuredCountries"
-              :key="country.names.pt"
-              class="text-center"
-            >
-              <v-btn
-                size="large"
-                label
-                class="p-4"
-                :value="country.code"
-                :color="selectedCountry === country.code ? 'primary' : ''"
-                @click="selectCountry(country.code)"
-              >
+            <v-col cols="12" v-for="country in featuredCountries" :key="country.names.pt" class="text-center">
+              <v-btn size="large" label class="p-4" :value="country.code"
+                :color="selectedCountry === country.code ? 'primary' : ''" @click="selectCountry(country.code)">
                 <v-avatar size="30">
-                  <v-img
-                    :src="
-                      'https://flagcdn.com/' +
-                      country.code.toLowerCase() +
-                      '.svg'
-                    "
-                  ></v-img>
+                  <v-img :src="'https://flagcdn.com/' +
+                    country.code.toLowerCase() +
+                    '.svg'
+                    "></v-img>
                 </v-avatar>
                 <span class="ml-2">{{ country.names.pt }}</span>
               </v-btn>
@@ -42,24 +33,12 @@
           <template v-if="regions && selectedCountry">
             <p class="text-h5 my-4 text-center">Escolha uma região</p>
             <v-row justify="center">
-              <v-col
-                cols="auto"
-                v-for="region in regions[selectedCountry.toUpperCase()]"
-                :key="region.id"
-                class="text-center"
-              >
-                <v-btn
-                  size="x-large"
-                  label
-                  class="p-4"
-                  :value="region.id"
-                  :to="{
-                    name: 'events',
-                    params: { country: selectedCountry, region: region.id },
-                  }"
-                  :color="selectedRegion === region.id ? 'primary' : ''"
-                  @click="selectRegion(region.id)"
-                >
+              <v-col cols="auto" v-for="region in regions[selectedCountry.toUpperCase()]" :key="region.id"
+                class="text-center">
+                <v-btn size="x-large" label class="p-4" :value="region.id" :to="{
+                  name: 'events',
+                  params: { country: selectedCountry, region: region.id },
+                }" :color="selectedRegion === region.id ? 'primary' : ''" @click="selectRegion(region.id)">
                   <span class="ml-2">{{ region.name }}</span>
                 </v-btn>
               </v-col>
@@ -109,18 +88,18 @@ function selectRegion(region) {
 }
 
 async function getUserRegion() {
-    const response = await fetch("https://ipinfo.io/79.153.219.49?token=3bbe5f169a430f");
-    const info = await response.json();
+  const response = await fetch("https://ipinfo.io/79.153.219.49?token=3bbe5f169a430f");
+  const info = await response.json();
 
-    if(regions[info.country]){
-        const checkForRegion = regions[info.country].find(r => r.name === info.region);
-        if(checkForRegion) {
-            router.push({name: "events", params: {country: [info.country], region: checkForRegion.id}})
-        }
+  if (regions[info.country]) {
+    const checkForRegion = regions[info.country].find(r => r.name === info.region);
+    if (checkForRegion) {
+      router.push({ name: "events", params: { country: [info.country], region: checkForRegion.id } })
     }
-    else {
-        router.push({name: "events", params: {country: "BR", region: "riodejaneiro"}})
-    }
+  }
+  else {
+    router.push({ name: "events", params: { country: "br", region: "riodejaneiro" } })
+  }
 
 
 
@@ -128,13 +107,13 @@ async function getUserRegion() {
 
 
 
-onMounted(async() => {
-    
-    if (!countries.value) {
-        
-        configStore.init();
-    }
-    await getUserRegion();
+onMounted(async () => {
+
+  if (!countries.value) {
+
+    configStore.init();
+  }
+  await getUserRegion();
 
 });
 </script>

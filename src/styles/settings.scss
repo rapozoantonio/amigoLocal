@@ -52,54 +52,54 @@ html {
   }
   
 
-.required .v-input .rounded-lg::after  {
-    content: "";
-    width: 100%;
-    height: auto;
-    border-left: solid 4px #D50000;
-    position: absolute;
-    left: 1px;
-    top: 0px;
-    bottom: 0px;
-    border-top-left-radius: 7px;
-    border-bottom-left-radius: 7px;
-    z-index: -1;
-    margin-top: 1px;
-    margin-bottom: 1px;
-}
+// .required .v-input .rounded-lg::after  {
+//     content: "";
+//     width: 100%;
+//     height: auto;
+//     border-left: solid 4px #D50000;
+//     position: absolute;
+//     left: 1px;
+//     top: 0px;
+//     bottom: 0px;
+//     border-top-left-radius: 7px;
+//     border-bottom-left-radius: 7px;
+//     z-index: -1;
+//     margin-top: 1px;
+//     margin-bottom: 1px;
+// }
 
- .required .v-input .rounded-large::after {
-    content: "";
-    width: 100%;
-    height: auto;
-    border-left: solid 4px #D50000;
-    position: absolute;
-    left: 1px;
-    top: 0px;
-    bottom: 0px;
-    border-top-left-radius: 3px;
-    border-bottom-left-radius: 3px;
-    z-index: -1;
-    margin-top: 1px;
-    margin-bottom: 1px;
-}
+//  .required .v-input .rounded-large::after {
+//     content: "";
+//     width: 100%;
+//     height: auto;
+//     border-left: solid 4px #D50000;
+//     position: absolute;
+//     left: 1px;
+//     top: 0px;
+//     bottom: 0px;
+//     border-top-left-radius: 3px;
+//     border-bottom-left-radius: 3px;
+//     z-index: -1;
+//     margin-top: 1px;
+//     margin-bottom: 1px;
+// }
 
 
-.required .rounded-xl::after {
-    content: "";
-    width: 100%;
-    height: auto;
-    border-left: solid 7px red;
-    position: absolute;
-    left: 1px;
-    top: 0px;
-    bottom: 0px;
-    border-top-left-radius: 19px;
-    border-bottom-left-radius: 19px;
-    z-index: -1;
-    margin-top: 1px;
-    margin-bottom: 1px;
-}
+// .required .rounded-xl::after {
+//     content: "";
+//     width: 100%;
+//     height: auto;
+//     border-left: solid 7px red;
+//     position: absolute;
+//     left: 1px;
+//     top: 0px;
+//     bottom: 0px;
+//     border-top-left-radius: 19px;
+//     border-bottom-left-radius: 19px;
+//     z-index: -1;
+//     margin-top: 1px;
+//     margin-bottom: 1px;
+// }
 
 .label {
     width: 100px;
