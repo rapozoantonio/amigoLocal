@@ -1,111 +1,93 @@
 <template>
-    <form-card v-if="user" @submit="saveProfile" :schema="userSchema" v-model:model="user" v-model:files="files"
+    <!-- <form-steps v-if="user" @submit="saveProfile" :schema="userSchema" v-model:model="user" v-model:files="files"
         labelType="left" title="Edit Profile" action="Save" :items="{ language: languages, gender: genders }">
 
         <template #prepend>
             <v-alert v-if="!user.completed" title="Complete seu perfil" variant="tonal" closable border="start">Complete
                 seu perfil para aceder as funcionalidades personalizadas</v-alert>
         </template>
-    </form-card>
-    <v-form v-if="false" @submit.prevent="saveProfile">
-        <v-container>
-            <v-row>
-                <v-col cols="12">
-                    <v-card v-if="user">
-                        <v-card-title class="mb-4">Personal Settings</v-card-title>
-                        <v-card-text>
-                            <v-alert v-if="!user.completed" class="mb-8" title="Complete seu perfil" variant="tonal"
-                                closable border="start">Complete
-                                seu
-                                perfil</v-alert>
-                            <v-row>
-                                <!-- DISPLAY NAME -->
-                                <v-col cols="12" class="d-flex required">
-                                    <label for="name" class="label">Name</label>
-                                    <v-text-field v-bind="fieldAttrs" id="name" name="name" label="" required
-                                        :rules="[rules.required]" v-model="user.name"></v-text-field>
-                                </v-col>
+</form-steps> -->
 
+    <v-container>
+        <v-row>
+            <!-- FORM -->
+            <v-col cols="12">
+                <!-- STEPPER -->
+                <v-stepper bg-color="transparent" flat ref="stepper" v-model="step" class="d-flex" color="primary"
+                    v-slot:default="{ next, prev }">
 
-                                <v-col cols="12" class="d-flex">
-                                    <label for="phone" class="label">Phone</label>
-                                    <v-text-field v-bind="fieldAttrs" id="phone" label="" name="phone"
-                                        v-model="user.phoneNumber"></v-text-field>
-                                </v-col>
-                                <!-- USERNAME -->
-                                <!-- <v-col cols="12">
-                                    <label for="name">Username</label>
-                                    <v-text-field v-bind="fieldAttrs" id="username"
-                                        v-model="user.username"></v-text-field>
-                                </v-col> -->
+                    <!-- HEADER -->
+                    <v-stepper-header flat v-show="!xs" class="flex-column justify-start pt-5 mr-4 flex-shrink-0">
 
+                        <v-stepper-item class="pb-2 pt-2" title="Personal Info" value="personal_info" color="primary"
+                            selected-class="text-primary font-weight-bold" editable icon="mdi-account">
+                        </v-stepper-item>
 
-                                <!-- LANGUAGE -->
-                                <v-col cols="12" class="d-flex required">
-                                    <label for="language" class="label">Language</label>
-                                    <v-select :items="languages" v-bind="fieldAttrs" name="language" label=""
-                                        id="language" :rules="[rules.required]" class="required" required
-                                        v-model="user.language"></v-select>
-                                </v-col>
+                        <v-stepper-item class="pb-2 pt-2" title="Account Settings" value="account_info" color="primary"
+                            selected-class="text-primary font-weight-bold" editable icon="mdi-cogs">
+                        </v-stepper-item>
 
+                        <v-stepper-item class="pb-2 pt-2" title="Promoter Settings" value="promoter_settings"
+                            color="primary" selected-class="text-primary font-weight-bold" editable
+                            icon="mdi-account-star">
+                        </v-stepper-item>
 
-                                <!-- BIRTHDAY -->
-                                <v-col cols="12" class="d-flex required">
-                                    <label for="birthday" class="label">Birthday</label>
-                                    <v-text-field view-mode="year" v-bind="fieldAttrs" name="birthday" id="birthday"
-                                        type="date" class="required" :rules="[rules.required]" required prepend-icon=""
-                                        label="" v-model="user.birthday"></v-text-field>
-                                </v-col>
+                    </v-stepper-header>
 
+                    <!-- FORM CONTENT -->
+                    <v-stepper-window class="flex-grow-1 mx-0 ma-0" style="margin: 0px">
 
-                                <!-- GENDER -->
-                                <v-col cols="12" class="d-flex">
-                                    <label for="gender" class="label">Gender</label>
-                                    <v-select :items="['Masculino', 'Feminino', 'Prefiro não dizer']" label=""
-                                        name="gender" v-bind="fieldAttrs" id="gender" v-model="user.gender"></v-select>
-                                </v-col>
+                        <v-stepper-window-item value="personal_info">
+                            <form-box v-if="user" @submit="saveProfile" :schema="userSchema" v-model:model="user"
+                                v-model:files="files" labelType="left" title="Edit Profile" action="Save"
+                                :items="{ language: languages, gender: genders }">
 
+                                <template #prepend>
+                                    <v-alert v-if="!user.completed" title="Complete seu perfil" variant="tonal" closable
+                                        border="start">Complete
+                                        seu perfil para aceder as funcionalidades personalizadas</v-alert>
+                                </template>
+                            </form-box>
+                        </v-stepper-window-item>
 
-                                <!-- COUNTRY -->
-                                <v-col cols="12" class="d-flex required">
-                                    <label for="country" class="label">Country</label>
-                                    <v-text-field v-bind="fieldAttrs" id="country" label="Country" required
-                                        name="country" :rules="[rules.required]" class="required"
-                                        v-model="user.country"></v-text-field>
-                                </v-col>
+                        <v-stepper-window-item value="account_info">
+                            <form-box v-if="user" @submit="saveProfile" :schema="userSchema" v-model:model="user"
+                                v-model:files="files" labelType="left" title="Edit Profile" action="Save"
+                                :items="{ language: languages, gender: genders }">
 
-                                <!-- REGION -->
-                                <v-col cols="12" class="d-flex required">
-                                    <label for="region" class="label">Region</label>
-                                    <v-text-field v-bind="fieldAttrs" id="region" label="Region" class="required"
-                                        name="region" :rules="[rules.required]" v-model="user.region"></v-text-field>
-                                </v-col>
+                                <template #prepend>
+                                    <v-alert v-if="!user.completed" title="Complete seu perfil" variant="tonal" closable
+                                        border="start">Complete
+                                        seu perfil para aceder as funcionalidades personalizadas</v-alert>
+                                </template>
+                            </form-box>
+                        </v-stepper-window-item>
 
-                                <v-col cols="12" class="text-right">
-                                    <v-btn class="mr-auto" color="primary" :loading="loading"
-                                        type="submit">Salvar</v-btn>
-                                </v-col>
+                        <v-stepper-window-item value="promoter_settings">
+                            <form-box v-if="user" @submit="saveProfile" :schema="promoterSchema" v-model:model="user"
+                                v-model:files="files" labelType="left" title="Edit Profile" action="Save"
+                                :items="{ language: languages, gender: genders }">
 
+                                <template #prepend>
+                                    <v-alert v-if="!user.completed" title="Complete seu perfil" variant="tonal" closable
+                                        border="start">Complete
+                                        seu perfil para aceder as funcionalidades personalizadas</v-alert>
+                                </template>
+                            </form-box>
+                        </v-stepper-window-item>
 
-                            </v-row>
-                        </v-card-text>
-                        <!-- <pre>
-                {{ user }}
-            </pre> -->
-                    </v-card>
-                </v-col>
-            </v-row>
-
-        </v-container>
-
-    </v-form>
+                    </v-stepper-window>
+                </v-stepper>
+            </v-col>
+        </v-row>
+    </v-container>
 </template>
 
 <script setup>
 import {
-  inject,
-  ref,
-  watch,
+    inject,
+    ref,
+    watch,
 } from 'vue';
 
 import { storeToRefs } from 'pinia';
@@ -115,8 +97,13 @@ import FormCard from '@/components/form/FormCard.vue';
 import userSchema from '@/schemas/userSchema';
 import { useFirebaseStore } from '@/store/firebase';
 import { useUserStore } from '@/store/user';
+import FormSteps from '@/components/form/FormSteps.vue';
+import FormBox from '@/components/form/FormBox.vue';
+import promoterSchema from '@/schemas/promoterSchema';
 
 const { fieldAttrs } = inject("$helpers");
+
+const step = ref("personal_info");
 
 const userStore = useUserStore();
 
@@ -142,10 +129,10 @@ const firebaseStore = useFirebaseStore();
 
 async function saveProfile(event) {
     try {
-        
+
         loading.value = true;
         const results = await event;
-        
+
         // if (!results.valid) {
         //     document.querySelector("#" + results.errors[0].id).focus();
         //     return false;
@@ -157,11 +144,11 @@ async function saveProfile(event) {
             response.notify("", "Your personal settings is successfully updated")
         }
 
-        
+
 
 
     } catch (error) {
-        
+
     } finally {
         loading.value = false;
     }

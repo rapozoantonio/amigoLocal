@@ -31,7 +31,7 @@ export default {
           label: "Birthday",
           type: "date",
           size: "lg",
-          rules: ["required"],
+          // rules: ["required"],
         },
         {
           id: "language",
@@ -51,7 +51,7 @@ export default {
           label: "Country",
           type: "custom-country",
           size: "lg",
-          rules: ["required"],
+          // rules: ["required"],
           initial: "BR",
         },
         {
@@ -59,7 +59,7 @@ export default {
           label: "Region",
           type: "custom-region",
           size: "lg",
-          rules: ["required"],
+          // rules: ["required"],
           initial: {
             id: "riodejaneiro",
             name: "Rio de Janeiro",

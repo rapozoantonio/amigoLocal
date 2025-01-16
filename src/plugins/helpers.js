@@ -22,9 +22,9 @@ export default {
 
     helpers.fieldAttrs = {
       rounded: "lg",
-      variant: "outlined",
+      variant: "solo-filled",
       density: "compact",
-      color: "#3F51B5",
+      color: "white",
       // class: "mt-1",
       hideDetails: "auto",
     };
@@ -32,21 +32,21 @@ export default {
     helpers.toDate = (date) => {
       const parsedDate = new Date(date);
       const currentYear = new Date().getFullYear();
-    
+
       // Set date format options, adding the year if it's not the current year
       const options = {
         day: "2-digit",
         month: "short",
       };
-    
+
       if (parsedDate.getFullYear() !== currentYear) {
         options.year = "numeric";
       }
-    
+
       return new Intl.DateTimeFormat("pt-BR", options)
         .format(parsedDate)
         .toUpperCase();
-    };    
+    };
 
     helpers.rules = {
       required: (value) => {

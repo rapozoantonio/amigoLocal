@@ -31,8 +31,6 @@
                             <v-form ref="formEl" v-model="formValid[index]" class="flex-grow-1">
                                 <!-- SECTION -->
                                 <v-card max-width="1000">
-                                    {{ formValid }}
-
                                     <!-- SLOT PREPEND INNER -->
                                     <v-card-text v-if="$slots['prepend-inner']">
                                         <slot name="prepend-inner"></slot>
@@ -78,7 +76,7 @@
 
                                             <!-- ACTION BUTTON -->
                                             <v-col cols="auto">
-                                                <v-btn color="warning" :disabled="step === 1" @click="prev">Prev</v-btn>
+                                                <v-btn color="grey" :disabled="step === 1" @click="prev">Prev</v-btn>
                                             </v-col>
 
                                             <v-spacer></v-spacer>
@@ -97,7 +95,11 @@
 
                                             <!-- ACTION BUTTON -->
                                             <v-col cols="auto">
-                                                <v-btn color="primary"
+                                                <v-btn color="primary" :variant="schema.sections.length
+                                                    === step
+                                                    ?
+                                                    'elevated' :
+                                                    'outlined'"
                                                     @click="nextStep(index, schema.sections.length === step ? submitForm : next)">{{
                                                         schema.sections.length
                                                             === step
@@ -196,18 +198,18 @@ async function submitForm() {
             step.value = 1;
         }
         else {
-            
+
         }
 
     } catch (error) {
-        
+
     }
 }
 
 async function nextStep(index, callback) {
-    
+
     const results = await formEl.value[index].validate();
-    
+
     if (!results.valid) {
         document.querySelector("#" + results.errors[0].id).focus();
         return false;

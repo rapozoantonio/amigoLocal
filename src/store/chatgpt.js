@@ -57,10 +57,9 @@ export const useChatgptStore = defineStore("chatgpt", () => {
         requestOptions
       );
       const result = await response.json();
-      
+
       return result;
     } catch (error) {
-      
       return error;
     }
   }
@@ -79,7 +78,7 @@ export const useChatgptStore = defineStore("chatgpt", () => {
         messages: [
           {
             role: "system",
-            content: `Atue como um especialista de eventos, receberá um texto de divulgação de eventos usado nos grupos de whatsapp. Preciso que retorne um JSON com um atributo 'events' que seja uma array com esses eventos, cada evento tem a seguinte configuração: {startDate: date, name: string, description: string, links: [{name: string, url: string}]}`,
+            content: `Atue como um especialista de eventos, receberá um texto de divulgação de eventos usado nos grupos de whatsapp. Preciso que retorne um JSON com um atributo 'events' que seja uma array com esses eventos, cada evento tem a seguinte configuração: {startDate: date, startTime: time, name: string, description: string, links: [{name: string, url: string}]}`,
           },
 
           {
@@ -101,10 +100,9 @@ export const useChatgptStore = defineStore("chatgpt", () => {
         requestOptions
       );
       const result = await response.json();
-      
+
       return result;
     } catch (error) {
-      
       return error;
     }
   }
