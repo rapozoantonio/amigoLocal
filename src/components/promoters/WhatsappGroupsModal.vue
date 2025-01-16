@@ -133,6 +133,16 @@ const props = defineProps({
         link: "https://chat.whatsapp.com/rio",
         category: "Geral",
       },
+      {
+        name: "Reveillon Copacabana",
+        link: "https://chat.whatsapp.com/reveillon-copa",
+        category: "Reveillon",
+      },
+      {
+        name: "Festas RJ",
+        link: "https://chat.whatsapp.com/rio",
+        category: "Geral",
+      },
     ],
   },
 });

@@ -40,8 +40,8 @@ export default createVuetify({
         dark: true,
         colors: {
           primaryIcon: "#F44336",
-          // primary: '#673AB7',
-          primary: '#3F51B5',      // Indigo - professional, trustworthy
+           primary: '#673AB7',
+          //primary: '#3F51B5',      // Indigo - professional, trustworthy
           secondary: '#00BCD4',    // Cyan - modern, complementary to indigo
           accent: '#7C4DFF',       // Deep purple - energetic highlights
           error: '#FF5252',        // Red - clear error states
