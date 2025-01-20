@@ -87,25 +87,76 @@ function selectRegion(region) {
   selectedRegion.value = region;
 }
 
-async function getUserRegion() {
-  const response = await fetch("https://ipinfo.io/79.153.219.49?token=3bbe5f169a430f");
-  const info = await response.json();
+// Cache the IP lookup result
+const IP_CACHE_KEY = 'user_region_info';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
+async function getUserRegion() {
+  try {
+    // Check cache first
+    const cachedData = localStorage.getItem(IP_CACHE_KEY);
+    if (cachedData) {
+      const { timestamp, info } = JSON.parse(cachedData);
+      if (Date.now() - timestamp < CACHE_DURATION) {
+        return handleRegionRouting(info);
+      }
+      localStorage.removeItem(IP_CACHE_KEY); // Clear expired cache
+    }
+
+    // Fetch with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
+    const response = await fetch(
+      "https://ipinfo.io/79.153.219.49?token=3bbe5f169a430f",
+      { signal: controller.signal }
+    );
+    
+    clearTimeout(timeoutId);
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
+    const info = await response.json();
+    
+    localStorage.setItem(IP_CACHE_KEY, JSON.stringify({
+      timestamp: Date.now(),
+      info
+    }));
+
+    return handleRegionRouting(info);
+
+  } catch (error) {
+    return redirectToRio();
+  }
+}
+
+function handleRegionRouting(info) {
   if (regions[info.country]) {
     const checkForRegion = regions[info.country].find(r => r.name === info.region);
     if (checkForRegion) {
-      router.push({ name: "events", params: { country: [info.country], region: checkForRegion.id } })
+      return router.push({ 
+        name: "events", 
+        params: { 
+          country: [info.country], 
+          region: checkForRegion.id 
+        } 
+      });
     }
   }
-  else {
-    router.push({ name: "events", params: { country: "br", region: "riodejaneiro" } })
-  }
-
-
-
+  return redirectToRio();
 }
 
-
+function redirectToRio() {
+  return router.push({ 
+    name: "events", 
+    params: { 
+      country: "br", 
+      region: "riodejaneiro" 
+    } 
+  });
+}
 
 onMounted(async () => {
 
