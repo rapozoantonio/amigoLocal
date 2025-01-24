@@ -1,9 +1,5 @@
 <template>
-  <v-main>
+  <div style="padding-top: 42px">
     <router-view />
-  </v-main>
+  </div>
 </template>
-
-<script setup>
-  //
-</script>

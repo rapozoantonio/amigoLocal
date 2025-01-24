@@ -25,12 +25,11 @@
         ></v-img>
       </v-col>
       <!-- Event Details (stacked layout for mobile) -->
-      <v-col cols="9" sm="7" class="px-2">
+      <v-col cols="9" sm="7" class="px-4">
         <!-- Event Name -->
-        <div class="event-name">
+        <div class="event-title">
           <router-link
             :to="{ name: 'event-id', params: { id: event.id } }"
-            class="text-h6 font-weight-bold"
           >
             {{ event.name }}
           </router-link>
@@ -38,13 +37,27 @@
 
         <!-- Event Location -->
         <div
-          v-if="event.location?.name"
           class="d-flex align-center my-1 location"
+          v-if="event.location?.name"
         >
-          <v-icon size="small" color="red"
-            >mdi-map-marker-radius-outline
-          </v-icon>
+          <v-icon size="small" color="primaryIcon">mdi-map-marker</v-icon>
           <span class="text-caption ml-1">{{ event.location.name }}</span>
+        </div>
+
+        <!-- Event Tags -->
+        <div class="d-flex flex-wrap gap-1 mt-1">
+          <!-- Categories -->
+          <v-chip
+            v-for="category in event.categories"
+            :key="'cat-' + category"
+            size="x-small"
+            label
+            variant="outlined"
+            color="primaryIcon"
+            class="mr-1 mb-1"
+          >
+            {{ category }}
+          </v-chip>
         </div>
       </v-col>
 
@@ -55,7 +68,7 @@
           v-if="event.promoter?.code"
           size="small"
           rounded="pill"
-          color="primary"
+          color="primaryIcon"
           class="mb-1 promoter-button"
         >
           <v-icon size="small" left>mdi-ticket</v-icon>
@@ -64,8 +77,8 @@
 
         <!-- Followers Count -->
         <div class="d-flex align-center text-caption followers">
-          <v-icon size="small" color="red" class="mr-1"
-            >mdi-account-multiple</v-icon
+          <v-icon size="small" color="primaryIcon" class="mr-1"
+            >mdi-account-group</v-icon
           >
           <span>{{ event.followers }}</span>
         </div>
@@ -87,7 +100,7 @@ a {
 }
 
 a:hover {
-  color: rgba(var(--v-theme-primary), 1);
+  color: rgba(var(--v-theme-secondary), 1);
 }
 
 /* Event Card Styles */
@@ -110,12 +123,12 @@ a:hover {
 /* Event Name Styling */
 .event-name {
   font-size: 1rem;
-  color: rgba(255, 255, 255, 0.87);
-  display: inline-block;
-  white-space: nowrap;
+  font-weight: 600;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  line-height: 1.4;
 }
 
 /* Location Styling */
@@ -124,7 +137,6 @@ a:hover {
 }
 
 .location .text-caption {
-  color: rgba(255, 255, 255, 0.6);
   font-size: 0.85rem;
 }
 
@@ -138,6 +150,5 @@ a:hover {
 .followers {
   display: flex;
   align-items: center;
-  color: rgba(255, 255, 255, 0.6);
 }
 </style>

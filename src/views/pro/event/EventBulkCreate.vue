@@ -12,7 +12,7 @@
                 <v-stepper-item value="2" title="Evento" class="pa-4"
                   :color="step == 2 ? 'primary' : ''"></v-stepper-item>
                 <v-divider class="mx-1"></v-divider>
-                <v-stepper-item class="pa-4" value="3" :color="step == 3 ? 'primary' : ''">Confirmation</v-stepper-item>
+                <v-stepper-item class="pa-4" value="3" :color="step == 3 ? 'primary' : ''">Confirmação</v-stepper-item>
               </v-stepper-header>
               <v-stepper-window class="ma-0 pt-4">
                 <!-- STEP 1 - VIRTUAL ASSISTENT -->

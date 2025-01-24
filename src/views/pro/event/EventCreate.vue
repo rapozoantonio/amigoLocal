@@ -16,7 +16,7 @@
           block
           variant="elevated"
           action="Use ✨️AI"
-          title="Jubilus Copilot"
+          title="Jubilos Copilot"
           text="Use ✨️AI para criar o evento"
         ></event-create-gpt-assistence>
       </div>
@@ -28,7 +28,7 @@
           variant="elevated"
           block
           action="Use ✨️AI"
-          title="Jubilus Copilot"
+          title="Jubilos Copilot"
           text="Use ✨️AI para criar o evento"
         ></event-create-gpt-assistence>
       </div>

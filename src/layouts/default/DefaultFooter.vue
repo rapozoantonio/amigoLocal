@@ -1,7 +1,10 @@
 <template>
-  <v-footer class="flex-grow-0 flex-column">
-    <!-- <event-list-links-footer></event-list-links-footer> -->
+  <v-footer
+    class="flex-grow-0 flex-column"
+    :class="{ 'mb-14': $vuetify.display.mobile }"
+  >
     <v-container>
+      <!-- First Row: Location and Language -->
       <v-row>
         <v-col>
           <p>
@@ -9,39 +12,53 @@
               <flag-icon country="br"></flag-icon>
             </v-icon>
             <span class="text-body-2">Rio de Janeiro</span>
-            <span class="text-grey ml-10 text-caption">Idioma</span>
+            <span class="ml-10 text-caption">Idioma</span>
             <span class="text-body-2 ml-2">Português</span>
           </p>
         </v-col>
+        <!-- Links -->
         <v-col cols="auto">
           <v-breadcrumbs
             density="compact"
-            class="pt-0"
+            class="pa-0"
             divider="-"
             :items="items"
           >
             <template v-slot:item="{ item }">
-              <a class="text-caption" :href="item.href"> {{ item.title }}</a>
+              <v-btn
+                variant="text"
+                color="onSurface"
+                class="text-caption px-1"
+                :href="item.href"
+                height="24"
+              >
+                {{ item.title }}
+              </v-btn>
             </template>
           </v-breadcrumbs>
         </v-col>
       </v-row>
+
       <v-divider></v-divider>
+
+      <!-- Second Row: Copyright and Social -->
       <v-row>
         <v-col class="mt-2">
-          <p class="text-caption text-grey">
-            © 2024 Jubilos Ltd. Todos os direitos reservados.
+          <p class="text-caption">
+            © 2025 Jubilos Ltd. Todos os direitos reservados.
           </p>
         </v-col>
         <v-col cols="auto" class="mt-2">
           <div class="d-flex" style="gap: 20px">
-            <a
+            <v-btn
               href="https://www.instagram.com/jubilos.you/"
               target="_blank"
               rel="noopener noreferrer"
+              variant="text"
+              icon
             >
               <v-icon>mdi-instagram</v-icon>
-            </a>
+            </v-btn>
           </div>
         </v-col>
       </v-row>
@@ -51,35 +68,44 @@
 
 <script setup>
 import FlagIcon from "@/components/FlagIcon.vue";
-// import EventListLinksFooter from "@/components/events/EventListLinksFooter.vue";
 
 const items = [
-  {
+{
     title: "Privacidade",
     disabled: false,
-    href: "breadcrumbs_dashboard",
+    href: "/termos-de-privacidade",
   },
   {
     title: "Termos",
     disabled: false,
-    href: "breadcrumbs_link_1",
+    href: "/termos-de-uso",
   },
   {
     title: "Mapa do site",
     disabled: false,
-    href: "breadcrumbs_link_2",
+    href: "/sitemap.xml",
   },
 ];
 </script>
 
 <style lang="scss" scoped>
-a {
-  text-decoration: none;
-  color: white;
+// Ensure no gap between content and footer
+.v-footer {
+  margin-top: -1px;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
-a:hover {
-  text-decoration: none;
-  color: primary;
+// Remove default button padding in breadcrumbs
+:deep(.v-breadcrumbs) {
+  .v-btn {
+    padding: 0;
+    min-width: 0;
+    height: auto;
+    color: white;
+
+    &:hover {
+      color: rgb(var(--v-theme-primary));
+    }
+  }
 }
 </style>

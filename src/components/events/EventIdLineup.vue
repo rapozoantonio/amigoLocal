@@ -23,7 +23,7 @@ const { event } = defineProps(["event"]);
 const shareOptions = ref({
   url: "https://vue-advisor.web.app",
   quote: "Quote",
-  hashtag: "#Jubilus",
+  hashtag: "#Jubilos",
 });
 
 const shareOptionsWS = ref({

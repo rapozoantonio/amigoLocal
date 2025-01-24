@@ -1,10 +1,10 @@
 <template>
   <v-dialog v-model="isOpen" width="400" class="whatsapp-groups-modal">
-    <v-card class="bg-grey-darken-4">
+    <v-card>
       <!-- Header -->
       <v-card-title class="d-flex align-center justify-space-between pa-4">
         <div class="d-flex align-center">
-          <v-icon size="24" color="primary" class="mr-2">mdi-whatsapp</v-icon>
+          <v-icon size="24" color="primaryIcon" class="mr-2">mdi-whatsapp</v-icon>
           <span class="text-h6">Grupos do WhatsApp</span>
         </div>
         <v-btn
@@ -43,20 +43,19 @@
             density="compact"
             hide-details
             class="mb-4"
-            color="primary"
-            bg-color="grey-darken-3"
+            color="primaryIcon"
+
           />
         </v-card-text>
 
         <!-- Groups List -->
         <v-card-text class="pa-4">
           <v-list
-            class="bg-grey-darken-4"
             v-for="(groups, category) in groupedAndFilteredGroups"
             :key="category"
           >
             <!-- Category Header -->
-            <v-list-subheader class="text-primary text-subtitle-2 px-0">
+            <v-list-subheader class="text-primaryIcon text-subtitle-2 px-0">
               {{ category }}
             </v-list-subheader>
 
@@ -69,16 +68,16 @@
               target="_blank"
               class="mb-2 rounded-lg"
               hover
-              active-color="primary"
+              color="primary"
             >
               <template v-slot:prepend>
                 <v-avatar
-                  color="primary"
+                  color="primaryIcon"
                   variant="tonal"
                   size="32"
                   class="mr-3"
                 >
-                  <v-icon size="16">mdi-whatsapp</v-icon>
+                  <v-icon size="16" color="primaryIcon">mdi-whatsapp</v-icon>
                 </v-avatar>
               </template>
 
@@ -94,7 +93,7 @@
           <v-spacer></v-spacer>
           <v-btn
             variant="tonal"
-            color="primary"
+            color="primaryIcon"
             @click="shareGroups"
             prepend-icon="mdi-share-variant"
           >

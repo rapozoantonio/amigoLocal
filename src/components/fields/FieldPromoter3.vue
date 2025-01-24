@@ -82,7 +82,7 @@ import { storeToRefs } from "pinia";
 
 import promoterSchema from "@/schemas/quickPromoterSchema";
 import { useConfigStore } from "@/store/config";
-import { usePromoterStore } from "@/store/promoter";
+import { usePromoterStore } from "@/store/promoters";
 import { usePromotersStore } from "@/store/promoters";
 
 import FormDialog from "../form/FormDialog.vue";

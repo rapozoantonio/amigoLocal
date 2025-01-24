@@ -8,19 +8,12 @@
           </p>
         </div>
         <v-row class="mt-4">
-          <!-- <v-col cols="6">
-                        <p class="text-caption text-grey">
-                            Administrador do evento
-                        </p>
-                        <p>Amandava bras</p>
-                    </v-col> -->
-
           <v-col cols="12" v-if="event.links">
             <p class="text-caption text-grey">Links</p>
             <div v-for="link in event.links" :key="link.name">
               <a
                 link
-                class="link"
+                class="link text-link-text hover-primary"
                 target="_blank"
                 :href="
                   !link.url.includes('http') ? 'http://' + link.url : link.url
@@ -33,7 +26,7 @@
 
           <v-col cols="12" v-if="event.price">
             <p class="text-caption text-grey">Preços</p>
-            <p v-for="{ name, value } in event.price" :key="name">
+            <p class="text-OnSurface" v-for="{ name, value } in event.price" :key="name">
               {{ name }}: R$ {{ value }}
             </p>
           </v-col>
@@ -47,7 +40,7 @@
 
           <v-col cols="6">
             <p class="text-caption text-grey">Idade mínima</p>
-            <p>{{ event.age }}</p>
+            <p class="text-OnSurface">{{ event.age }}</p>
           </v-col>
         </v-row>
       </v-col>
