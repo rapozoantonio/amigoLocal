@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if="event">
+  <v-card v-if="promoter">
     <template #image>
       <v-img
         :src="computedImageSrc"
@@ -7,184 +7,214 @@
         cover
       ></v-img>
     </template>
-    <v-container>
-      <v-row>
-        <v-col cols="12">
-          <v-btn
-            color="white"
-            variant="plain"
-            class="pl-0"
-            size="small"
-            :to="{
-              name: 'events',
-              params: {
-                country: event.location.country,
-                region: event.location.region.id || event.location.region,
-              },
-            }"
-          >
-            <v-icon>mdi-chevron-left</v-icon>
-            <v-avatar class="mr-2 ml-1" size="20">
-              <v-img
-                :src="
-                  'http://flagcdn.com/' +
-                  event.location.country.toLowerCase() +
-                  '.svg'
-                "
-              ></v-img>
-            </v-avatar>
-            {{ event.location.region.name || event.location.region }}
-          </v-btn>
-        </v-col>
-      </v-row>
 
-      <v-row class="pt-0 d-flex align-start">
-        <!-- Main column with promoter code -->
-        <v-col cols="12" md="10">
-          <h1 class="text-h2 font-weight-bold flex-grow-1">
-            {{ promoter.PromoterCode }}
-          </h1>
-        </v-col>
-
-        <!-- Button column with follow button -->
-        <v-col cols="12" md="2" class="d-flex justify-end">
-          <follow-button
-            @follow="follow"
-            @unfollow="unfollow"
-            entity="events"
-            :entity_id="event.id"
-          ></follow-button>
-        </v-col>
-      </v-row>
-
-      <v-row>
-        <v-col cols="12" md="4">
-          <p class="text-caption text-grey">Localização</p>
-          <p class="text-caption">
-            {{ promoter.LocationArray.join(", ") }}
-          </p>
-        </v-col>
-        <v-col cols="6" md="2">
-          <p class="text-caption text-grey">Última Atualização</p>
-          <p class="text-h6">{{ helpers.toDate(promoter.LastUpdate) }}</p>
-        </v-col>
-        <v-col cols="6" md="2">
-          <p class="text-caption text-grey">Promoter</p>
-          <router-link
-            :to="{ name: 'promoter-id', params: { id: event.promoter?.id } }"
-            class="link"
-          >
-            {{ event.promoter?.name }}
-          </router-link>
-        </v-col>
-        <v-col cols="6" md="2">
-          <p class="text-caption text-grey">Categorias de Eventos</p>
-          <div class="d-flex">
-            <v-chip
-              v-for="category in promoter.EventCategoryArray"
-              :key="category"
-              class="mr-2"
-              label
-              variant="outlined"
-              size="small"
-              color="primary"
+    <!-- Mobile Layout -->
+    <div class="d-md-none">
+      <v-container class="pa-2">
+        <v-row no-gutters class="align-center">
+          <v-col cols="9">
+            <v-btn
+              :to="{
+                name: 'events',
+                params: {
+                  country: promoter.country || 'BR',
+                  region: promoter.region?.id || 'riodejaneiro', 
+                },
+              }"
             >
-              <span class="text-white"> {{ category }}</span>
-            </v-chip>
-          </div>
-        </v-col>
-        <v-col cols="6" md="2">
-          <p class="text-caption text-grey">Followers</p>
-          <span class="text-h6">{{ promoter.Followers }}</span>
-        </v-col>
-        <v-col cols="12" md="4">
-          <p class="text-caption text-grey mb-2">Tipos de Música</p>
-          <div class="d-flex">
-            <v-chip
-              v-for="genre in promoter.MusicTypeArray"
-              class="mr-2"
-              label
-              variant="outlined"
+              <v-icon size="small">mdi-chevron-left</v-icon>
+              <v-avatar class="mx-1" size="16">
+                <v-img src="http://flagcdn.com/br.svg"></v-img>
+              </v-avatar>
+              <span class="text-caption">{{ promoter.region?.name }}</span>
+            </v-btn>
+          </v-col>
+          <v-col cols="3" class="d-flex justify-end">
+            <follow-button
+              @follow="follow"
+              @unfollow="unfollow"
+              entity="promoters"
+              :entity_id="promoter.Id"
+              density="compact"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row no-gutters class="mt-2">
+          <v-col cols="12">
+            <h1 class="text-h4 font-weight-bold text-onSurface">
+              {{ promoter.PromoterCode }}
+            </h1>
+          </v-col>
+        </v-row>
+
+        <v-row no-gutters>
+          <v-col cols="12">
+            <p class="text-caption text-grey-lighten-1">
+              {{ promoter.LocationArray[0] }} •
+              {{ promoter.MusicTypeArray.join(", ") }} •
+              {{ promoter.Followers }} followers
+            </p>
+          </v-col>
+        </v-row>
+
+        <v-row no-gutters class="mt-1">
+          <v-col cols="12">
+            <div class="d-flex overflow-x-auto hide-scrollbar">
+              <v-chip
+                v-for="category in promoter.EventCategoryArray"
+                :key="category"
+                size="x-small"
+                label
+                variant="outlined"
+                color="primary"
+                class="mr-1"
+              >
+                <span>{{ category }}</span>
+              </v-chip>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
+
+    <!-- Desktop Layout -->
+    <div class="d-none d-md-block">
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-btn
+              color="white"
+              variant="plain"
+              class="pl-0"
               size="small"
-              color="primary"
+              :to="{
+                name: 'events',
+                params: {
+                  country: promoter.country || 'BR',
+                  region: promoter.region?.id,
+                },
+              }"
             >
-              <span class="text-white">{{ genre }}</span>
-            </v-chip>
-          </div>
-        </v-col>
-      </v-row>
-    </v-container>
+              <v-icon>mdi-chevron-left</v-icon>
+              <v-avatar class="mr-2 ml-1" size="20">
+                <v-img src="http://flagcdn.com/br.svg"></v-img>
+              </v-avatar>
+              {{ promoter.region?.name }}
+            </v-btn>
+          </v-col>
+        </v-row>
+
+        <v-row class="pt-0 d-flex align-start">
+          <v-col cols="12" md="10">
+            <h1 class="text-h2 font-weight-bold flex-grow-1 text-onSurface">
+              {{ promoter.PromoterCode }}
+            </h1>
+          </v-col>
+          <v-col cols="12" md="2" class="d-flex justify-end">
+            <follow-button
+              @follow="follow"
+              @unfollow="unfollow"
+              entity="promoters"
+              :entity_id="promoter.Id"
+            />
+          </v-col>
+        </v-row>
+
+        <v-row>
+          <v-col cols="12" md="4">
+            <p class="text-caption text-grey">Localização</p>
+            <p class="text-caption text-grey">
+              {{ promoter.LocationArray.join(", ") }}
+            </p>
+          </v-col>
+          <v-col cols="6" md="2">
+            <p class="text-caption text-grey">Última Atualização</p>
+            <p class="text-caption text-grey">
+              {{ helpers.toDate(promoter.LastUpdate) }}
+            </p>
+          </v-col>
+          <v-col cols="6" md="2">
+            <p class="text-caption text-grey">Nome</p>
+            <p class="text-caption text-grey">{{ promoter.PromoterName }}</p>
+          </v-col>
+          <v-col cols="6" md="2">
+            <p class="text-caption text-grey">Categorias de Eventos</p>
+            <div class="d-flex flex-wrap">
+              <v-chip
+                v-for="category in promoter.EventCategoryArray"
+                :key="category"
+                class="mr-2 mb-2"
+                label
+                variant="outlined"
+                size="small"
+                color="primary"
+              >
+                <span>{{ category }}</span>
+              </v-chip>
+            </div>
+          </v-col>
+          <v-col cols="6" md="2">
+            <p class="text-caption text-grey">Followers</p>
+            <span class="text-h6 text-white">{{ promoter.Followers }}</span>
+          </v-col>
+          <v-col cols="12" md="4">
+            <p class="text-caption text-grey mb-2">Tipos de Música</p>
+            <div class="d-flex flex-wrap">
+              <v-chip
+                v-for="genre in promoter.MusicTypeArray"
+                :key="genre"
+                class="mr-2 mb-2"
+                label
+                variant="outlined"
+                size="small"
+                color="primary"
+              >
+                <span>{{ genre }}</span>
+              </v-chip>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
+    </div>
   </v-card>
 </template>
 
 <script setup>
-//TODO: Add TikTok sharing and create necessary logic to it, remove vue-socials from other places as well
-//TODO: Generate more events and add CTRL+C / CTRL+V functionality
-//TODO: Create a prop on the filter for Carnaval/ Reveillon in the event save
-//TODO: Update event creation to consider categories, carnaval, reveillon
-//TODO: LastUpdate should be based on eventList, and tipos de music and eventCategori, based on eventList top 3
-//TODO: Followers should be also based on sumTotaliNTEREST + PROMOTERInterest
-// Vue Framework and Libraries Imports
-import { defineProps, inject, ref, computed, onMounted } from "vue";
-import { storeToRefs } from "pinia";
+import { defineProps, inject, computed } from "vue";
 import { RouterLink } from "vue-router";
-import { SFacebook, STwitter, SWhatsApp } from "vue-socials";
-// Store and Components
-import { useEventsStore } from "@/store/events";
 import FollowButton from "../interface/FollowButton.vue";
 
-// Store setup
-const { promoter } = defineProps({
-  promoter: Object,
+const props = defineProps({
+  promoter: {
+    type: Object,
+    required: true,
+  },
 });
 
-const eventsStore = useEventsStore();
-const { event } = storeToRefs(eventsStore);
-
-// Injecting helpers from the root component or plugins
 const helpers = inject("$helpers");
 
-// Image Source Computation
-const computedImageSrc = computed(() => {
-  return "/img/placeholder_event_1.jpg";
-});
+const computedImageSrc = computed(() => "/img/placeholder_event_1.jpg");
 
-// Social Share Options
-const shareOptions = ref({
-  url: "https://vue-advisor.web.app",
-  quote: "Quote",
-  hashtag: "#Jubilus",
-});
-
-const shareOptionsWS = ref({
-  text: "See this event",
-});
-
-// Event Handlers for Social Sharing
-function onClose() {}
-function onOpen() {}
-function onBlock() {}
-function onFocus() {}
-
-// Event Followers Handling
 function follow() {
-  event.value.followers++;
+  props.promoter.Followers++;
 }
 
 function unfollow() {
-  event.value.followers--;
+  props.promoter.Followers--;
 }
-
-onMounted(() => {
-});
 </script>
+
 <style scoped>
-.bordered-icon {
-  border: 1px solid white; /* Sets the border color to white and width to 2px */
-  border-radius: 50%; /* Makes the border rounded */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
-.bordered-icon .v-icon {
-  color: white; /* Ensures icon is white for visibility against the border */
+.v-chip {
+  margin-bottom: 0 !important;
 }
 </style>

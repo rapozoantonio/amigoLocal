@@ -7,7 +7,7 @@
             </div>
         </template>
 
-        <div class="text-center bg-grey-darken-4">
+        <div class="text-center">
             <v-toolbar density="compact">
                 <v-spacer></v-spacer>
                 <v-btn @click="close" icon><v-icon>mdi-close</v-icon></v-btn>

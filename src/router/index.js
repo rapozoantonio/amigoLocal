@@ -121,6 +121,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "register" */ "@/views/Register.vue"),
       },
+      //TODO: change id to name, and search other router-link :to="{ name: 'promoter-id',
       {
         path: "promoters/:id",
         name: "promoter-id",
@@ -425,6 +426,21 @@ const routes = [
         /* webpackChunkName: "path-not-found" */ "@/views/PathNotFound.vue"
       ),
   },
+  {
+    path: "/sitemap.xml",
+    name: "sitemap",
+    component: () => import("@/views/SitemapXML.vue"),
+  },
+  {
+    path: "/termos-de-uso",
+    name: "termos-de-uso",
+    component: () => import("@/views/TermsOfUse.vue"),
+  },
+  {
+    path: "/termos-de-privacidade",
+    name: "termos-de-privacidade",
+    component: () => import("@/views/PrivacyPolicy.vue"),
+  },
 ];
 
 const router = createRouter({
@@ -436,8 +452,6 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  
-
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
 
@@ -471,8 +485,8 @@ router.beforeEach(async (to, from, next) => {
 });
 
 // router.beforeEach(async (to, from, next) => {
-//   
-//   
+//
+//
 //   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 //   const auth = useAuthStore();
 //   const token = await auth.getUserClaims();
@@ -486,19 +500,19 @@ router.beforeEach(async (to, from, next) => {
 //       }
 //     }
 //   }
-//   
-//   
+//
+//
 //   if (!requiresAuth) {
-//     
+//
 //     next();
 //     return;
 //   }
-//   
-//   
+//
+//
 //   const user = await auth.getCurrentUser();
-//   
+//
 //   if (!user) {
-//     
+//
 //     next({ name: "login", query: { redirect: btoa(to.fullPath) } });
 //     return;
 //   }

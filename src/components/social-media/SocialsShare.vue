@@ -46,7 +46,7 @@
                       </template>
                     </v-hover>
                   </s-facebook>
-                  <p >Facebook</p>
+                  <p>Facebook</p>
                 </div>
 
                 <div
@@ -75,7 +75,7 @@
                       </template>
                     </v-hover>
                   </a>
-                  <p >TikTok</p>
+                  <p>TikTok</p>
                 </div>
 
                 <div
@@ -104,7 +104,7 @@
                       </template>
                     </v-hover>
                   </a>
-                  <p >Instagram</p>
+                  <p>Instagram</p>
                 </div>
 
                 <div
@@ -128,7 +128,7 @@
                       </template>
                     </v-hover>
                   </s-whats-app>
-                  <p >WhatsApp</p>
+                  <p>WhatsApp</p>
                 </div>
               </div>
 
@@ -141,7 +141,6 @@
                     label="Pagina URL"
                     readonly
                     outlined
-                    
                     @click="copyUrl"
                   >
                   </v-text-field>
@@ -347,12 +346,12 @@ import { ref, onMounted } from "vue";
 import { useMediaQuery } from "@vueuse/core";
 import tiktokSvg from "@/assets/svg/tiktokSvg.svg";
 import InstagramSvg from "@/assets/svg/InstagramSvg.svg";
-
+const isHovering = ref(false);
 const isLargeScreen = useMediaQuery("(min-width: 1024px)");
 const shareOptions = ref({
   url: "https://vue-advisor.web.app",
   quote: "Quote",
-  hashtag: "#Jubilus",
+  hashtag: "#Jubilos",
 });
 
 const shareOptionsWS = ref({

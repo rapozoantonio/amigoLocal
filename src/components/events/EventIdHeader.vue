@@ -45,7 +45,7 @@
         <v-col cols="12" class="pt-0 d-flex align-center">
           <v-row>
             <v-col cols="auto">
-              <h1 class="text-h2 font-weight-bold">{{ event.name }}</h1>
+              <h1 class="text-h2 font-weight-bold text-white">{{ event.name }}</h1>
             </v-col>
           </v-row>
         </v-col>
@@ -56,11 +56,11 @@
           <router-link
             v-if="event.location.id"
             :to="{ name: 'location-info', params: { id: event.location.id } }"
-            class="text-h6 link"
+            class="text-h6 text-white"
             >{{ event.location.name }}</router-link
           >
-          <p v-else class="text-h6">{{ event.location.name }}</p>
-          <p class="text-caption">
+          <p v-else class="text-h6 link">{{ event.location.name }}</p>
+          <p class="text-caption text-grey">
             {{ event.location.address }} {{ event.location.postalcode }}
             {{ event.location.city }},
             {{ event.location.country }}
@@ -69,8 +69,8 @@
 
         <v-col cols="6" md="2" class="d-flex flex-column">
           <p class="text-caption text-grey">Date</p>
-          <p class="text-h6">{{ helpers.toDate(event.startDate) }}</p>
-          <p class="text-caption">
+          <p class="text-h6 text-white">{{ helpers.toDate(event.startDate) }}</p>
+          <p class="text-caption text-grey">
             {{ event.startTime
             }}{{ event.endTime ? " - " + event.endTime : "" }}
           </p>
@@ -103,7 +103,7 @@
         <v-col cols="6" md="2" class="d-flex flex-column">
           <p class="text-caption text-grey">Interessados</p>
           <div class="d-flex justify-space-between align-center">
-            <span class="text-h6">{{ event.followers }}</span>
+            <span class="text-h6 text-white">{{ event.followers }}</span>
           </div>
         </v-col>
 
@@ -120,7 +120,7 @@
               v-for="genre in event.genres"
               :key="genre"
             >
-              <span class="text-white">
+              <span>
                 {{ genre }}
               </span>
             </v-chip>

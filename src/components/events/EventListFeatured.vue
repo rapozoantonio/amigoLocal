@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-grey-darken-4 flex-grow-1">
+  <section class="flex-grow-1">
     <v-container>
       <v-row>
         <v-col cols="12">
