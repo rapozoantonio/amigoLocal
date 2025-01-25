@@ -1,130 +1,125 @@
 export default {
   name: "events",
   sections: [
-   
     {
-      name: "Basic Info",
+      name: "Informações básicas",
       index: 1,
-      type: "section",
+      type: "section", 
       fields: [
         {
-          id: "name",
-          label: "Name",
+          id: "name", // Keep id unchanged
+          label: "Nome",
           type: "text",
           size: "lg",
           rules: ["required"],
         },
         {
           id: "startDate",
-          label: "Start Date",
-          type: "date",
+          label: "Data início",
+          type: "date", 
           size: "sm",
           rules: ["required"],
         },
         {
           id: "startTime",
-          label: "Start Time",
+          label: "Horário início",
           type: "time",
-          size: "sm",
+          size: "sm", 
         },
         {
           id: "endDate",
-          label: "End Date",
+          label: "Data fim",
           type: "date",
           size: "sm",
         },
         {
           id: "endTime",
-          label: "End Time",
+          label: "Horário fim", 
           type: "time",
           size: "sm",
         },
-      
         {
           id: "location",
+          label: "Local",
           type: "custom-location",
           size: "lg",
-          label: "Location",
         },
       ],
     },
     {
-      name: "Details & LineUp",
+      name: "Detalhes & Line-up",
       index: 2,
       type: "section",
       fields: [
         {
           id: "genres",
-          label: "Genres",
+          label: "Estilos",
           type: "autocomplete",
           size: "sm",
           rules: ["required"],
         },
         {
-          id: "categories",
-          label: "Categories",
+          id: "categories", 
+          label: "Categorias",
           type: "autocomplete",
           size: "sm",
         },
         {
           id: "lineup",
-          label: "Line Up",
+          label: "Artistas",
           type: "textarea",
           size: "lg",
         },
-   
         {
           id: "description",
-          type: "textarea",
+          label: "Sobre",
+          type: "textarea", 
           size: "lg",
-          label: "Description",
         },
         {
           id: "producer",
+          label: "Produtora",
           type: "custom-producer",
           size: "sm",
-          label: "Producer",
         },
         {
           id: "promoter",
-          type: "custom-promoter",
-          size: "sm",
           label: "Promoter",
+          type: "custom-promoter", 
+          size: "sm",
         },
       ],
     },
     {
-      name: "Promotional",
+      name: "Divulgação",
       index: 3,
       type: "section",
       fields: [
         {
           id: "image",
+          label: "Imagem",
           type: "image",
           size: "lg",
-          label: "Image",
         },
         {
           id: "price",
+          label: "Preço",
           type: "custom-price",
           size: "md",
-          label: "Price",
         },
         {
           id: "links",
+          label: "Links",
           type: "custom-links",
           size: "lg",
-          label: "Links",
         },
         {
           id: "medias",
+          label: "Mídia",
           type: "custom-medias",
           size: "lg",
-          label: "Media",
         },
       ],
     },
   ],
-};
-
-// TYPES: TEXT, TEXTAREA, DATE, TIME, AUTOCOMPLETE, IMAGE, PRICE, SELECT, CHECKBOX, OBJECT; ADDRESS; CUSTOM-LINKS, CUSTOM-PRICE, CUSTOM-PRODUCER, CUSTOM-MEDIAS, CUSTOM-REGION, CUSTOM-COUNTRY
+ };

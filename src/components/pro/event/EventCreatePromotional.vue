@@ -62,9 +62,9 @@
                 </v-row>
             </v-card-text>
             <v-card-actions>
-                <v-btn variant="tonal" color="secondary" @click="prev">Prev</v-btn>
+                <v-btn variant="tonal" color="secondary" @click="prev">Anterior</v-btn>
                 <v-spacer> </v-spacer>
-                <v-btn variant="tonal" color="success" type="submit">Submit</v-btn>
+                <v-btn variant="tonal" color="success" type="submit">Enviar</v-btn>
             </v-card-actions>
         </v-card>
     </v-form>
