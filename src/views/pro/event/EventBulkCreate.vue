@@ -6,7 +6,7 @@
           <v-stepper editable v-model="step">
             <template v-slot:default="{ prev, next }">
               <v-stepper-header>
-                <v-stepper-item class="pa-4" title="✨️AI" value="1" :color="step == 1 ? 'primary' : ''">
+                <v-stepper-item class="pa-4" title="✨️AI Iris" value="1" :color="step == 1 ? 'primary' : ''">
                 </v-stepper-item>
                 <v-divider class="mx-1"></v-divider>
                 <v-stepper-item value="2" title="Evento" class="pa-4"
@@ -18,10 +18,9 @@
                 <!-- STEP 1 - VIRTUAL ASSISTENT -->
                 <v-stepper-window-item value="1">
                   <v-card flat max-width="500" class="mx-auto">
-                    <v-card-title> Virtual Assistent</v-card-title>
+                    <v-card-title>✨️ AI Iris</v-card-title>
                     <v-card-text>
-                      Cole a lista de eventos e deixe que nossa assistente
-                      virtual te ajude a criar os eventos
+                      Me passa a lista dos eventos que eu crio tudo pra você na hora
                     </v-card-text>
                     <v-card-text>
                       <v-row>
@@ -32,7 +31,7 @@
                         <v-col cols="12" class="text-center">
                           <v-btn color="primary" class="mx-auto" :disabled="!text && text != ''"
                             @click="useAssistente(next)">
-                            Use ✨️AI
+                            Use ✨️AI Iris
                           </v-btn></v-col>
                         <v-col cols="12">
                           <v-divider></v-divider>
@@ -87,7 +86,7 @@
 
                         <v-col cols="12" class="text-center">
                           <v-btn color="primary" class="mx-auto" @click="next">
-                            Next
+                            Próximo
                           </v-btn></v-col>
                       </v-row>
                     </v-card-text>
@@ -97,7 +96,7 @@
                 <!-- STEP 3 - CONFIRMATION -->
                 <v-stepper-window-item title="Imagem" value="3" @click:next="onClickFinish">
                   <v-card variant="flat" max-width="500" class="mx-auto text-center">
-                    <v-card-title> Confirmation </v-card-title>
+                    <v-card-title> Confirmação </v-card-title>
                     <v-card-text>
                       <p>Total de eventos: {{ events.length }} </p>
                       <v-btn @click="onClickFinish">Criar {{ events.length }} eventos</v-btn>
@@ -248,199 +247,11 @@ const events = ref([
       }
     ]
   },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "D-EDGE RIO SEXTA",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/d-edge-rio-sexta"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "CAPITAL DO SAMBA C/ SORRISO MAROTO, DILSINHO, FERRUGEM, LÉO SANTANA & TIEE",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/capital-do-samba"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "CASA DDP FULL OPEN BAR",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/casa-ddp-full-open-bar"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "FESTA RARA 09 ANOS",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/festa-rara"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "BOSQUE 40º GRAUS COM MC ANDINHO",
-  //   "description": "LISTA VIP até 22:00 horas",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/bosque-bar-sabado"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "SAMBA DO REDENTOR NA LAGOA RODRIGO DE FREITAS",
-  //   "description": "LISTA VIP até 19:30 horas",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/samba-do-redentor"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "ALDEIA SÁBADO",
-  //   "description": "LISTA VIP até 22:30 horas",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/aldeia-sabado"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "SAMBA ENTRE 4 PAREDES COZINHA ARRUMADA & SAMBOTICA",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/samba-entre-4-paredes"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "PAGODE DO JORGIN",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/pagode-do-jorgin"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "D-EDGE RIO SÁBADO",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/d-edge-rio-sabado"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "COLISEU VERDE E ROSA NA QUADRA DA MANGUEIRA",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/coliseu-verde-e-rosa"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "TRILOGIA NO ESPAÇO HALL C/ SUEL, VITINHO E RONY LÚCIO",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/trilogia-espaco-hall"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "PRIVILEGE BÚZIOS SÁBADO",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/privilege-buzios-sabado"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-18",
-  //   "name": "BETTER DAYS OPEN BAR (SP)",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/better-days-sp"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-19",
-  //   "name": "SAMBINHA DO BOSQUE",
-  //   "description": "LISTA VIP até 20:00 horas",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/sambinha-do-bosque"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-19",
-  //   "name": "PARQUE BAR DOMINGO",
-  //   "description": "LISTA VIP até 20:00 horas",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/parque-bar-domingo"
-  //     }
-  //   ]
-  // },
-  // {
-  //   "startDate": "2024-05-19",
-  //   "name": "CAPITAL DO SAMBA C/ MENOS É MAIS, MUMUZINHO, XANDE DE PILARES, PÉRICLES & PIQUE NOVO",
-  //   "description": "Código Promocional: BRAGA",
-  //   "links": [
-  //     {
-  //       "name": "festaserrejota",
-  //       "url": "http://festaserrejota.com.br/capital-do-samba"
-  //     }
-  //   ]
-  // }
 ]);
 
 async function useAssistente(callback) {
   try {
     appStore.loading = true;
-    // appStore.loadingText = "Converting text...";
     const response = await chatgptStore.getBulkEventList(text.value);
 
     const content = JSON.parse(response.choices[0].message.content);

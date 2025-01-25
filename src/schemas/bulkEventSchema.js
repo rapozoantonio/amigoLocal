@@ -2,35 +2,35 @@ export default {
   name: "events",
   sections: [
     {
-      name: "Edit event",
+      name: "Editar evento",
       index: 1,
-      type: "section",
+      type: "section", 
       fields: [
         {
           id: "name",
-          label: "Name",
+          label: "Nome do evento",
           type: "text",
           size: "lg",
           rules: ["required"],
         },
         {
           id: "startDate",
-          label: "Start Date",
+          label: "Data", 
           type: "date",
           size: "sm",
           rules: ["required"],
         },
         {
           id: "startTime",
-          label: "Start Time",
+          label: "Horário",
           type: "time",
           size: "sm",
         },
         {
           id: "description",
+          label: "Sobre", 
           type: "textarea",
           size: "lg",
-          label: "Description",
         },
         {
           id: "links",
@@ -40,16 +40,16 @@ export default {
           children: [
             {
               id: "name",
-              label: "Link Name",
-              type: "text",
+              label: "Título do link",
+              type: "text", 
               size: "lg",
               rules: ["required"],
             },
             {
               id: "url",
-              label: "Link URL",
+              label: "URL",
               type: "text",
-              size: "lg",
+              size: "lg", 
               rules: ["required"],
             },
           ],
@@ -57,6 +57,4 @@ export default {
       ],
     },
   ],
-};
-
-// TYPES: TEXT, TEXTAREA, DATE, TIME, AUTOCOMPLETE, IMAGE, PRICE, SELECT, CHECKBOX, OBJECT; ADDRESS; CUSTOM-LINKS, CUSTOM-PRICE, CUSTOM-PRODUCER, CUSTOM-MEDIAS, CUSTOM-REGION, CUSTOM-COUNTRY
+ };

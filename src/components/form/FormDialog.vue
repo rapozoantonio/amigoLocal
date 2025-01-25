@@ -90,7 +90,7 @@
                     <slot name="action-prepend"></slot>
                     <!-- ACTION BUTTON -->
                     <v-btn type="submit" variant="elevated" color="primary">{{ action ||
-                        "Submit" }}</v-btn>
+                        "Enviar" }}</v-btn>
                     <!-- SLOT ACTION APPEND -->
                     <slot name="action-append"></slot>
                 </v-card-text>

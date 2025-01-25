@@ -20,41 +20,58 @@
         viewBox="0 0 48 48"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <!-- Green background -->
-        <rect width="48" height="48" fill="#009B3A"></rect>
+        <!-- Clip path to make the SVG rounded -->
+        <clipPath id="circleMask">
+          <circle cx="24" cy="24" r="24"></circle>
+        </clipPath>
 
-        <!-- Yellow diamond -->
-        <path d="M24 4L44 24 24 44 4 24Z" fill="#FFCC29"></path>
+        <!-- Apply the clip path to the entire content -->
+        <g clip-path="url(#circleMask)">
+          <!-- Green background -->
+          <rect width="48" height="48" fill="#009B3A"></rect>
 
-        <!-- Blue circle -->
-        <circle cx="24" cy="24" r="10" fill="#002776"></circle>
+          <!-- Yellow diamond -->
+          <path d="M24 4L44 24L24 44L4 24Z" fill="#FFCC29"></path>
 
-        <!-- White band -->
-        <path
-          d="M8 24a16 16 0 0 1 32 0h-2a14 14 0 1 0 -28 0z"
-          fill="#FFFFFF"
-          transform="translate(0 -2)"
-        ></path>
+          <!-- Blue circle -->
+          <circle cx="24" cy="24" r="10" fill="#002776"></circle>
 
-        <!-- Stars group (simplified for icon size) -->
-        <g transform="translate(24 20)" fill="#FFFFFF">
-          <!-- Star at top-left -->
-          <path d="M0-3.5l1.5 1-1-1.5-1 1.5z" />
-          <!-- Star at top-right -->
-          <path transform="translate(4 0)" d="M0-3.5l1.5 1-1-1.5-1 1.5z" />
-          <!-- Star at bottom-right -->
-          <path transform="translate(3 4)" d="M0-3.5l1.5 1-1-1.5-1 1.5z" />
-          <!-- Star at bottom-left -->
-          <path transform="translate(-4 4)" d="M0-3.5l1.5 1-1-1.5-1 1.5z" />
+          <!-- White curved band -->
+          <path
+            d="M17.5 24c0-3.5 2.5-7 6.5-7s6.5 3.5 6.5 7c0 0.5-0.1 1-0.2 1.5H17.7C17.6 25 17.5 24.5 17.5 24Z"
+            fill="#FFFFFF"
+            transform="rotate(-27 24 24)"
+          ></path>
+
+          <!-- Stars group -->
+          <g transform="translate(24 20) scale(0.7)" fill="#FFFFFF">
+            <!-- Large star at center -->
+            <path d="M0-3.5l1.5 1-1-1.5-1 1.5z"></path>
+            <!-- Smaller stars -->
+            <path
+              transform="translate(3 -2)"
+              d="M0-3.5l1 0.6-0.6-1-0.6 1z"
+            ></path>
+            <path
+              transform="translate(-3 -2)"
+              d="M0-3.5l1 0.6-0.6-1-0.6 1z"
+            ></path>
+            <path
+              transform="translate(4 3)"
+              d="M0-3.5l1 0.6-0.6-1-0.6 1z"
+            ></path>
+            <path
+              transform="translate(-4 3)"
+              d="M0-3.5l1 0.6-0.6-1-0.6 1z"
+            ></path>
+          </g>
         </g>
       </svg>
     </template>
-
     <template v-else>
       <g fill="none" fill-rule="nonzero">
         <!-- Background circle for the globe -->
         <circle cx="12" cy="12" r="10" fill="#cccccc"></circle>
-
         <!-- Continents (simple shapes for illustration) -->
         <path
           d="M8.5 7.5C7 9 8 11 10 11c1 0 1-1 2-1 2 0 2.5 2 2 3-.5 1.5 1 2 1 3s-2.5 2-5 2-3-2.5-3-2.5"
@@ -73,5 +90,3 @@
 import { defineProps } from "vue";
 const props = defineProps(["country"]);
 </script>
-
-<style lang="scss" scoped></style>

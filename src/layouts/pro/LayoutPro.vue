@@ -2,7 +2,7 @@
     <v-app>
         <pro-bar />
         <pro-view />
-        <pro-footer />
+        <footer-component />
         <loading-overlay />
     </v-app>
 </template>
@@ -11,6 +11,6 @@
 import LoadingOverlay from '@/components/interface/LoadingOverlay.vue';
 
 import ProBar from './ProAppBar.vue';
-import ProFooter from './ProFooter.vue';
+import FooterComponent from '../FooterComponent.vue';
 import ProView from './ProView.vue';
 </script>
