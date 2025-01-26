@@ -82,6 +82,8 @@ import {
     httpsCallable,
 } from '@/plugins/firebase';
 
+import FormDialog from '@/components/form/FormDialog.vue';
+
 const loading = ref(false)
 const users = ref([]);
 const selectedUser = ref(null);
@@ -135,10 +137,10 @@ const headers = [
 ]
 
 async function grantAdminRole() {
-    
+
     const user = users.value.find((u) => selectedUser.value === u.uid);
     if (!user) return;
-    
+
     user.role = "admin";
     user.admin = true;
     const updateUserCustomClaims = httpsCallable(
@@ -146,7 +148,7 @@ async function grantAdminRole() {
         "updateUserCustomClaims"
     );
     const response = await updateUserCustomClaims(user);
-    
+
 }
 
 function closeDialog() {
@@ -161,16 +163,16 @@ async function updateUserRole(uid, customClaims) {
     try {
         loading.value = true;
         const updateRole = httpsCallable(functions, "updateRole");
-        
+
         const response = await updateRole({ uid, customClaims });
-        
+
         if (response.data.ok) {
             dialog.value.item.customClaims = response.data.data.customClaims
             dialog.value.item = null;
             dialog.value.opened = false;
         }
     } catch (error) {
-        
+
     }
     finally {
         loading.value = false;
@@ -181,7 +183,7 @@ async function updateUserRole(uid, customClaims) {
 async function getAllUsers() {
     const getUsers = httpsCallable(functions, "getAllUsers");
     const response = await getUsers();
-    
+
     users.value = response.data.data;
 }
 

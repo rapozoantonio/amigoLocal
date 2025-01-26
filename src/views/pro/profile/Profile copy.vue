@@ -1,14 +1,24 @@
 <template>
-    <!-- <form-steps v-if="user" @submit="saveProfile" :schema="userSchema" v-model:model="user" v-model:files="files"
-        labelType="left" title="Edit Profile" action="Save" :items="{ language: languages, gender: genders }">
-
-        <template #prepend>
-            <v-alert v-if="!user.completed" title="Complete seu perfil" variant="tonal" closable border="start">Complete
-                seu perfil para aceder as funcionalidades personalizadas</v-alert>
-        </template>
-</form-steps> -->
-
     <v-container>
+        <v-bottom-navigation grow>
+            <v-btn value="recent">
+                <v-icon>mdi-history</v-icon>
+
+                <span>Recent</span>
+            </v-btn>
+            <v-btn value="favorites">
+                <v-icon>mdi-heart</v-icon>
+
+                <span>Favorites</span>
+            </v-btn>
+
+            <v-btn value="nearby">
+                <v-icon>mdi-map-marker</v-icon>
+
+                <span>Nearby</span>
+            </v-btn>
+
+        </v-bottom-navigation>
         <v-row>
             <!-- FORM -->
             <v-col cols="12">

@@ -22,7 +22,7 @@ export default {
 
     helpers.fieldAttrs = {
       rounded: "lg",
-      variant: "solo-filled",
+      variant: "outlined",
       density: "compact",
       color: "white",
       // class: "mt-1",

@@ -6,14 +6,14 @@ export default {
       index: 1,
       type: "section",
       fields: [
-        {
-          id: "id",
-          label: "Id",
-          type: "text",
-          size: "lg",
-          rules: ["required"],
-          readOnly: true,
-        },
+        // {
+        //   id: "id",
+        //   label: "Id",
+        //   type: "text",
+        //   size: "lg",
+        //   rules: ["required"],
+        //   readOnly: true,
+        // },
         {
           id: "email",
           label: "Email",
@@ -31,9 +31,9 @@ export default {
         },
 
         {
-          id: "username",
-          label: "Username",
-          type: "custom-username",
+          id: "instagram",
+          label: "Instagram",
+          type: "text",
           size: "lg",
           rules: ["required"],
         },
@@ -44,6 +44,14 @@ export default {
           type: "custom-username",
           size: "lg",
           rules: ["required"],
+        },
+        {
+          id: "whatsapp",
+          label: "Whatsapp",
+          type: "text",
+          size: "lg",
+          rules: ["required"],
+          placeholder: "+55 21 999 888 777",
         },
         {
           id: "country",

@@ -1,7 +1,7 @@
 <template>
     <div>
         <p class="mb-2 ml-2 text-caption" v-if="labelType === 'in'">{{ label }}</p>
-        <v-row no-gutters v-for="(item, index) in list" :key="index" class="mb-2 bg-grey-darken-4 pa-1">
+        <v-row no-gutters v-for="(item, index) in list" :key="index" class="mb-2 bg-grey-darken-4 pa-1 pb-2">
             <v-row dense v-if="children && list[index]">
                 <v-col cols="auto" class="mt-2">
                     <v-chip size="small">
@@ -10,7 +10,7 @@
                 </v-col>
                 <v-col>
                     <v-row dense>
-                        <form-field labelType="in" v-for="(child) in children" :key="child.id"
+                        <form-field :labelType="labelType" v-for="(child) in children" :key="child.id"
                             v-model:model="list[index]" :field="child.id" v-bind="child"></form-field>
                     </v-row>
                 </v-col>

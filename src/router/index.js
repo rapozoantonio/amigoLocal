@@ -275,11 +275,36 @@ const routes = [
       {
         path: "profile",
         name: "pro-profile",
-
         component: () =>
           import(
-            /* webpackChunkName: "pro-profile" */ "@/views/pro/Profile.vue"
+            /* webpackChunkName: "pro-profile" */ "@/views/pro/profile/Profile.vue"
           ),
+        children: [
+          {
+            path: "personal",
+            name: "pro-profile-personal",
+            component: () =>
+              import(
+                /* webpackChunkName: "pro-profile-personal" */ "@/views/pro/profile/ProfilePersonal.vue"
+              ),
+          },
+          {
+            path: "account",
+            name: "pro-profile-account",
+            component: () =>
+              import(
+                /* webpackChunkName: "pro-profile-account" */ "@/views/pro/profile/ProfileAccount.vue"
+              ),
+          },
+          {
+            path: "promoter",
+            name: "pro-profile-promoter",
+            component: () =>
+              import(
+                /* webpackChunkName: "pro-profile-promoter" */ "@/views/pro/profile/ProfilePromoter.vue"
+              ),
+          },
+        ],
       },
       {
         path: "events/create",
@@ -436,8 +461,6 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-  
-
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
 
@@ -471,8 +494,8 @@ router.beforeEach(async (to, from, next) => {
 });
 
 // router.beforeEach(async (to, from, next) => {
-//   
-//   
+//
+//
 //   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
 //   const auth = useAuthStore();
 //   const token = await auth.getUserClaims();
@@ -486,19 +509,19 @@ router.beforeEach(async (to, from, next) => {
 //       }
 //     }
 //   }
-//   
-//   
+//
+//
 //   if (!requiresAuth) {
-//     
+//
 //     next();
 //     return;
 //   }
-//   
-//   
+//
+//
 //   const user = await auth.getCurrentUser();
-//   
+//
 //   if (!user) {
-//     
+//
 //     next({ name: "login", query: { redirect: btoa(to.fullPath) } });
 //     return;
 //   }
