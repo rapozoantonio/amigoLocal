@@ -1,12 +1,12 @@
 <template>
-    <div class="d-flex flex-column" style="height: 100%">
-        <event-list-region-select></event-list-region-select>
-        <event-list-toolbar></event-list-toolbar>
-        <event-list-featured></event-list-featured>
-        <event-list-next-events></event-list-next-events>
-        <event-list-popular-news></event-list-popular-news>
-        <event-list-links-footer></event-list-links-footer>
-    </div>
+  <div class="d-flex flex-column" style="height: 100%">
+    <event-list-region-select></event-list-region-select>
+    <event-list-toolbar></event-list-toolbar>
+    <event-list-featured></event-list-featured>
+    <event-list-next-events></event-list-next-events>
+    <event-list-popular-news></event-list-popular-news>
+    <event-list-links-footer></event-list-links-footer>
+  </div>
 </template>
 
 <script setup>
@@ -24,9 +24,9 @@ import { storeToRefs } from "pinia";
 import store from "@/store";
 
 const places = [
-    { name: "Barcelona", flag: "es" },
-    { name: "Madrid", icon: "es" },
-    { name: "Sevilla", icon: "es" },
+  { name: "Barcelona", flag: "es" },
+  { name: "Madrid", icon: "es" },
+  { name: "Sevilla", icon: "es" },
 ];
 
 const eventsStore = useEventsStore();
@@ -34,15 +34,14 @@ const { events } = storeToRefs(eventsStore);
 
 const route = useRoute();
 
-
 onMounted(() => {
-    eventsStore.getEventsByRegion("BR");
+  eventsStore.getEventsByRegion("BR");
 });
 </script>
 
 <style lang="scss" scoped>
 img {
-    display: block;
-    width: 100%;
+  display: block;
+  width: 100%;
 }
 </style>

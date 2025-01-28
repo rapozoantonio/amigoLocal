@@ -3,23 +3,34 @@
     <v-container>
       <v-row>
         <v-col cols="12">
-          <p class="text-caption ml-4 text-grey mt-2">Eventos em breve</p>
+          <div class="d-flex align-center justify-space-between mb-4">
+            <p class="text-caption text-grey-darken-1">
+              {{ totalAmountOfUpcomingEvents }} próximos eventos
+            </p>
+            <p
+              @click="removeFilters"
+              v-if="selectedGenres && selectedGenres.length"
+              class="text-caption"
+            >
+              <span class="mr-1">X</span> Remover filtros
+            </p>
+          </div>
         </v-col>
         <v-col cols="12">
-          <p class="text-h4 ml-4 mt-2 text-primary">🔥 Em Alta</p>
+          <p class="text-h4 text-primary font-weight-bold">🔥 Em Alta</p>
         </v-col>
       </v-row>
 
       <v-row>
         <v-col cols="12">
-          <v-slide-group :center-active="true" show-arrows>
+          <v-slide-group :center-active="true">
             <v-slide-group-item
               v-for="event in featuredEvents"
               :key="event.id"
               v-slot="{ isSelected, toggle }"
             >
               <event-card-vertical
-                class="mr-5"
+                class="mr-1"
                 :event="event"
               ></event-card-vertical>
             </v-slide-group-item>
@@ -34,43 +45,38 @@
 import { useEventsStore } from "@/store/events";
 import { storeToRefs } from "pinia";
 import EventCardVertical from "@/components/events/EventCardVertical.vue";
+import { ref, watch } from "vue";
+import { useRouter } from "vue-router";
 
 const eventsStore = useEventsStore();
 
-const { featuredEvents, loading } = storeToRefs(eventsStore);
+const removeFilters = () => {
+  router.push({ query: { genre: [], categories: [], dateRange: [] } });
+};
 
-// const events = ref([
-//     {
-//         title: "TRANSC.END with BOB MOSES",
-//         date: "SAT, 30 DEC",
-//         location: "Morro Da Urca",
-//         image: "/img/path-to-event-image.jpg",
-//         attendees: 58,
-//     },
-//     {
-//         title: "4 FINEST EARS - RÉVEILLON 2024",
-//         date: "SUN, 31 DEC",
-//         location: "TBA - Rua Tenente Marcin Pinto, n125, Gávea - RJ",
-//         image: "/img/path-to-event-image.jpg",
-//         attendees: 8,
-//     },
-//     {
-//         title: "Reveillon NEW ´24 - Sheraton Grand Rio Hotel & Resort",
-//         date: "SUN, 31 DEC",
-//         location: "TBA - Sheraton Grand Rio Hotel & Resort (Leblon)",
-//         image: "/img/path-to-event-image.jpg",
-//         attendees: 7,
-//     },
-//     {
-//         title: "Terraço do Amor by Fica Comigo",
-//         date: "SAT, 30 DEC",
-//         location: "TBA - Sheraton Grand Rio Hotel & Resort",
-//         image: "/img/path-to-event-image.jpg",
-//         attendees: 2,
-//     },
-
-//     // Add more events as needed
-// ]);
+const { nextEvents, featuredEvents, loading, selectedGenres, filteredEvents } =
+  storeToRefs(eventsStore);
+const router = useRouter();
+const totalAmountOfUpcomingEvents = ref(0);
+watch(
+  () => nextEvents.value,
+  (newValue) => {
+    if (
+      newValue &&
+      typeof newValue === "object" &&
+      Object.keys(newValue).length
+    ) {
+      // Safely check if newValue is a valid object with keys
+      totalAmountOfUpcomingEvents.value = Object.values(newValue).reduce(
+        (total, events) => total + events.length,
+        0
+      );
+    } else {
+      totalAmountOfUpcomingEvents.value = 0;
+    }
+  },
+  { deep: true } // Optional if structure can change deeply
+);
 </script>
 
 <style lang="scss" scoped></style>

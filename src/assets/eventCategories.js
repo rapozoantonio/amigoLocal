@@ -1,8 +1,1 @@
-export default [
-  "carnaval",
-  "reveillon",
-  "open bar", 
-  "day party",
-  "carnaval",
-  "reveillon"
-];
+export default ["open bar", "day party"];
