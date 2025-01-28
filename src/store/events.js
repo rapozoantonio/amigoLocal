@@ -11,6 +11,7 @@ import {
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
 import { firestore } from "@/plugins/firebase";
+import { parse } from "vue/compiler-sfc";
 
 // Cache configuration
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
@@ -36,6 +37,8 @@ export const useEventsStore = defineStore("events", () => {
   const event = ref(null);
   const loadingStates = ref(new Map());
   const selectedGenres = ref(null);
+  const selectedCategories = ref(null);
+  const selectedDateRange = ref(null);
 
   // Loading state management
   const setLoading = (operation, state) => {
@@ -49,11 +52,33 @@ export const useEventsStore = defineStore("events", () => {
   // Computed properties
   const filteredEvents = computed(() => {
     if (!events.value) return null;
-    if (!selectedGenres.value?.length) return events.value;
-    
-    return events.value.filter(event => 
-      event.genres.some(genre => selectedGenres.value.includes(genre))
-    );
+    let eventsToReturn = events.value;
+    if (selectedGenres.value && selectedGenres.value.length > 0) {
+      eventsToReturn = eventsToReturn.filter((e) => {
+        return e.genres.some((g) => selectedGenres.value.includes(g));
+      });
+    }
+    if (selectedCategories.value && selectedCategories.value.length > 0) {
+      eventsToReturn = eventsToReturn.filter((e) => {
+        if (e.categories)
+          return e.categories.some((g) => selectedCategories.value.includes(g));
+      });
+    }
+
+    if (selectedDateRange.value && selectedDateRange.value.length > 0) {
+      const parsedDate = selectedDateRange.value.map((date) => new Date(date)); // Parse dates
+
+      eventsToReturn = eventsToReturn.filter((e) => {
+        const eventStartDate = new Date(e.startDate);
+
+        return (
+          eventStartDate >= parsedDate[0] &&
+          eventStartDate <= parsedDate[parsedDate.length - 1] // Compare dates
+        );
+      });
+    }
+
+    return eventsToReturn;
   });
 
   const featuredEvents = computed(() => {
@@ -70,8 +95,69 @@ export const useEventsStore = defineStore("events", () => {
         result.regular.push(event);
     });
 
-    result.regular.sort((a, b) => b.followers - a.followers);
-    return [...result.featured, ...result.regular];
+  const getCountByGenre = computed(() => {
+    return (genre) => {
+      if (!events.value) return 0;
+      let eventsToReturn = events.value;
+      if (selectedCategories.value && selectedCategories.value.length > 0) {
+        eventsToReturn = eventsToReturn.filter((e) => {
+          if (e.categories)
+            return e.categories.some((g) =>
+              selectedCategories.value.includes(g)
+            );
+        });
+      }
+      if (selectedDateRange.value && selectedDateRange.value.length > 0) {
+        const parsedDate = selectedDateRange.value.map(
+          (date) => new Date(date)
+        ); // Parse dates
+
+        eventsToReturn = eventsToReturn.filter((e) => {
+          const eventStartDate = new Date(e.startDate);
+
+          return (
+            eventStartDate >= parsedDate[0] &&
+            eventStartDate <= parsedDate[parsedDate.length - 1] // Compare dates
+          );
+        });
+      }
+
+      return eventsToReturn.filter((e) => e.genres.includes(genre)).length;
+    };
+  });
+  const getCountByCategorie = computed(() => {
+    return (categorie) => {
+      if (!events.value) return 0;
+      let eventsToReturn = events.value;
+
+      if (selectedGenres.value && selectedGenres.value.length > 0) {
+        eventsToReturn = eventsToReturn.filter((e) => {
+          return (
+            e.genres && e.genres.some((g) => selectedGenres.value.includes(g))
+          );
+        });
+      }
+
+      if (selectedDateRange.value && selectedDateRange.value.length > 0) {
+        const parsedDate = selectedDateRange.value.map(
+          (date) => new Date(date)
+        ); // Parse dates
+
+        eventsToReturn = eventsToReturn.filter((e) => {
+          const eventStartDate = new Date(e.startDate);
+
+          return (
+            eventStartDate >= parsedDate[0] &&
+            eventStartDate <= parsedDate[parsedDate.length - 1] // Compare dates
+          );
+        });
+      }
+
+      return eventsToReturn.filter((e) => {
+        return e.categories && e.categories.includes(categorie);
+      }).length;
+    };
+
   });
 
   const getCountByGenre = computed(() => genre => 
@@ -100,20 +186,198 @@ export const useEventsStore = defineStore("events", () => {
     }, {});
   });
 
-  const eventsDateList = computed(() => eventsList => {
-    if (!eventsList) return null;
 
-    const currentYear = new Date().getFullYear();
-    return eventsList.reduce((acc, event) => {
-      const date = formatEventDate(event.startDate, currentYear);
-      
-      if (!acc[date]) {
-        acc[date] = [];
-      }
-      acc[date].push(event);
-      return acc;
-    }, {});
+  const getTotalUpcomingEvents = computed(() => {
+    if (!events.value || !events.value.length) return 0;
+    // Get yesterday's date at midnight to avoid time comparison issues
+    // const yesterday = new Date();
+    // yesterday.setDate(yesterday.getDate() - 1);
+    // yesterday.setHours(0, 0, 0, 0);
+
+    // const upcomingEvents = events.value.filter(
+    //   (event) => new Date(event.startDate) > yesterday
+    // );
+
+    // return upcomingEvents.length;
+    return events.value.length;
   });
+
+  const getUpcomingEventsFilteredByDateAndCategories = computed(() => {
+    if (!events.value || !events.value.length) return 0;
+    let eventsToReturn = events.value;
+    if (selectedCategories.value && selectedCategories.value.length > 0) {
+      eventsToReturn = eventsToReturn.filter((e) => {
+        if (e.categories)
+          return e.categories.some((g) => selectedCategories.value.includes(g));
+      });
+    }
+
+    if (selectedDateRange.value && selectedDateRange.value.length > 0) {
+      const parsedDate = selectedDateRange.value.map((date) => new Date(date)); // Parse dates
+
+      eventsToReturn = eventsToReturn.filter((e) => {
+        const eventStartDate = new Date(e.startDate);
+
+        return (
+          eventStartDate >= parsedDate[0] &&
+          eventStartDate <= parsedDate[parsedDate.length - 1] // Compare dates
+        );
+      });
+    }
+    return eventsToReturn.length;
+  });
+  const getUpcomingEventsFilteredByDateAndGenre = computed(() => {
+    if (!events.value || !events.value.length) return 0;
+    let eventsToReturn = events.value;
+    if (selectedGenres.value && selectedGenres.value.length > 0) {
+      eventsToReturn = eventsToReturn.filter((e) => {
+        return e.genres.some((g) => selectedGenres.value.includes(g));
+      });
+    }
+
+    if (selectedDateRange.value && selectedDateRange.value.length > 0) {
+      const parsedDate = selectedDateRange.value.map((date) => new Date(date)); // Parse dates
+
+      eventsToReturn = eventsToReturn.filter((e) => {
+        const eventStartDate = new Date(e.startDate);
+
+        return (
+          eventStartDate >= parsedDate[0] &&
+          eventStartDate <= parsedDate[parsedDate.length - 1] // Compare dates
+        );
+      });
+    }
+    return eventsToReturn.length;
+  });
+  const getUpcomingEventsFilteredByGenreAndCategories = computed(() => {
+    if (!events.value || !events.value.length) return 0;
+    let eventsToReturn = events.value;
+    if (selectedGenres.value && selectedGenres.value.length > 0) {
+      eventsToReturn = eventsToReturn.filter((e) => {
+        return e.genres.some((g) => selectedGenres.value.includes(g));
+      });
+    }
+
+    if (selectedCategories.value && selectedCategories.value.length > 0) {
+      eventsToReturn = eventsToReturn.filter((e) => {
+        if (e.categories)
+          return e.categories.some((g) => selectedCategories.value.includes(g));
+      });
+    }
+    return eventsToReturn.length;
+  });
+
+  const getFilteredByGenreUpcomingEvents = (filtersParameter) => {
+    if (
+      filteredEvents.value &&
+      filteredEvents.value.length &&
+      filtersParameter.length
+    ) {
+      let eventsFiltered = [];
+
+      eventsFiltered = filteredEvents.value.filter((e) => {
+        return e.genres.some((g) => filtersParameter.includes(g));
+      });
+      return eventsFiltered.length;
+    }
+  };
+
+  const getFilteredByCategoriesUpcomingEvents = (filtersParameter) => {
+    if (
+      filteredEvents.value &&
+      filteredEvents.value.length &&
+      filtersParameter.length
+    ) {
+      let eventsFiltered = [];
+      eventsFiltered = filteredEvents.value.filter((e) => {
+        // Ensure e.categories is not null or undefined before calling .some()
+        return (
+          e.categories && e.categories.some((g) => filtersParameter.includes(g))
+        );
+      });
+      return eventsFiltered.length;
+    }
+    return 0; // Return 0 if the initial conditions are not met
+  };
+
+  const getFilteredByDatesUpcomingEvents = (filtersParameter) => {
+    // Check if filteredEvents and filtersParameter are valid
+
+    if (
+      filteredEvents.value &&
+      filteredEvents.value.length > 0 &&
+      filtersParameter &&
+      filtersParameter.length > 0
+    ) {
+      // Parse the date range from filtersParameter
+      const parsedDate = filtersParameter.map((date) => new Date(date));
+
+      // Filter events within the date range
+      let eventsFiltered = [];
+
+      eventsFiltered = filteredEvents.value.filter((e) => {
+        const eventStartDate = new Date(e.startDate);
+
+        return (
+          eventStartDate >= parsedDate[0] &&
+          eventStartDate <= parsedDate[parsedDate.length - 1]
+        );
+      });
+
+      return eventsFiltered.length; // Return the number of filtered events
+    }
+
+    // Return 0 if conditions are not met
+    return 0;
+  };
+
+  const eventsDateList = computed(() => {
+    return (eventsList) => {
+      return !eventsList
+        ? null
+        : eventsList.reduce((nextEvents, event) => {
+            const eventDate = new Date(event.startDate);
+            const currentYear = new Date().getFullYear();
+
+            // Include the year in the format if the event is not in the current year
+            const options = {
+              weekday: "short",
+              day: "2-digit",
+              month: "short",
+              ...(eventDate.getFullYear() !== currentYear && {
+                year: "numeric",
+              }),
+            };
+
+            // Format the start date with or without the year as needed
+            const date = new Intl.DateTimeFormat("pt-BR", options)
+              .format(eventDate)
+              .toUpperCase();
+
+            if (nextEvents[date]) {
+              nextEvents[date].push(event);
+            } else {
+              nextEvents[date] = [event];
+            }
+
+            return nextEvents;
+          }, {});
+    };
+  });
+
+ // const eventsDateList = computed(() => eventsList => {
+  //  if (!eventsList) return null;
+   // const currentYear = new Date().getFullYear();
+   // return eventsList.reduce((acc, event) => {
+     // const date = formatEventDate(event.startDate, currentYear);
+      
+     // if (!acc[date]) {
+      //  acc[date] = [];
+     // }
+     // acc[date].push(event);
+    //  return acc;
+   // }, {});
+ // });
 
   // Query helpers
   const buildQueries = (config) => {
@@ -122,6 +386,7 @@ export const useEventsStore = defineStore("events", () => {
     if (config.country) {
       queries.push(where("location.country", "==", config.country));
     }
+
     if (config.region) {
       queries.push(where("location.region.id", "==", config.region));
     }
@@ -138,8 +403,18 @@ export const useEventsStore = defineStore("events", () => {
       queries.push(where("location.id", "==", config.locationId));
     }
 
-    return queries;
-  };
+
+ // async function getEventsByRegion(country, region) {
+   // loading.value = true;
+   // events.value = null;
+   // const queries = [];
+   // queries.push(where("location.country", "==", country));
+   // if (region) {
+     // queries.push(where("location.region.id", "==", region));
+    //}
+
+    //return queries;
+ // };
 
   const executeQuery = async (queries) => {
     const q = query(collection(firestore, "events"), ...queries);
@@ -152,6 +427,7 @@ export const useEventsStore = defineStore("events", () => {
   const getEvents = async (queryConfig) => {
     const operationId = 'getEvents';
     setLoading(operationId, true);
+
 
     try {
       const cacheKey = JSON.stringify(queryConfig);
@@ -287,7 +563,17 @@ export const useEventsStore = defineStore("events", () => {
     event,
     loading: isLoading,
     selectedGenres,
+    selectedCategories,
+    selectedDateRange,
     getCountByGenre,
+    getCountByCategorie,
+    getTotalUpcomingEvents,
+    getUpcomingEventsFilteredByDateAndCategories,
+    getUpcomingEventsFilteredByDateAndGenre,
+    getUpcomingEventsFilteredByGenreAndCategories,
+    getFilteredByGenreUpcomingEvents,
+    getFilteredByCategoriesUpcomingEvents,
+    getFilteredByDatesUpcomingEvents,
     getEventsByPromoterId,
     getEventsByProducerId,
     getEventsByLocationId,
