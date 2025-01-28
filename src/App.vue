@@ -33,13 +33,6 @@ label.required:after {
   right: -10px;
 }
 
-
-
-
-body {
-  margin: 0px;
-}
-
 #loading {
   height: 100vh;
   width: 100%;
@@ -97,5 +90,9 @@ body {
   100% {
     background-position: 50% 0%;
   }
+}
+
+.hover-primary:hover {
+  color: rgb(var(--v-theme-primary)) !important;
 }
 </style>

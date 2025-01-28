@@ -29,11 +29,11 @@
         <event-list-next-events></event-list-next-events>
 
 
-        <section v-if="false" class="bg-grey-darken-4 flex-grow-1">
+        <section v-if="false" class="flex-grow-1">
             <v-container>
                 <v-row v-for="(events, day) in nextEvents" :key="day">
                     <v-col cols="12">
-                        <v-toolbar color="grey-darken-4" density="compact"
+                        <v-toolbar color="background"density="compact"
                             style="position: sticky; top: 48px; z-index: 999">
                             <v-toolbar-title>
                                 <p class="text-h5">

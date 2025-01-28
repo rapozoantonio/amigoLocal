@@ -51,6 +51,7 @@ const newsItems = ref([
   },
   { id: 6, headline: "Paris label Casual Gabberz closes after ten years" }, // Add more news items as needed
 ]);
+
 </script>
 
 <style lang="scss" scoped>
@@ -58,3 +59,4 @@ a {
   color: white;
 }
 </style>
+

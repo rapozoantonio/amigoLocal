@@ -1,1 +1,11 @@
-export default ["open bar", "day party"];
+
+export default [
+  "carnaval",
+  "reveillon",
+  "open bar", 
+  "day party",
+  "carnaval",
+  "reveillon",
+  "lista amiga"
+];
+

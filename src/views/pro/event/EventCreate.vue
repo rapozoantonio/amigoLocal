@@ -15,9 +15,9 @@
         <event-create-gpt-assistence
           block
           variant="elevated"
-          action="Use ✨️AI"
-          title="Jubilus Copilot"
-          text="Use ✨️AI para criar o evento"
+          action="Use ✨️AI Iris"
+          title="✨️AI Iris"
+          text="Use ✨️AI Iris para criar o evento"
         ></event-create-gpt-assistence>
       </div>
     </template>
@@ -27,9 +27,9 @@
         <event-create-gpt-assistence
           variant="elevated"
           block
-          action="Use ✨️AI"
-          title="Jubilus Copilot"
-          text="Use ✨️AI para criar o evento"
+          action="Use ✨️AI Iris"
+          title="✨️AI Iris"
+          text="Use ✨️AI Iris para criar o evento"
         ></event-create-gpt-assistence>
       </div>
     </template>

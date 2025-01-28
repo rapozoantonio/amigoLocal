@@ -1,13 +1,8 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import {
-  getFunctions,
-  httpsCallable,
-} from 'firebase/functions';
+import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getStorage } from 'firebase/storage';
-
-// import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -19,13 +14,30 @@ const firebaseConfig = {
   measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-const firebase = initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
 
-const auth = getAuth();
-const firestore = getFirestore();
-const storage = getStorage();
-const functions = getFunctions(firebase);
-// connectFunctionsEmulator(functions, "localhost", 5001);
-// const analytics = getAnalytics(firebase);
+// Initialize services
+const auth = getAuth(app);
+const firestore = getFirestore(app);
+const storage = getStorage(app);
+const functions = getFunctions(app);
 
-export { auth, firebase, firestore, functions, httpsCallable, storage };
+// Lazy load additional Firebase features when needed
+export const lazyLoadFirebaseFeature = async (feature) => {
+  switch (feature) {
+    case 'analytics':
+      const { getAnalytics } = await import('firebase/analytics');
+      return getAnalytics(app);
+    // Add other features as needed
+  }
+};
+
+export { 
+  app as firebase, 
+  auth, 
+  firestore, 
+  functions, 
+  httpsCallable, 
+  storage 
+};

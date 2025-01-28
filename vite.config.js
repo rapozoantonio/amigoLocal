@@ -1,11 +1,8 @@
 import { fileURLToPath, URL } from "node:url";
-
+import { VitePWA } from "vite-plugin-pwa"; // <-- Added PWA plugin
 import ViteFonts from "unplugin-fonts/vite";
-// Utilities
 import { defineConfig } from "vite";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
-
-// Plugins
 import vue from "@vitejs/plugin-vue";
 
 // https://vitejs.dev/config/
@@ -14,7 +11,6 @@ export default defineConfig({
     vue({
       template: { transformAssetUrls },
     }),
-    // https://github.com/vuetifyjs/vuetify-loader/tree/next/packages/vite-plugin
     vuetify({
       autoImport: true,
       styles: {
@@ -25,10 +21,54 @@ export default defineConfig({
       google: {
         families: [
           {
-            name: "Roboto",
+            name: "Inter",
             styles: "wght@100;300;400;500;700;900",
           },
         ],
+      },
+    }),
+    // Added PWA configuration
+    VitePWA({
+      registerType: "autoUpdate",
+      manifest: {
+        name: "Jubilos",
+        short_name: "Jubilos",
+        description: "Os Melhores Eventos do RJ E SP",
+        start_url: "/",
+        display: "standalone",
+        background_color: "#ffffff",
+        theme_color: "#4DBA87",
+        icons: [
+          {
+            src: "/img/icons/pwa-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/img/icons/pwa-512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any maskable",
+          },
+        ],
+      },
+      screenshots: [
+        {
+          src: "/img/screenshots/desktop.png",
+          sizes: "1280x800",
+          type: "image/png",
+          form_factor: "wide", // For desktop
+        },
+        {
+          src: "/img/screenshots/mobile.png",
+          sizes: "375x812",
+          type: "image/png",
+          form_factor: "narrow", // For mobile
+        },
+      ],
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,woff2,ttf,svg,png}"],
       },
     }),
   ],

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-toolbar color="grey-darken-4" style="position: sticky; top: 48px; z-index: 999">
+        <v-toolbar color="background" style="position: sticky; top: 48px; z-index: 999">
             <v-toolbar-title>
                 <p class="text-h5">
                     <v-icon size="x-small">mdi-calendar</v-icon>

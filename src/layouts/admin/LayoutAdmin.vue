@@ -2,7 +2,7 @@
     <v-app>
         <admin-bar />
         <admin-view />
-        <admin-footer />
+        <footer-component />
         <loading-overlay />
     </v-app>
 </template>
@@ -10,6 +10,6 @@
 <script setup>
 import AdminBar from "./AdminAppBar.vue";
 import AdminView from "./AdminView.vue";
-import AdminFooter from "./AdminFooter.vue";
+import FooterComponent from "../FooterComponent.vue";
 import LoadingOverlay from "@/components/interface/LoadingOverlay.vue";
 </script>

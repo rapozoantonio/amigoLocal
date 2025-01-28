@@ -1,5 +1,4 @@
 import { computed, ref } from "vue";
-
 import {
   collection,
   doc,
@@ -9,21 +8,48 @@ import {
   query,
   where,
 } from "firebase/firestore";
-// import { ref, } from 'vue'
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
-
 import { firestore } from "@/plugins/firebase";
 import { parse } from "vue/compiler-sfc";
 
+// Cache configuration
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const eventCache = new Map();
+
+// Date formatters
+const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
+  weekday: "short",
+  day: "2-digit",
+  month: "short",
+});
+
+const yearFormatter = new Intl.DateTimeFormat("pt-BR", {
+  weekday: "short",
+  day: "2-digit",
+  month: "short",
+  year: "numeric",
+});
+
 export const useEventsStore = defineStore("events", () => {
+  // State
   const events = ref(null);
   const event = ref(null);
-  const loading = ref(false);
+  const loadingStates = ref(new Map());
   const selectedGenres = ref(null);
   const selectedCategories = ref(null);
   const selectedDateRange = ref(null);
 
+  // Loading state management
+  const setLoading = (operation, state) => {
+    loadingStates.value.set(operation, state);
+  };
+
+  const isLoading = computed(() => 
+    operation => loadingStates.value.get(operation) ?? false
+  );
+
+  // Computed properties
   const filteredEvents = computed(() => {
     if (!events.value) return null;
     let eventsToReturn = events.value;
@@ -56,17 +82,18 @@ export const useEventsStore = defineStore("events", () => {
   });
 
   const featuredEvents = computed(() => {
-    if (!events.value) {
-      return null;
-    }
-    const featured = filteredEvents.value.filter((event) => event.featured);
-    const moreFollowers = [
-      ...filteredEvents.value.filter((e) => !event.featured),
-    ].sort((a, b) => {
-      return a.followers > b.followers;
+    if (!events.value) return null;
+    
+    const result = {
+      featured: [],
+      regular: []
+    };
+
+    filteredEvents.value.forEach(event => {
+      event.featured ? 
+        result.featured.push(event) : 
+        result.regular.push(event);
     });
-    return [...featured, ...moreFollowers];
-  });
 
   const getCountByGenre = computed(() => {
     return (genre) => {
@@ -130,52 +157,35 @@ export const useEventsStore = defineStore("events", () => {
         return e.categories && e.categories.includes(categorie);
       }).length;
     };
+
   });
+
+  const getCountByGenre = computed(() => genre => 
+    events.value?.filter(e => e.genres.includes(genre)).length ?? 0
+  );
+
+  const formatEventDate = (dateString, currentYear) => {
+    const date = new Date(dateString);
+    const formatter = date.getFullYear() === currentYear ? 
+      dateFormatter : yearFormatter;
+    return formatter.format(date).toUpperCase();
+  };
 
   const nextEvents = computed(() => {
-    if (events.value) {
-      // Sort events by startDate
-      events.value.sort((a, b) => a.startDate.localeCompare(b.startDate));
+    if (!events.value) return null;
 
-      // Process and group events by date
-      const nextEventsResult = filteredEvents.value.reduce(
-        (nextEvents, event) => {
-          const eventDate = new Date(event.startDate);
-          const currentYear = new Date().getFullYear();
-
-          // Adjust format options to include the year if it's different from the current year
-          const options = {
-            weekday: "short",
-            day: "2-digit",
-            month: "short",
-          };
-
-          if (eventDate.getFullYear() !== currentYear) {
-            options.year = "numeric";
-          }
-
-          // Format date with or without the year as needed
-          const date = new Intl.DateTimeFormat("pt-BR", options)
-            .format(eventDate)
-            .toUpperCase();
-
-          // Add event to the grouped result
-          if (nextEvents[date]) {
-            nextEvents[date].push(event);
-          } else {
-            nextEvents[date] = [event];
-          }
-
-          return nextEvents;
-        },
-        {}
-      );
-
-      return nextEventsResult;
-    }
-
-    return null;
+    const currentYear = new Date().getFullYear();
+    return filteredEvents.value.reduce((acc, event) => {
+      const date = formatEventDate(event.startDate, currentYear);
+      
+      if (!acc[date]) {
+        acc[date] = [];
+      }
+      acc[date].push(event);
+      return acc;
+    }, {});
   });
+
 
   const getTotalUpcomingEvents = computed(() => {
     if (!events.value || !events.value.length) return 0;
@@ -355,203 +365,183 @@ export const useEventsStore = defineStore("events", () => {
     };
   });
 
-  async function countDocuments(col, condition) {
-    const coll = collection(firestore, col);
-    const q = query(coll, where(...condition));
-    const snapshot = await getCountFromServer(q);
-    return snapshot.data().count;
-  }
+ // const eventsDateList = computed(() => eventsList => {
+  //  if (!eventsList) return null;
+   // const currentYear = new Date().getFullYear();
+   // return eventsList.reduce((acc, event) => {
+     // const date = formatEventDate(event.startDate, currentYear);
+      
+     // if (!acc[date]) {
+      //  acc[date] = [];
+     // }
+     // acc[date].push(event);
+    //  return acc;
+   // }, {});
+ // });
 
-  async function getEventsByCategories(country, region, categories) {
-    loading.value = true;
-    events.value = null;
+  // Query helpers
+  const buildQueries = (config) => {
     const queries = [];
-    queries.push(where("location.country", "==", country));
-    if (region) {
-      queries.push(where("location.region.id", "==", region));
+    
+    if (config.country) {
+      queries.push(where("location.country", "==", config.country));
     }
-    if (categories) {
-      queries.push(where("categories", "array-contains-any", categories));
+
+    if (config.region) {
+      queries.push(where("location.region.id", "==", config.region));
     }
-    // queries.push(
-    //   where("startDate", ">=", new Date().toISOString().split("T")[0])
-    // );
-    // queries.push(where("createdAt", "<", new Date()))
+    if (config.categories?.length) {
+      queries.push(where("categories", "array-contains-any", config.categories));
+    }
+    if (config.promoterId) {
+      queries.push(where("promoter.id", "==", config.promoterId));
+    }
+    if (config.producerId) {
+      queries.push(where("producer.id", "==", config.producerId));
+    }
+    if (config.locationId) {
+      queries.push(where("location.id", "==", config.locationId));
+    }
+
+
+ // async function getEventsByRegion(country, region) {
+   // loading.value = true;
+   // events.value = null;
+   // const queries = [];
+   // queries.push(where("location.country", "==", country));
+   // if (region) {
+     // queries.push(where("location.region.id", "==", region));
+    //}
+
+    //return queries;
+ // };
+
+  const executeQuery = async (queries) => {
+    const q = query(collection(firestore, "events"), ...queries);
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(d => d.data())
+      .sort((a, b) => a.startDate.localeCompare(b.startDate));
+  };
+
+  // Main query function
+  const getEvents = async (queryConfig) => {
+    const operationId = 'getEvents';
+    setLoading(operationId, true);
+
 
     try {
-      const q = query(collection(firestore, "events"), ...queries);
-      const querySnapshot = await getDocs(q);
+      const cacheKey = JSON.stringify(queryConfig);
+      const cached = eventCache.get(cacheKey);
 
-      //   querySnapshot.forEach((document) => {
-      //
-      //     events.value.push(document.data());
-      //   });
-      events.value = querySnapshot.docs.map((d) => d.data());
-      events.value.sort((a, b) => {
-        return a.startDate.localeCompare(b.startDate);
+      if (cached?.timestamp > Date.now() - CACHE_DURATION) {
+        events.value = cached.data;
+        return { ok: true, data: { events: cached.data } };
+      }
+
+      const queries = buildQueries(queryConfig);
+      const eventsData = await executeQuery(queries);
+
+      eventCache.set(cacheKey, {
+        data: eventsData,
+        timestamp: Date.now()
       });
-      return {
-        ok: true,
-        data: { events: events.value },
-      };
+
+      events.value = eventsData;
+      return { ok: true, data: { events: eventsData } };
+
     } catch (error) {
+      console.error('Error fetching events:', error);
       notifyError(error);
-      return {
-        ok: false,
-        error,
-      };
+      return { ok: false, error };
     } finally {
-      loading.value = false;
+      setLoading(operationId, false);
     }
-  }
+  };
 
-  async function getEventsByRegion(country, region) {
-    loading.value = true;
-    events.value = null;
-    const queries = [];
-    queries.push(where("location.country", "==", country));
-    if (region) {
-      queries.push(where("location.region.id", "==", region));
-    }
+  // Specific query methods
+  const getEventsByCategories = (country, region, categories) => 
+    getEvents({ country, region, categories });
 
-    try {
-      const q = query(collection(firestore, "events"), ...queries);
-      const querySnapshot = await getDocs(q);
-      events.value = querySnapshot.docs.map((d) => d.data());
-      events.value.sort((a, b) => {
-        return a.startDate.localeCompare(b.startDate);
-      });
-      return {
-        ok: true,
-        data: { events: events.value },
-      };
-    } catch (error) {
-      notifyError(error);
-      return {
-        ok: false,
-        error,
-      };
-    } finally {
-      loading.value = false;
-    }
-  }
+  const getEventsByRegion = (country, region) => 
+    getEvents({ country, region });
 
-  async function getEventsByPromoterId(promoterId) {
-    loading.value = true;
-    events.value = null;
-    const queries = [];
-    queries.push(where("promoter.id", "==", promoterId));
-    // queries.push(
-    //   where("startDate", ">=", new Date().toISOString().split("T")[0])
-    // );
-    // queries.push(where("createdAt", "<", new Date()))
+  const getEventsByPromoterId = (promoterId) => 
+    getEvents({ promoterId });
 
-    try {
-      const q = query(collection(firestore, "events"), ...queries);
-      const querySnapshot = await getDocs(q);
+  const getEventsByProducerId = (producerId) => 
+    getEvents({ producerId });
 
-      //   querySnapshot.forEach((document) => {
-      //
-      //     events.value.push(document.data());
-      //   });
-      events.value = querySnapshot.docs.map((d) => d.data());
-      return {
-        ok: true,
-        data: events.value,
-      };
-    } catch (error) {
-      notifyError(error);
-      return {
-        ok: false,
-        error,
-      };
-    } finally {
-      loading.value = false;
-    }
-  }
+  const getEventsByLocationId = (locationId) => 
+    getEvents({ locationId });
 
-  async function getEventsByProducerId(producerId) {
-    loading.value = true;
-    events.value = null;
-    const queries = [];
-    queries.push(where("producer.id", "==", producerId));
-
-    // queries.push(
-    //   where("startDate", ">=", new Date().toISOString().split("T")[0])
-    // );
-    // queries.push(where("createdAt", "<", new Date()))
-
-    try {
-      const q = query(collection(firestore, "events"), ...queries);
-      const querySnapshot = await getDocs(q);
-
-      //   querySnapshot.forEach((document) => {
-      //
-      //     events.value.push(document.data());
-      //   });
-      events.value = querySnapshot.docs.map((d) => d.data());
-      return {
-        ok: true,
-        data: events.value,
-      };
-    } catch (error) {
-      notifyError(error);
-      return {
-        ok: false,
-        error,
-      };
-    } finally {
-      loading.value = false;
-    }
-  }
-
-  async function getEventsByLocationId(locationId) {
-    loading.value = true;
-    events.value = null;
-    const queries = [];
-    queries.push(where("location.id", "==", locationId));
-
-    // queries.push(
-    //   where("startDate", ">=", new Date().toISOString().split("T")[0])
-    // );
-    // queries.push(where("createdAt", "<", new Date()))
-
-    try {
-      const q = query(collection(firestore, "events"), ...queries);
-      const querySnapshot = await getDocs(q);
-
-      //   querySnapshot.forEach((document) => {
-      //
-      //     events.value.push(document.data());
-      //   });
-      events.value = querySnapshot.docs.map((d) => d.data());
-      return {
-        ok: true,
-        data: { events: events.value },
-      };
-    } catch (error) {
-      notifyError(error);
-      return {
-        ok: false,
-        error,
-      };
-    } finally {
-      loading.value = false;
-    }
-  }
-
+  // Single event query
   async function getEventById(id) {
+    const operationId = 'getEventById';
+    setLoading(operationId, true);
+
     try {
+      const cacheKey = `event-${id}`;
+      const cached = eventCache.get(cacheKey);
+
+      if (cached?.timestamp > Date.now() - CACHE_DURATION) {
+        event.value = cached.data;
+        return { ok: true, data: cached.data };
+      }
+
       const documentSnapshot = await getDoc(doc(firestore, "events/" + id));
       if (!documentSnapshot.empty) {
-        event.value = documentSnapshot.data();
+        const eventData = documentSnapshot.data();
+        
+        eventCache.set(cacheKey, {
+          data: eventData,
+          timestamp: Date.now()
+        });
+
+        event.value = eventData;
+        return { ok: true, data: eventData };
       }
+      
+      return { ok: false, error: 'Event not found' };
+
     } catch (error) {
+      console.error('Error fetching event:', error);
       notifyError(error);
-      return {
-        ok: false,
-        error,
-      };
+      return { ok: false, error };
+    } finally {
+      setLoading(operationId, false);
+    }
+  }
+
+  // Count documents helper
+  async function countDocuments(col, condition) {
+    const operationId = 'countDocuments';
+    setLoading(operationId, true);
+
+    try {
+      const cacheKey = `count-${col}-${JSON.stringify(condition)}`;
+      const cached = eventCache.get(cacheKey);
+
+      if (cached?.timestamp > Date.now() - CACHE_DURATION) {
+        return cached.data;
+      }
+
+      const coll = collection(firestore, col);
+      const q = query(coll, where(...condition));
+      const snapshot = await getCountFromServer(q);
+      const count = snapshot.data().count;
+
+      eventCache.set(cacheKey, {
+        data: count,
+        timestamp: Date.now()
+      });
+
+      return count;
+    } catch (error) {
+      console.error('Error counting documents:', error);
+      notifyError(error);
+      return 0;
+    } finally {
+      setLoading(operationId, false);
     }
   }
 
@@ -571,7 +561,7 @@ export const useEventsStore = defineStore("events", () => {
     nextEvents,
     getEventById,
     event,
-    loading,
+    loading: isLoading,
     selectedGenres,
     selectedCategories,
     selectedDateRange,

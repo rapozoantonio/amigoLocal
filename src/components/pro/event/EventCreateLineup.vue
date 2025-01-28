@@ -24,9 +24,9 @@
                 </v-row>
             </v-card-text>
             <v-card-actions>
-                <v-btn variant="tonal" color="secondary" @click="prev">Prev</v-btn>
+                <v-btn variant="tonal" color="secondary" @click="prev">Anterior</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn variant="tonal" color="primary" type="submit">Next</v-btn>
+                <v-btn variant="tonal" color="primary" type="submit">Próximo</v-btn>
             </v-card-actions>
         </v-card>
     </v-form>

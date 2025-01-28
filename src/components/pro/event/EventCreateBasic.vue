@@ -91,7 +91,7 @@
             <!-- ACTIONS -->
             <v-card-actions>
                 <!-- BUTTON SUBMIT -->
-                <v-btn variant="tonal" color="primary" type="submit" class="ml-auto">Next</v-btn>
+                <v-btn variant="tonal" color="primary" type="submit" class="ml-auto">Próximo</v-btn>
             </v-card-actions>
         </v-card>
     </v-form>

@@ -59,6 +59,8 @@ export const useEventStore = defineStore("event", () => {
     { name: "+19", value: "+19" },
     { name: "+20", value: "+20" },
     { name: "+21", value: "+21" },
+    { name: "+24", value: "+24" },
+    { name: "+30", value: "+30" },
   ]);
 
   const sections = ref({
@@ -81,7 +83,7 @@ export const useEventStore = defineStore("event", () => {
 
   async function createEvent() {
     appStore.loading = true;
-    appStore.loadingText = "Creating event...";
+    appStore.loadingText = "Criando evento...";
     try {
       const id = firebaseStore.getPostDocRef("events").id;
 
@@ -130,8 +132,8 @@ export const useEventStore = defineStore("event", () => {
         "events"
       );
       response.notify(
-        "Event created",
-        `Event ${event.value.name ? event.value.name : ""} created successfully`
+        "Evento criado",
+        `Evento ${event.value.name ? event.value.name : ""} criado com sucesso`
       );
       return { ok: true };
     } catch (error) {
@@ -145,7 +147,7 @@ export const useEventStore = defineStore("event", () => {
 
   async function updateEvent() {
     appStore.loading = true;
-    appStore.loadingText = "Updating event...";
+    appStore.loadingText = "Atualizando evento...";
     try {
       const id = event.value.id;
       const entries = Object.entries(files.value);

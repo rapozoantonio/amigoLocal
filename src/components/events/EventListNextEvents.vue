@@ -1,9 +1,9 @@
 <template>
-    <section class="bg-grey-darken-4 flex-grow-1">
+    <section class="flex-grow-1">
         <v-container>
             <v-row v-for="(events, day) in nextEvents" :key="day">
                 <v-col cols="12">
-                    <v-toolbar color="grey-darken-4" style="position: sticky; top: 48px; z-index: 999"
+                    <v-toolbar color="background" style="position: sticky; top: 48px; z-index: 999"
                         density="compact">
                         <v-toolbar-title>
                             <p class="text-h5">

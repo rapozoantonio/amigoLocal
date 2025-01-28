@@ -47,10 +47,65 @@
       </div>
     </v-card-text>
   </v-card>
+
 </template>
 
 <script setup>
 const { event } = defineProps(["event"]);
 </script>
 
-<style lang="scss" scoped></style>
+
+<style lang="scss" scoped>
+// Move this to top to set base icon color
+:deep(.v-icon[color="primaryIcon"]) {
+  color: rgb(var(--v-theme-primaryIcon)) !important;
+}
+
+// Rest of your styles remain the same
+a {
+  text-decoration: none;
+  color: rgb(var(--v-theme-link-text));
+  &:hover { color: rgb(var(--v-theme-primary)); }
+}
+// Base link styles
+a {
+ text-decoration: none;
+ color: rgb(var(--v-theme-link-text));
+
+ &:hover {
+   color: rgb(var(--v-theme-primary));
+   
+   .v-icon {
+     color: rgb(var(--v-theme-primaryIcon)) !important;
+   }
+ }
+}
+
+// Keep v-icon color
+:deep(.v-icon) {
+ color: rgb(var(--v-theme-primaryIcon)) !important;
+}
+
+// Event title specific styles
+.text-h5.link {
+ color: rgb(var(--v-theme-link-text));
+
+ &:hover, &:visited:hover {
+   color: rgb(var(--v-theme-primary));
+ }
+
+ &:visited {
+   color: rgb(var(--v-theme-link-text));
+ }
+}
+
+// Location link specific styles 
+.text-caption {
+ color: rgb(var(--v-theme-link-text));
+
+ &:hover {
+   color: rgb(var(--v-theme-primary));
+ }
+}
+</style>
+
