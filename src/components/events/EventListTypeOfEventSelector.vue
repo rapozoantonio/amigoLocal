@@ -27,7 +27,7 @@
               </v-list> -->
 
       <v-item-group multiple v-model="selectedeventTypesLocal">
-        <p class="text-caption text-white my-4 pl-4">
+        <p class="text-caption my-4 pl-4">
           Tipos de Eventos <span class="ml-2">({{ eventTypes.length }})</span>
         </p>
 

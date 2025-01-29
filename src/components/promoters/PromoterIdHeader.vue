@@ -7,7 +7,6 @@
         cover
       ></v-img>
     </template>
-
     <!-- Mobile Layout -->
     <div class="d-md-none">
       <v-container class="pa-2">
@@ -156,7 +155,7 @@
           </v-col>
           <v-col cols="6" md="2">
             <p class="text-caption text-grey">Followers</p>
-            <span class="text-h6 text-white">{{ promoter.Followers }}</span>
+            <span class="text-h6">{{ promoter.Followers }}</span>
           </v-col>
           <v-col cols="12" md="4">
             <p class="text-caption text-grey mb-2">Tipos de Música</p>

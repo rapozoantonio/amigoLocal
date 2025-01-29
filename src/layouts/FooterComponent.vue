@@ -20,14 +20,14 @@
         <v-col cols="auto">
           <v-breadcrumbs
             density="compact"
-            class="pa-0"
+            class="pa-0 text-grey"
             divider="-"
             :items="items"
           >
             <template v-slot:item="{ item }">
               <v-btn
-                variant="text"
-                color="onSurface"
+                variant="plain"
+                color="grey"
                 class="text-caption px-1"
                 :href="item.href"
                 height="24"
@@ -38,9 +38,7 @@
           </v-breadcrumbs>
         </v-col>
       </v-row>
-
       <v-divider></v-divider>
-
       <!-- Second Row: Copyright and Social -->
       <v-row>
         <v-col class="mt-2">
@@ -70,13 +68,13 @@
 import FlagIcon from "@/components/FlagIcon.vue";
 
 const items = [
-{
+  {
     title: "Privacidade",
     disabled: false,
     href: "/termos-de-privacidade",
   },
   {
-    title: "Termos",
+    title: "Termos de Uso",
     disabled: false,
     href: "/termos-de-uso",
   },

@@ -27,75 +27,61 @@ const routes = [
         },
       },
       {
+        path: "select-region", // Removed the leading slash
+        name: "event-region-selector",
+        component: () => import("@/views/events/EventRegionSelector.vue"),
+      },
+      {
         path: "events",
-        name: "event-list",
-        component: () =>
-          import(
-            /* webpackChunkName: "region-selector" */ "@/views/events/RegionSelector.vue"
-          ),
+        component: () => import("@/views/events/RegionSelector.vue"),
+        children: [
+          {
+            path: "",
+            name: "event-list",
+            component: () => import("@/views/events/RegionSelector.vue"),
+          },
+        ],
       },
       {
         path: "events/:country/:region",
-        // name: "events",
         props: true,
-        component: () =>
-          import(
-            /* webpackChunkName: "events" */ "@/views/events/EventsPage.vue"
-          ),
+        component: () => import("@/views/events/EventsPage.vue"),
         children: [
           {
             path: "",
             name: "events",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-all" */ "@/views/events/EventListAll.vue"
-              ),
+            component: () => import("@/views/events/EventListAll.vue"),
           },
           {
             path: "foryou",
             name: "events-foryou",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-foryou" */ "@/views/events/EventListForyou.vue"
-              ),
+            component: () => import("@/views/events/EventListForyou.vue"),
           },
           {
             path: "new",
             name: "events-new",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-new" */ "@/views/events/EventListNew.vue"
-              ),
+            component: () => import("@/views/events/EventListNew.vue"),
           },
           {
             path: "openbar",
             name: "events-openbar",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-openbar" */ "@/views/events/EventListOpenbar.vue"
-              ),
+            component: () => import("@/views/events/EventListOpenbar.vue"),
           },
           {
             path: "carnaval",
             name: "events-carnaval",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-carnaval" */ "@/views/events/EventListCarnaval.vue"
-              ),
+            component: () => import("@/views/events/EventListCarnaval.vue"),
           },
           {
             path: "reveillon",
             name: "events-reveillon",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-reveillon" */ "@/views/events/EventListReveillon.vue"
-              ),
+            component: () => import("@/views/events/EventListReveillon.vue"),
           },
         ],
       },
@@ -108,7 +94,6 @@ const routes = [
             /* webpackChunkName: "event-id" */ "@/views/events/EventId.vue"
           ),
       },
-
       {
         path: "login",
         name: "login",

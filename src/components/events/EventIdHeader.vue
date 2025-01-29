@@ -45,7 +45,9 @@
         <v-col cols="12" class="pt-0 d-flex align-center">
           <v-row>
             <v-col cols="auto">
-              <h1 class="text-h2 font-weight-bold text-white">{{ event.name }}</h1>
+              <h1 class="text-h2 text-white font-weight-bold">
+                {{ event.name }}
+              </h1>
             </v-col>
           </v-row>
         </v-col>
@@ -56,7 +58,7 @@
           <router-link
             v-if="event.location.id"
             :to="{ name: 'location-info', params: { id: event.location.id } }"
-            class="text-h6 text-white"
+            class="text-h6 link"
             >{{ event.location.name }}</router-link
           >
           <p v-else class="text-h6 link">{{ event.location.name }}</p>

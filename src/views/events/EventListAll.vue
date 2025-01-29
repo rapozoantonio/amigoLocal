@@ -94,12 +94,3 @@ onMounted(() => {
   eventsStore.getEventsByRegion(country.toUpperCase(), region);
 });
 </script>
-
-//http://localhost:3001/events/BR/riodejaneiro?genre=Funk&genre=Sertanejo&categories=dayparty&categories=openbar
-
-<!-- <style lang="scss" scoped>
-img {
-  display: block;
-  width: 100%;
-}
-</style> -->

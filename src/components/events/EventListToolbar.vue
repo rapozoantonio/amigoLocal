@@ -33,7 +33,6 @@
             </v-tab>
           </v-tabs>
         </v-row>
-
         <v-row cols="auto">
           <event-list-date-selector class="mr-2"></event-list-date-selector>
           <event-list-genre-selector class="mr-2"></event-list-genre-selector>
@@ -53,5 +52,3 @@ import EventListTypeOfEventSelector from "./EventListTypeOfEventSelector.vue";
 
 const route = useRoute();
 </script>
-
-<style lang="scss" scoped></style>

@@ -83,6 +83,7 @@ export default createVuetify({
         dark: false,
         colors: {
           primary: "#3F51B5",
+          primaryIcon: "#3F51B5",
           secondary: "#00ACC1",
           accent: "#673AB7",
           error: "#FF5252",
@@ -93,7 +94,7 @@ export default createVuetify({
           "venue-tag": "#006064",
           "genre-tag": "#3949AB",
           "rating-active": "#FFC107",
-          onSurface: "#ffffff",
+          onSurface: "#FFFFFF",
           "link-text": "#212121",
           background: "#FFFFFF",
           surface: "#FFFFFF",

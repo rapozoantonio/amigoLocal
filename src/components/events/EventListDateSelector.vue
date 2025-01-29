@@ -198,7 +198,6 @@ onMounted(() => {
 
 const filterAmount = computed(() => {
   if (selectedDateRangeLocal.value && selectedDateRangeLocal.value.length > 0) {
-    console.log("getFilteredByDatesUpcomingEvents");
     return eventsStore.getFilteredByDatesUpcomingEvents(
       selectedDateRangeLocal.value
     );

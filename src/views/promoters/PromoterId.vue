@@ -1,10 +1,9 @@
 <template>
   <div style="padding-top: 5px">
-    <promoter-id-header 
-  v-if="promoter" 
-  :promoter="promoter"
-  @mounted="console.log('Promoter data:', promoter)"
-></promoter-id-header>
+    <promoter-id-header
+      v-if="promoter"
+      :promoter="promoter"
+    ></promoter-id-header>
     <promoter-event-list></promoter-event-list>
   </div>
 </template>

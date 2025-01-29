@@ -42,7 +42,7 @@
       </template>
 
       <v-item-group multiple v-model="selectedGenresLocal">
-        <p class="text-caption text-white my-4 pl-4">
+        <p class="text-caption my-4 pl-4">
           Todos os generos <span class="ml-2">({{ genres.length }})</span>
         </p>
         <v-item
