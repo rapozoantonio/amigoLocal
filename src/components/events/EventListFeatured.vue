@@ -1,15 +1,15 @@
 <template>
   <section class="flex-grow-1">
-    <v-container>
+    <v-container v-if="featuredEvents.length > 0">
       <v-row>
         <v-col cols="12">
           <div class="d-flex align-center justify-space-between mb-4">
             <p class="text-caption text-grey-darken-1">
-              {{ totalAmountOfUpcomingEvents }} próximos eventos
+              {{ totalUpcomingEvents }} próximos eventos
             </p>
             <p
               @click="removeFilters"
-              v-if="selectedGenres && selectedGenres.length"
+              v-if="selectedGenres?.length"
               class="text-caption"
             >
               <span class="mr-1">X</span> Remover filtros
@@ -20,12 +20,11 @@
           <p class="text-h4 text-primary font-weight-bold">🔥 Em Alta</p>
         </v-col>
       </v-row>
-
       <v-row>
         <v-col cols="12">
           <v-slide-group :center-active="true">
             <v-slide-group-item
-              v-for="event in featuredEvents"
+              v-for="event in responsiveEvents"
               :key="event.id"
               v-slot="{ isSelected, toggle }"
             >
@@ -45,38 +44,42 @@
 import { useEventsStore } from "@/store/events";
 import { storeToRefs } from "pinia";
 import EventCardVertical from "@/components/events/EventCardVertical.vue";
-import { ref, watch } from "vue";
+import { computed } from "vue";
 import { useRouter } from "vue-router";
+import { useDisplay } from "vuetify";
 
 const eventsStore = useEventsStore();
+const { mobile } = useDisplay();
+const router = useRouter();
 
 const removeFilters = () => {
   router.push({ query: { genre: [], categories: [], dateRange: [] } });
 };
 
-const { nextEvents, featuredEvents, loading, selectedGenres, filteredEvents } =
-  storeToRefs(eventsStore);
-const router = useRouter();
-const totalAmountOfUpcomingEvents = ref(0);
-watch(
-  () => nextEvents.value,
-  (newValue) => {
-    if (
-      newValue &&
-      typeof newValue === "object" &&
-      Object.keys(newValue).length
-    ) {
-      // Safely check if newValue is a valid object with keys
-      totalAmountOfUpcomingEvents.value = Object.values(newValue).reduce(
-        (total, events) => total + events.length,
-        0
-      );
-    } else {
-      totalAmountOfUpcomingEvents.value = 0;
-    }
-  },
-  { deep: true } // Optional if structure can change deeply
-);
-</script>
+const {
+  nextEvents,
+  featuredEvents,
+  loading,
+  selectedGenres,
+  filteredEvents,
+  getTotalUpcomingEvents,
+} = storeToRefs(eventsStore);
 
-<style lang="scss" scoped></style>
+// Create responsive events computed property with null check
+const responsiveEvents = computed(() => {
+  if (!featuredEvents?.value) return [];
+
+  const sliceSize = mobile.value ? 3 : 6;
+  return featuredEvents?.value.slice(0, sliceSize) || [];
+});
+
+// Computed with null check
+const totalUpcomingEvents = computed(() => {
+  if (!nextEvents?.value) return 0;
+
+  return Object.values(nextEvents.value).reduce((total, events) => {
+    if (!Array.isArray(events)) return total;
+    return total + events.length;
+  }, 0);
+});
+</script>

@@ -81,33 +81,35 @@ export const useEventsStore = defineStore("events", () => {
   });
 
   const featuredEvents = computed(() => {
-    if (!events.value) return null;
+    if (!events.value) return [];
+
+    // Get today's date in YYYY-MM-DD format for comparison
+    const today = new Date().toISOString().split("T")[0];
 
     const result = {
       featured: [],
       regular: [],
     };
 
-    filteredEvents.value.forEach((event) => {
+    // Filter future events first using startDate
+    const futureEvents = filteredEvents.value.filter((event) => {
+      return event.startDate >= today;
+    });
+
+    // Sort all events by followers first
+    futureEvents.sort((a, b) => b.followers - a.followers);
+
+    // Then separate into featured and regular
+    futureEvents.forEach((event) => {
       event.featured ? result.featured.push(event) : result.regular.push(event);
     });
 
-    result.regular.sort((a, b) => b.followers - a.followers);
-    return [...result.featured, ...result.regular];
+    // Return only first 6 events
+    return [...result.featured, ...result.regular].slice(0, 6);
   });
 
   const getTotalUpcomingEvents = computed(() => {
     if (!events.value || !events.value.length) return 0;
-    // Get yesterday's date at midnight to avoid time comparison issues
-    // const yesterday = new Date();
-    // yesterday.setDate(yesterday.getDate() - 1);
-    // yesterday.setHours(0, 0, 0, 0);
-
-    // const upcomingEvents = events.value.filter(
-    //   (event) => new Date(event.startDate) > yesterday
-    // );
-
-    // return upcomingEvents.length;
     return events.value.length;
   });
 
@@ -183,13 +185,21 @@ export const useEventsStore = defineStore("events", () => {
     return formatter.format(date).toUpperCase();
   };
 
+  // In your events store
   const nextEvents = computed(() => {
-    if (!events.value) return null;
+    if (!filteredEvents.value) return null;
 
     const currentYear = new Date().getFullYear();
-    return filteredEvents.value.reduce((acc, event) => {
-      const date = formatEventDate(event.startDate, currentYear);
+    const today = new Date().toISOString().split("T")[0];
 
+    // Filter for upcoming events first
+    const upcomingEvents = filteredEvents.value.filter(
+      (event) => event.startDate >= today
+    );
+
+    // Then group them by date
+    return upcomingEvents.reduce((acc, event) => {
+      const date = formatEventDate(event.startDate, currentYear);
       if (!acc[date]) {
         acc[date] = [];
       }
@@ -214,39 +224,40 @@ export const useEventsStore = defineStore("events", () => {
   });
 
   // Query helpers
+  // Correct syntax for array queries in Firestore:
+  // 1. array-contains - for exact match of one element
   const buildQueries = (config) => {
     const queries = [];
 
+    // Location queries first (as per our index)
     if (config.country) {
       queries.push(where("location.country", "==", config.country));
     }
+
     if (config.region) {
       queries.push(where("location.region.id", "==", config.region));
     }
+
+    // Categories query using array-contains
     if (config.categories?.length) {
-      queries.push(
-        where("categories", "array-contains-any", config.categories)
-      );
+      console.log(config.categories[0]);
+      // Per docs: array-contains matches single element in array
+      queries.push(where("categories", "array-contains", config.categories[0]));
     }
-    if (config.promoterId) {
-      queries.push(where("promoter.id", "==", config.promoterId));
-    }
-    if (config.producerId) {
-      queries.push(where("producer.id", "==", config.producerId));
-    }
-    if (config.locationId) {
-      queries.push(where("location.id", "==", config.locationId));
-    }
+
+    // Date filter last
+    const today = new Date().toISOString().split("T")[0];
+    queries.push(where("startDate", ">=", today));
 
     return queries;
   };
-
+  
   const executeQuery = async (queries) => {
     const q = query(collection(firestore, "events"), ...queries);
     const snapshot = await getDocs(q);
     return snapshot.docs
       .map((d) => d.data())
-      .sort((a, b) => a.startDate.localeCompare(b.startDate));
+      .sort((a, b) => b.startDate.localeCompare(a.startDate)); 
   };
 
   // Main query function

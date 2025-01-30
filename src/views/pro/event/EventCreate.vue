@@ -17,7 +17,7 @@
           variant="elevated"
           action="Use ✨️AI Iris"
           title="✨️AI Iris"
-          text="Use ✨️AI Iris para criar o evento"
+          text="Transforme texto em evento ✨️AI Iris"
         ></event-create-gpt-assistence>
       </div>
     </template>
@@ -29,7 +29,7 @@
           block
           action="Use ✨️AI Iris"
           title="✨️AI Iris"
-          text="Use ✨️AI Iris para criar o evento"
+          text="Transforme texto em evento ✨️AI Iris"
         ></event-create-gpt-assistence>
       </div>
     </template>

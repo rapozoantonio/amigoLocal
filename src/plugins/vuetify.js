@@ -6,6 +6,7 @@
 import "@mdi/font/css/materialdesignicons.css";
 import "vuetify/styles";
 import { createVuetify } from "vuetify";
+import { pt } from "vuetify/locale";
 import { h } from "vue";
 import {
   VStepperVertical,
@@ -16,6 +17,11 @@ export default createVuetify({
   components: {
     VStepperVertical,
     VStepperVerticalItem,
+  },
+  locale: {
+    locale: "pt",
+    fallback: "pt",
+    messages: { pt },
   },
 
   defaults: {

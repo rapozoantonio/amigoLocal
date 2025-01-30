@@ -3,7 +3,6 @@
     <event-list-region-select></event-list-region-select>
     <event-list-toolbar></event-list-toolbar>
     <event-list-featured></event-list-featured>
-
     <div class="w-100" style=" height: 0.6px; background-color: gray"></div>
     <router-view :key="route.fullPath"></router-view>
     <event-list-popular-news></event-list-popular-news>

@@ -3,17 +3,12 @@
     <template #image>
       <v-img
         style="filter: blur(30px) brightness(0.3)"
-        :src="
-          event.image
-            ? event.image?.url
-            : event.flyerFront
-            ? event.flyerFront.url
-            : '/img/placeholder_event_1.jpg'
-        "
+        :src="event.image?.url || event.flyerFront?.url || '/img/placeholder_event_1.jpg'"
         cover
       ></v-img>
     </template>
     <v-container>
+      <!-- Navigation Row -->
       <v-row>
         <v-col cols="12">
           <v-btn
@@ -30,26 +25,30 @@
             }"
           >
             <v-icon>mdi-chevron-left</v-icon>
-            <v-avatar class="mr-2 ml-1" size="20"
-              ><v-img
-                :src="
-                  'http://flagcdn.com/' +
-                  event.location.country.toLowerCase() +
-                  '.svg'
-                "
-              ></v-img
-            ></v-avatar>
+            <v-avatar class="mr-2 ml-1" size="20">
+              <v-img
+                :src="`http://flagcdn.com/${event.location.country.toLowerCase()}.svg`"
+              ></v-img>
+            </v-avatar>
             {{ event.location.region.name || event.location.region }}
-          </v-btn></v-col
-        >
+          </v-btn>
+        </v-col>
+      </v-row>
+
+      <!-- Title Row - Now Responsive -->
+      <v-row>
         <v-col cols="12" class="pt-0 d-flex align-center">
-          <v-row>
-            <v-col cols="auto">
-              <h1 class="text-h2 text-white font-weight-bold">
-                {{ event.name }}
-              </h1>
-            </v-col>
-          </v-row>
+          <h1 
+            :class="[
+              $vuetify.display.xs ? 'text-h3' : 'text-h2',
+              'text-white',
+              'font-weight-bold',
+              'text-break',
+              $vuetify.display.xs ? 'my-2' : 'my-4'
+            ]"
+          >
+            {{ event.name }}
+          </h1>
         </v-col>
       </v-row>
       <v-row class=" ">
@@ -153,6 +152,9 @@ import { useEventsStore } from "@/store/events";
 import FollowButton from "../interface/FollowButton.vue";
 import SocialsShare from "@/components/social-media/SocialsShare.vue";
 
+import { useDisplay } from 'vuetify'
+const { xs } = useDisplay()
+
 const eventsStore = useEventsStore();
 const { event } = storeToRefs(eventsStore);
 
@@ -169,4 +171,9 @@ function unfollow() {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.text-break {
+  word-break: break-word;
+  hyphens: auto;
+}
+</style>

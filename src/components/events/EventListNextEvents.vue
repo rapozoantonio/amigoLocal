@@ -15,7 +15,6 @@
               </p>
             </v-toolbar-title>
           </v-toolbar>
-
           <event-card-horizontal
             v-for="event in events"
             :key="event.id"

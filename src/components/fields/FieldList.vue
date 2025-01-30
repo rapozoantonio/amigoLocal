@@ -84,11 +84,4 @@ function removeItem(index) {
     }
     list.value.splice(index, 1);
 }
-
-onMounted(() => {
-    console.log({ children })
-})
-
 </script>
-
-<style lang="scss" scoped></style>

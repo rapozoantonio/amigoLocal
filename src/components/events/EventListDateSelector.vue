@@ -19,26 +19,18 @@
       location="right"
       v-model="dateRangeSelectionOpened"
     >
-      <!-- <v-list >
-                  <v-list-item v-for="(genre) in genres" :key="genre" :to="{ query: { genre } }" link>
-  
-                      <v-list-item-title> {{ genre }} </v-list-item-title>
-                  </v-list-item>
-              </v-list> -->
-
       <template v-slot:prepend>
-        <p
-          class="pl-4 text-caption mt-4"
-          style="color: rgba(255, 255, 255, 0.3); letter-spacing: 0.2em"
-        >
-          Data
-        </p>
         <v-container>
           <v-date-picker
             v-model="selectedDateRangeLocal"
             locale="pt-BR"
             multiple="range"
             elevation="2"
+            :first-day-of-week="0"
+            weekday-format="short"
+            no-title
+            hide-header 
+            no-header 
           ></v-date-picker>
         </v-container>
       </template>
@@ -47,8 +39,40 @@
           class=""
           style="color: rgba(255, 255, 255, 0.3); letter-spacing: 0.1em"
         >
-          Datas selecionadas:
+          Escolha rápida:
         </p>
+
+        <!-- Quick Date Range Buttons -->
+        <v-row class="mt-2">
+          <v-col cols="12">
+            <v-btn
+              block
+              variant="outlined"
+              rounded="pill"
+              @click="setToday"
+              class="mb-2"
+              >🎉 Hoje</v-btn
+            >
+            <v-btn
+              block
+              variant="outlined"
+              rounded="pill"
+              @click="setNextWeekend"
+              class="mb-2"
+              >🎪 Próximo Final de Semana</v-btn
+            >
+            <v-btn
+              v-for="(holiday, index) in nextThreeHolidays"
+              :key="index"
+              block
+              variant="outlined"
+              rounded="pill"
+              @click="setHolidayRange(holiday.startDate, holiday.endDate)"
+              class="mb-2"
+              >{{ holiday.name }}</v-btn
+            >
+          </v-col>
+        </v-row>
 
         <v-col class="mt-4">
           <v-row style="color: rgba(255, 255, 255, 0.3); letter-spacing: 0.1em"
@@ -110,21 +134,16 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, shallowRef } from "vue";
-
+import { computed, onMounted, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useRoute, useRouter } from "vue-router";
-
 import { useConfigStore } from "@/store/config";
 import { useEventsStore } from "@/store/events";
 
 const eventsStore = useEventsStore();
 const { selecedDateRange } = storeToRefs(eventsStore);
-
-// const { selectedGenres } = storeToRefs(eventsStore);
 const { genres } = storeToRefs(useConfigStore());
 
-const dates = ref(["2019-09-10", "2019-09-20"]);
 const router = useRouter();
 const route = useRoute();
 const dateRangeSelectionOpened = ref(false);
@@ -136,25 +155,84 @@ const {
   selectedDateRange,
 } = storeToRefs(eventsStore);
 
+// Full list of holidays in 2025 for Rio de Janeiro or São Paulo
+const holidays = ref([
+  {
+    name: "Confraternização Universal",
+    startDate: "2025-01-01",
+    endDate: "2025-01-01",
+  },
+  { name: "Carnaval", startDate: "2025-03-01", endDate: "2025-03-04" }, // Carnaval typically spans multiple days
+  { name: "Sexta-feira Santa", startDate: "2025-04-18", endDate: "2025-04-18" },
+  { name: "Tiradentes", startDate: "2025-04-21", endDate: "2025-04-21" },
+  { name: "Dia do Trabalho", startDate: "2025-05-01", endDate: "2025-05-01" },
+  { name: "Corpus Christi", startDate: "2025-06-19", endDate: "2025-06-19" },
+  {
+    name: "Independência do Brasil",
+    startDate: "2025-09-07",
+    endDate: "2025-09-07",
+  },
+  {
+    name: "Nossa Senhora Aparecida",
+    startDate: "2025-10-12",
+    endDate: "2025-10-12",
+  },
+  { name: "Finados", startDate: "2025-11-02", endDate: "2025-11-02" },
+  {
+    name: "Proclamação da República",
+    startDate: "2025-11-15",
+    endDate: "2025-11-15",
+  },
+  { name: "Natal", startDate: "2025-12-25", endDate: "2025-12-25" },
+]);
+
+// Get the next three holidays based on the current date
+const nextThreeHolidays = computed(() => {
+  const today = new Date();
+  return holidays.value
+    .filter((holiday) => new Date(holiday.startDate) >= today) // Filter out past holidays
+    .slice(0, 3); // Show only the next three
+});
+
+function setToday() {
+  const today = new Date();
+  selectedDateRangeLocal.value = [today, today];
+}
+
+function setNextWeekend() {
+  const today = new Date();
+  const dayOfWeek = today.getDay();
+  const daysUntilSaturday = (6 - dayOfWeek + 7) % 7;
+  const nextSaturday = new Date(today);
+  nextSaturday.setDate(today.getDate() + daysUntilSaturday);
+  const nextSunday = new Date(nextSaturday);
+  nextSunday.setDate(nextSaturday.getDate() + 1);
+  selectedDateRangeLocal.value = [nextSaturday, nextSunday];
+}
+
+function setHolidayRange(startDate, endDate) {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  selectedDateRangeLocal.value = [start, end];
+}
+
 function restabelecer() {
   selectedDateRangeLocal.value = [];
 }
 
 function openSelector() {
-  // Ensure dateRange is an array
   const dateRange = route.query.dateRange
     ? Array.isArray(route.query.dateRange)
       ? route.query.dateRange
-      : route.query.dateRange.split(",") // Split string into array if necessary
+      : route.query.dateRange.split(",")
     : [];
 
-  // Parse the dates
   selectedDateRangeLocal.value = dateRange
     .map((date) => {
       const parsedDate = new Date(date);
-      return isNaN(parsedDate) ? null : parsedDate; // Guard against invalid dates
+      return isNaN(parsedDate) ? null : parsedDate;
     })
-    .filter(Boolean); // Remove null values
+    .filter(Boolean);
 
   dateRangeSelectionOpened.value = true;
 }
@@ -166,7 +244,7 @@ function buscar() {
       query: {
         ...route.query,
         dateRange: selectedDateRangeLocal.value.map(
-          (date) => date.toISOString().split("T")[0] // Format as "YYYY-MM-DD"
+          (date) => date.toISOString().split("T")[0]
         ),
       },
     });
@@ -182,17 +260,16 @@ function buscar() {
 
 onMounted(() => {
   if (route.query.dateRange) {
-    // Ensure dateRange is an array
     const dateRange = Array.isArray(route.query.dateRange)
       ? route.query.dateRange
-      : route.query.dateRange.split(","); // Split if it's a string
+      : route.query.dateRange.split(",");
 
     selectedDateRangeLocal.value = dateRange
       .map((date) => {
         const parsedDate = new Date(date);
-        return isNaN(parsedDate) ? null : parsedDate; // Guard against invalid dates
+        return isNaN(parsedDate) ? null : parsedDate;
       })
-      .filter(Boolean); // Remove null values
+      .filter(Boolean);
   }
 });
 
@@ -202,7 +279,6 @@ const filterAmount = computed(() => {
       selectedDateRangeLocal.value
     );
   } else {
-    console.log(events.value);
     return getUpcomingEventsFilteredByGenreAndCategories.value;
   }
 });
@@ -210,10 +286,9 @@ const filterAmount = computed(() => {
 function formatDate(date) {
   if (selectedDateRangeLocal.value && selectedDateRangeLocal.value.length) {
     let dateObject = new Date(date);
-    const day = String(dateObject.getDate()).padStart(2, "0"); // Add leading zero if needed
-    const month = String(dateObject.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-    const year = String(dateObject.getFullYear()).slice(-2); // Get last two digits of the year
-
+    const day = String(dateObject.getDate()).padStart(2, "0");
+    const month = String(dateObject.getMonth() + 1).padStart(2, "0");
+    const year = String(dateObject.getFullYear()).slice(-2);
     return `${day}/${month}/${year}`;
   } else return;
 }

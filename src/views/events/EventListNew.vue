@@ -5,7 +5,13 @@
             <v-progress-circular color="primary"></v-progress-circular>
         </v-container>
         <v-container v-else-if="events.length === 0">
-            <v-alert icon="mdi-calendar-remove-outline"> Não ha eventos </v-alert>
+            <v-alert
+        icon="mdi-calendar-remove-outline"
+        color="warning"
+        variant="tonal"
+      >
+        Não ha eventos
+      </v-alert>
         </v-container>
 
         <event-list-featured v-if="events && events.length > 0"></event-list-featured>

@@ -504,11 +504,12 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
-
   // Check if any matched route has `isActive` set to `false`, for pages not ready to prod
   if (!isRouteActive(to)) {
     next({ name: "path-not-found" });
     return;
+  }  // Added missing closing brace here
+
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
   const authStore = useAuthStore();
@@ -539,7 +540,6 @@ router.beforeEach(async (to, from, next) => {
   next({ name: "error401" });
   return;
 });
-
 
 function isRouteActive(to) {
   return !to.matched.some((record) => record.meta.isActive === false);

@@ -19,13 +19,6 @@
       location="right"
       v-model="typesSelectionOpened"
     >
-      <!-- <v-list >
-                  <v-list-item v-for="(genre) in genres" :key="genre" :to="{ query: { genre } }" link>
-  
-                      <v-list-item-title> {{ genre }} </v-list-item-title>
-                  </v-list-item>
-              </v-list> -->
-
       <v-item-group multiple v-model="selectedeventTypesLocal">
         <p class="text-caption my-4 pl-4">
           Tipos de Eventos <span class="ml-2">({{ eventTypes.length }})</span>
@@ -88,7 +81,7 @@ const { selectedCategories } = storeToRefs(eventsStore);
 
 // const { selectedGenres } = storeToRefs(eventsStore);
 
-const eventTypes = ["openbar", "day party"];
+const eventTypes = ["openbar", "day party", "lista amiga"];
 //http://localhost:3001/events/BR/riodejaneiro?categories=day+party
 
 const router = useRouter();
@@ -131,9 +124,6 @@ const filterAmount = computed(() => {
     return eventsStore.getFilteredByCategoriesUpcomingEvents(
       selectedeventTypesLocal.value
     );
-    //   } else {
-    //     console.log(events.value);
-    //     return getTotalUpcomingEvents.value;
   } else {
     return getUpcomingEventsFilteredByDateAndGenre.value;
   }
