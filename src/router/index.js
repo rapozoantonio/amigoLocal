@@ -303,11 +303,36 @@ const routes = [
       {
         path: "profile",
         name: "pro-profile",
-
         component: () =>
           import(
-            /* webpackChunkName: "pro-profile" */ "@/views/pro/Profile.vue"
+            /* webpackChunkName: "pro-profile" */ "@/views/pro/profile/Profile.vue"
           ),
+        children: [
+          {
+            path: "personal",
+            name: "pro-profile-personal",
+            component: () =>
+              import(
+                /* webpackChunkName: "pro-profile-personal" */ "@/views/pro/profile/ProfilePersonal.vue"
+              ),
+          },
+          {
+            path: "account",
+            name: "pro-profile-account",
+            component: () =>
+              import(
+                /* webpackChunkName: "pro-profile-account" */ "@/views/pro/profile/ProfileAccount.vue"
+              ),
+          },
+          {
+            path: "promoter",
+            name: "pro-profile-promoter",
+            component: () =>
+              import(
+                /* webpackChunkName: "pro-profile-promoter" */ "@/views/pro/profile/ProfilePromoter.vue"
+              ),
+          },
+        ],
       },
       {
         path: "events/create",
@@ -479,11 +504,11 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+
   // Check if any matched route has `isActive` set to `false`, for pages not ready to prod
   if (!isRouteActive(to)) {
     next({ name: "path-not-found" });
     return;
-  }
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
   const authStore = useAuthStore();
@@ -514,6 +539,7 @@ router.beforeEach(async (to, from, next) => {
   next({ name: "error401" });
   return;
 });
+
 
 function isRouteActive(to) {
   return !to.matched.some((record) => record.meta.isActive === false);

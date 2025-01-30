@@ -8,10 +8,10 @@
 
 <script setup>
 import {
-  onBeforeMount,
-  onMounted,
-  ref,
-  watch,
+    onBeforeMount,
+    onMounted,
+    ref,
+    watch,
 } from 'vue';
 
 import { storeToRefs } from 'pinia';
@@ -58,7 +58,7 @@ async function checkIfRequestAlreadyExists() {
         }
         return false;
     } catch (error) {
-        
+
         return false;
     }
 }
@@ -70,7 +70,7 @@ async function submitRequest() {
             response.notify("Request sent", "Your request has been sent to be approved");
         }
     } catch (error) {
-        
+
     }
 }
 
@@ -89,7 +89,10 @@ watch(() => promoter.value.name, (newValue) => {
     promoter.value.username = newValue;
 })
 
-await init();
+onMounted(async () => {
+    await init();
+})
+
 
 
 </script>

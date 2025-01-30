@@ -1,14 +1,24 @@
 <template>
-  <!-- <form-steps v-if="user" @submit="saveProfile" :schema="userSchema" v-model:model="user" v-model:files="files"
-        labelType="left" title="Edit Profile" action="Save" :items="{ language: languages, gender: genders }">
+    <v-container>
+        <v-bottom-navigation grow>
+            <v-btn value="recent">
+                <v-icon>mdi-history</v-icon>
 
-        <template #prepend>
-            <v-alert v-if="!user.completed" title="Complete seu perfil" variant="tonal" closable border="start">Complete
-                seu perfil para aceder as funcionalidades personalizadas</v-alert>
-        </template>
-</form-steps> -->
+                <span>Recent</span>
+            </v-btn>
+            <v-btn value="favorites">
+                <v-icon>mdi-heart</v-icon>
 
-  <v-container>
+                <span>Favorites</span>
+            </v-btn>
+
+            <v-btn value="nearby">
+                <v-icon>mdi-map-marker</v-icon>
+
+                <span>Nearby</span>
+            </v-btn>
+
+        </v-bottom-navigation>
         <v-row>
             <!-- FORM -->
             <v-col cols="12">
@@ -84,18 +94,22 @@
 </template>
 
 <script setup>
-import { inject, ref, watch } from "vue";
+import {
+    inject,
+    ref,
+    watch,
+} from 'vue';
 
-import { storeToRefs } from "pinia";
-import { VDateInput } from "vuetify/labs/VDateInput";
+import { storeToRefs } from 'pinia';
+import { VDateInput } from 'vuetify/labs/VDateInput';
 
-import FormCard from "@/components/form/FormCard.vue";
-import userSchema from "@/schemas/userSchema";
-import { useFirebaseStore } from "@/store/firebase";
-import { useUserStore } from "@/store/user";
-import FormSteps from "@/components/form/FormSteps.vue";
-import FormBox from "@/components/form/FormBox.vue";
-import promoterSchema from "@/schemas/promoterSchema";
+import FormCard from '@/components/form/FormCard.vue';
+import userSchema from '@/schemas/userSchema';
+import { useFirebaseStore } from '@/store/firebase';
+import { useUserStore } from '@/store/user';
+import FormSteps from '@/components/form/FormSteps.vue';
+import FormBox from '@/components/form/FormBox.vue';
+import promoterSchema from '@/schemas/promoterSchema';
 
 const { fieldAttrs } = inject("$helpers");
 
@@ -106,49 +120,56 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 const loading = ref(false);
 const languages = ref([
-  { name: "English", value: "en" },
-  { name: "Spanish", value: "es" },
-  { name: "Portuguese", value: "pt" },
-  { name: "Italian", value: "it" },
+    { name: "English", value: "en" },
+    { name: "Spanish", value: "es" },
+    { name: "Portuguese", value: "pt" },
+    { name: "Italian", value: "it" },
 ]);
 const rules = ref({
-  required: (value) => !!value || "Field is required",
+    required: (value) => !!value || "Field is required",
 });
 
-const genders = ref(["Masculino", "Feminino", "Prefiro não dizer"]);
+const genders = ref([
+    "Masculino", "Feminino", "Prefiro não dizer"
+])
 
 const files = ref({});
 
 const firebaseStore = useFirebaseStore();
 
 async function saveProfile(event) {
-  try {
-    loading.value = true;
-    const results = await event;
+    try {
 
-    // if (!results.valid) {
-    //     document.querySelector("#" + results.errors[0].id).focus();
-    //     return false;
-    // }
-    user.value.completed = true;
-    const response = await firebaseStore.putDocument(
-      "users",
-      user.value.uid,
-      user.value
-    );
+        loading.value = true;
+        const results = await event;
 
-    if (response.ok) {
-      response.notify("", "Your personal settings is successfully updated");
+        // if (!results.valid) {
+        //     document.querySelector("#" + results.errors[0].id).focus();
+        //     return false;
+        // }
+        user.value.completed = true;
+        const response = await firebaseStore.putDocument("users", user.value.uid, user.value);
+
+        if (response.ok) {
+            response.notify("", "Your personal settings is successfully updated")
+        }
+
+
+
+
+    } catch (error) {
+
+    } finally {
+        loading.value = false;
     }
-  } catch (error) {
-  } finally {
-    loading.value = false;
-  }
 }
+
+
+
 </script>
 
 <style lang="scss" scoped>
 .label {
-  width: 75px;
+    width: 75px;
 }
 </style>

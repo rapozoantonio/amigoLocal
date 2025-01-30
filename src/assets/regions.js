@@ -29,6 +29,10 @@ export default {
       name: "São Paulo",
       id: "saopaulo",
     },
+    {
+      name: "Outras Regiões",
+      id: "outras",
+    },
   ],
   ES: [
     {

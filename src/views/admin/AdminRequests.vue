@@ -103,7 +103,7 @@ const opened = ref(false);
 
 async function getPromoterRequests() {
     const response = await firebaseStore.getCollection({ collection: "requests", query: { entity: "promoters", status: "pending" } })
-    
+
     if (response.ok) {
         promoterRequest.value = response.data;
     }
@@ -117,7 +117,7 @@ async function approveRequest(request) {
         await updateUserRole(request.id, { role: "pro", levelAccess: 3, admin: false },)
         request.approved = true;
     } catch (error) {
-        
+
     }
 }
 
@@ -130,7 +130,7 @@ async function createPromoter(promoter) {
         await updateUserRole(request.id, { role: "pro", levelAccess: 3, admin: false },)
         request.approved = true;
     } catch (error) {
-        
+
     } finally {
         appStore.loading = false;
         appStore.loadingText = ""
@@ -140,15 +140,15 @@ async function createPromoter(promoter) {
 async function updateUserRole(uid, customClaims) {
     try {
         const updateRole = httpsCallable(functions, "updateRole");
-        
+
         const response = await updateRole({ uid, customClaims });
-        
+
         if (response.data.ok) {
             return { ok: true };
         }
         return { ok: false };
     } catch (error) {
-        
+
         return { ok: false };
 
     }
@@ -162,7 +162,11 @@ watch(() => promoter.value.name, (newValue) => {
     promoter.value.username = newValue;
 })
 
-await getPromoterRequests();
+onMounted(async () => {
+    await getPromoterRequests();
+
+})
+
 
 </script>
 
