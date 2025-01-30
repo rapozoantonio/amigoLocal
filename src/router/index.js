@@ -125,7 +125,7 @@ const routes = [
                 /* webpackChunkName: "promoter-info" */ "@/views/promoters/PromoterInfo.vue"
               ),
             meta: {
-              isActive: false,
+              isActive: true,
             },
           },
           {
