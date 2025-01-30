@@ -1,8 +1,11 @@
+
 export default [
   "carnaval",
   "reveillon",
   "open bar", 
   "day party",
   "carnaval",
-  "reveillon"
+  "reveillon",
+  "lista amiga"
 ];
+

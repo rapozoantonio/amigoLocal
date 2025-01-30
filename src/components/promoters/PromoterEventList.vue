@@ -34,7 +34,7 @@
   </section>
 
   <!-- Action Buttons Row -->
-  <section class="bg-grey-darken-4 action-buttons">
+  <section class="action-buttons d-none d-md-block">
     <v-container>
       <v-row no-gutters class="flex-column gap-2">
         <v-col cols="12">
@@ -46,6 +46,18 @@
           >
             <v-icon start class="mr-2 grey--text">mdi-account-group</v-icon>
             Grupos de WhatsApp
+          </v-btn>
+        </v-col>
+
+        <v-col cols="12">
+          <v-btn
+            @click="openDirectContact"
+            block
+            variant="outlined"
+            class="grey--text"
+          >
+            <v-icon start class="mr-2 grey--text">mdi-message-text</v-icon>
+            Despedidas, Aniversários, Pix ou Dúvidas
           </v-btn>
         </v-col>
 
@@ -65,8 +77,9 @@
     </v-container>
     <v-divider></v-divider>
   </section>
+
   <!-- Content section -->
-  <section class="bg-grey-darken-4 flex-grow-1">
+  <section class="content-section">
     <v-container>
       <template v-if="Object.keys(filteredEvents || {}).length === 0">
         <v-row>
@@ -79,7 +92,7 @@
         <v-row v-for="(events, day) in filteredEvents" :key="day">
           <v-col cols="12" class="py-0">
             <v-toolbar
-              color="grey-darken-4"
+              color="background"
               :style="{
                 position: 'sticky',
                 top: `${tabsHeight}px`,
@@ -88,12 +101,13 @@
               density="compact"
             >
               <v-toolbar-title>
-                <p class="text-body-2 grey-darken-4" style="color: #9e9e9e">
+                <p class="text-body-2">
                   <v-icon size="x-small">mdi-calendar</v-icon>
                   {{ day }}
                 </p>
               </v-toolbar-title>
             </v-toolbar>
+            
             <promoter-card-horizontal
               v-for="(event, index) in events.slice(
                 0,
@@ -120,6 +134,49 @@
       </template>
     </v-container>
   </section>
+
+  <!-- Bottom Navigation for Mobile -->
+  <v-bottom-navigation
+    v-model="activeNav"
+    grow
+    class="d-md-none"
+    color="primary"
+    fixed
+  >
+    <!-- Events Tab - Primary Focus -->
+
+    <v-btn
+      value="events"
+      @click="toggleEventView"
+      :class="{
+        'v-btn--active': activeNav === (showingTodayEvents ? 'today' : 'all'),
+      }"
+    >
+      <v-icon>{{
+        showingTodayEvents ? "mdi-calendar" : "mdi-calendar-today"
+      }}</v-icon>
+      {{ buttonText }}
+    </v-btn>
+
+    <!-- Quick Share/Save -->
+    <v-btn value="share" @click="shareList">
+      <v-icon>mdi-share</v-icon>
+      Compartilhar
+    </v-btn>
+
+    <!-- Contact Button -->
+    <v-btn value="contact" @click="openDirectContact">
+      <v-icon>mdi-whatsapp</v-icon>
+      Contato
+    </v-btn>
+
+    <!-- Groups -->
+    <v-btn value="groups" @click="openWhatsappGroups">
+      <v-icon>mdi-account-group</v-icon>
+      Grupos
+    </v-btn>
+  </v-bottom-navigation>
+
   <WhatsappGroupsModal ref="whatsappGroupsModal" />
 </template>
 <script setup>
@@ -141,6 +198,7 @@ const { nextEvents } = storeToRefs(eventsStore);
 const selectedCategory = ref("proximos");
 const whatsappGroupsModal = ref(null);
 const tabsHeight = ref(48);
+const activeNav = ref("events");
 
 const eventDisplayLimits = ref({
   proximos: 5,
@@ -149,9 +207,37 @@ const eventDisplayLimits = ref({
 });
 
 // Computed properties
-const filteredEvents = computed(() =>
-  filterEventsByCategory(nextEvents.value, selectedCategory.value)
-);
+const filteredEvents = computed(() => {
+  if (!nextEvents.value) return {};
+
+  return Object.entries(nextEvents.value).reduce((acc, [day, eventsForDay]) => {
+    let filtered = eventsForDay;
+
+    // Category filter
+    filtered = filtered.filter(
+      (event) =>
+        selectedCategory.value === "proximos" ||
+        event.categories?.includes(selectedCategory.value)
+    );
+
+    // Today filter
+    if (showingTodayEvents.value) {
+      const today = new Date().toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+      });
+      filtered = filtered.filter((event) => {
+        const eventDate = formatDate(event.startDate || day);
+        return eventDate === today;
+      });
+    }
+
+    if (filtered.length > 0) {
+      acc[day] = filtered;
+    }
+    return acc;
+  }, {});
+});
 
 const hasMoreEventsInCurrentTab = computed(() => {
   const totalEvents = Object.values(filteredEvents.value || {}).flat().length;
@@ -204,6 +290,13 @@ function shareList() {
   window.open(whatsappUrl, "_blank");
 }
 
+// Add this with the other functions in the script setup
+function openDirectContact() {
+  const phoneNumber = "YOUR_WHATSAPP_NUMBER"; // Replace with actual number
+  const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  window.open(whatsappUrl, "_blank");
+}
+
 // Event processing
 function sortEventsByDateTime(events) {
   if (!events) return {};
@@ -229,19 +322,17 @@ function sortEventsByDateTime(events) {
   }, {});
 }
 
-function filterEventsByCategory(events, category) {
-  if (!events) return {};
+const headerText = computed(() =>
+  showingTodayEvents.value ? "Eventos de Hoje" : "Todos os Eventos"
+);
+const showingTodayEvents = ref(false);
+const buttonText = computed(() =>
+  showingTodayEvents.value ? "Todos os Eventos" : "Eventos Hoje"
+);
 
-  return Object.entries(events).reduce((acc, [day, eventsForDay]) => {
-    const filteredEvents = eventsForDay.filter(
-      (event) => category === "proximos" || event.categories?.includes(category)
-    );
-
-    if (filteredEvents.length > 0) {
-      acc[day] = filteredEvents;
-    }
-    return acc;
-  }, {});
+function toggleEventView() {
+  showingTodayEvents.value = !showingTodayEvents.value;
+  activeNav.value = showingTodayEvents.value ? "today" : "all";
 }
 
 // Formatting utilities
@@ -327,5 +418,24 @@ img {
   .width-full {
     width: auto;
   }
+}
+
+// Ensure the bottom navigation stays on top
+.v-bottom-navigation {
+  z-index: 1000;
+}
+
+.action-buttons {
+  padding-block: 0.5rem;
+  margin-top: -1px; // Remove any gap
+}
+
+section {
+  position: relative; // Ensure sections stack properly
+  z-index: 1;
+}
+
+.w-min-0 {
+  min-width: 0px !important;
 }
 </style>

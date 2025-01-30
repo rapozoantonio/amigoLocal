@@ -1,7 +1,7 @@
 <template>
-  <v-main>
-    <router-view :key="route.path" />
-  </v-main>
+  <div style="padding-top: 42px">
+  <router-view :key="route.path" />
+  </div>
 </template>
 
 <script setup>

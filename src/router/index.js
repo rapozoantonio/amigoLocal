@@ -13,9 +13,6 @@ const routes = [
       {
         path: "",
         name: "home",
-        // route level code-splitting
-        // this generates a separate chunk (about.[hash].js) for this route
-        // which is lazy-loaded when the route is visited.
         component: () =>
           import(/* webpackChunkName: "home" */ "@/views/Home.vue"),
         redirect: "/events",
@@ -25,77 +22,66 @@ const routes = [
         name: "About",
         component: () =>
           import(/* webpackChunkName: "about" */ "@/views/About.vue"),
+        meta: {
+          isActive: false,
+        },
+      },
+      {
+        path: "select-region", // Removed the leading slash
+        name: "event-region-selector",
+        component: () => import("@/views/events/EventRegionSelector.vue"),
       },
       {
         path: "events",
-        name: "event-list",
-        component: () =>
-          import(
-            /* webpackChunkName: "region-selector" */ "@/views/events/RegionSelector.vue"
-          ),
+        component: () => import("@/views/events/RegionSelector.vue"),
+        children: [
+          {
+            path: "",
+            name: "event-list",
+            component: () => import("@/views/events/RegionSelector.vue"),
+          },
+        ],
       },
       {
         path: "events/:country/:region",
-        // name: "events",
         props: true,
-        component: () =>
-          import(
-            /* webpackChunkName: "events" */ "@/views/events/EventsPage.vue"
-          ),
+        component: () => import("@/views/events/EventsPage.vue"),
         children: [
           {
             path: "",
             name: "events",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-all" */ "@/views/events/EventListAll.vue"
-              ),
+            component: () => import("@/views/events/EventListAll.vue"),
           },
           {
             path: "foryou",
             name: "events-foryou",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-foryou" */ "@/views/events/EventListForyou.vue"
-              ),
+            component: () => import("@/views/events/EventListForyou.vue"),
           },
           {
             path: "new",
             name: "events-new",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-new" */ "@/views/events/EventListNew.vue"
-              ),
+            component: () => import("@/views/events/EventListNew.vue"),
           },
           {
             path: "openbar",
             name: "events-openbar",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-openbar" */ "@/views/events/EventListOpenbar.vue"
-              ),
+            component: () => import("@/views/events/EventListOpenbar.vue"),
           },
           {
             path: "carnaval",
             name: "events-carnaval",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-carnaval" */ "@/views/events/EventListCarnaval.vue"
-              ),
+            component: () => import("@/views/events/EventListCarnaval.vue"),
           },
           {
             path: "reveillon",
             name: "events-reveillon",
             props: true,
-            component: () =>
-              import(
-                /* webpackChunkName: "events-reveillon" */ "@/views/events/EventListReveillon.vue"
-              ),
+            component: () => import("@/views/events/EventListReveillon.vue"),
           },
         ],
       },
@@ -108,7 +94,6 @@ const routes = [
             /* webpackChunkName: "event-id" */ "@/views/events/EventId.vue"
           ),
       },
-
       {
         path: "login",
         name: "login",
@@ -121,6 +106,7 @@ const routes = [
         component: () =>
           import(/* webpackChunkName: "register" */ "@/views/Register.vue"),
       },
+      //TODO: change id to name, and search other router-link :to="{ name: 'promoter-id',
       {
         path: "promoters/:id",
         name: "promoter-id",
@@ -138,6 +124,9 @@ const routes = [
               import(
                 /* webpackChunkName: "promoter-info" */ "@/views/promoters/PromoterInfo.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
           {
             path: "events",
@@ -147,6 +136,9 @@ const routes = [
               import(
                 /* webpackChunkName: "promoter-events" */ "@/views/promoters/PromoterEvents.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
           {
             path: "past-events",
@@ -156,6 +148,9 @@ const routes = [
               import(
                 /* webpackChunkName: "promoter-past-events" */ "@/views/promoters/PromoterPastEvents.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
           {
             path: "news",
@@ -165,6 +160,9 @@ const routes = [
               import(
                 /* webpackChunkName: "promoter-news" */ "@/views/promoters/PromoterNews.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
         ],
       },
@@ -176,6 +174,9 @@ const routes = [
           import(
             /* webpackChunkName: "producer" */ "@/views/producers/Producer.vue"
           ),
+        meta: {
+          isActive: false,
+        },
         children: [
           {
             path: "",
@@ -185,6 +186,9 @@ const routes = [
               import(
                 /* webpackChunkName: "producer-info" */ "@/views/producers/ProducerInfo.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
           {
             path: "events",
@@ -194,6 +198,9 @@ const routes = [
               import(
                 /* webpackChunkName: "producer-events" */ "@/views/producers/ProducerEvents.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
           {
             path: "past-events",
@@ -203,6 +210,9 @@ const routes = [
               import(
                 /* webpackChunkName: "producer-past-events" */ "@/views/producers/ProducerPastEvents.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
           {
             path: "news",
@@ -212,6 +222,9 @@ const routes = [
               import(
                 /* webpackChunkName: "producer-news" */ "@/views/producers/ProducerNews.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
         ],
       },
@@ -223,6 +236,9 @@ const routes = [
           import(
             /* webpackChunkName: "location-id" */ "@/views/locations/Location.vue"
           ),
+        meta: {
+          isActive: false,
+        },
         children: [
           {
             path: "",
@@ -232,6 +248,9 @@ const routes = [
               import(
                 /* webpackChunkName: "location-info" */ "@/views/locations/LocationInfo.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
           {
             path: "events",
@@ -241,6 +260,9 @@ const routes = [
               import(
                 /* webpackChunkName: "location-events" */ "@/views/locations/LocationEvents.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
           {
             path: "past-events",
@@ -250,6 +272,9 @@ const routes = [
               import(
                 /* webpackChunkName: "location-past-events" */ "@/views/locations/LocationPastEvents.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
           {
             path: "news",
@@ -259,6 +284,9 @@ const routes = [
               import(
                 /* webpackChunkName: "location-news" */ "@/views/locations/LocationNews.vue"
               ),
+            meta: {
+              isActive: false,
+            },
           },
         ],
       },
@@ -450,6 +478,21 @@ const routes = [
         /* webpackChunkName: "path-not-found" */ "@/views/PathNotFound.vue"
       ),
   },
+  {
+    path: "/sitemap.xml",
+    name: "sitemap",
+    component: () => import("@/views/SitemapXML.vue"),
+  },
+  {
+    path: "/termos-de-uso",
+    name: "termos-de-uso",
+    component: () => import("@/views/TermsOfUse.vue"),
+  },
+  {
+    path: "/termos-de-privacidade",
+    name: "termos-de-privacidade",
+    component: () => import("@/views/PrivacyPolicy.vue"),
+  },
 ];
 
 const router = createRouter({
@@ -461,9 +504,13 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from, next) => {
+
+  // Check if any matched route has `isActive` set to `false`, for pages not ready to prod
+  if (!isRouteActive(to)) {
+    next({ name: "path-not-found" });
+    return;
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
-
   const authStore = useAuthStore();
   const userStore = useUserStore();
 
@@ -493,39 +540,9 @@ router.beforeEach(async (to, from, next) => {
   return;
 });
 
-// router.beforeEach(async (to, from, next) => {
-//
-//
-//   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-//   const auth = useAuthStore();
-//   const token = await auth.getUserClaims();
-//   if (token) {
-//     const userStore = useUserStore();
-//     if (!userStore.user || userStore.user.uid !== token.claims.user_id) {
-//       const user = await userStore.getUser(token.claims.user_id);
-//       if (!user.completed) {
-//         next({ name: "pro-profile", redirect: btoa(to.fullPath) });
-//         return;
-//       }
-//     }
-//   }
-//
-//
-//   if (!requiresAuth) {
-//
-//     next();
-//     return;
-//   }
-//
-//
-//   const user = await auth.getCurrentUser();
-//
-//   if (!user) {
-//
-//     next({ name: "login", query: { redirect: btoa(to.fullPath) } });
-//     return;
-//   }
-//   next();
-// });
+
+function isRouteActive(to) {
+  return !to.matched.some((record) => record.meta.isActive === false);
+}
 
 export default router;

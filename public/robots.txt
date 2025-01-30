@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Sitemap: https://jubilos.com.br/sitemap.xml
+
+# Optional: Block specific paths
+# Disallow: /pro/
+# Disallow: /admin/

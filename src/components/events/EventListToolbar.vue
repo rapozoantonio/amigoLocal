@@ -1,53 +1,54 @@
 <template>
-    <div class="bg-black" color="#000">
-        <v-container>
-            <v-row no-gutters justify="center" justify-md="space-between" align="center">
-                <v-col cols="auto">
-                    <v-tabs color="primary" density="compact">
-                        <v-tab exact variant="text" size="small" style="text-transform: none"
-                            :to="{ name: 'events', query: route.query }">
-                            All
-                        </v-tab>
-                        <v-tab exact variant="text" size="small" style="text-transform: none"
-                            :to="{ name: 'events-carnaval', query: route.query }">
-                           Carnaval
-                        </v-tab>
-                        <!-- <v-tab exact variant="text" size="small" style="text-transform: none"
-                            :to="{ name: 'events-new' }">
-                            New
-                        </v-tab> -->
-                        <v-tab exact variant="text" size="small" style="text-transform: none"
-                            :to="{ name: 'events-reveillon', query: route.query }">
-                            Reveillon
-                        </v-tab>
-                        <v-tab exact variant="text" size="small" style="text-transform: none"
-                            :to="{ name: 'events-openbar', query: route.query }">
-                            Open Bar
-                        </v-tab>
-                    </v-tabs>
-                    <!-- <v-btn variant="text" size="small" style="text-transform: none">Todos</v-btn>
-                    <v-btn variant="text" size="small" style="text-transform: none">Para você</v-btn>
-                    <v-btn variant="text" size="small" style="text-transform: none">Novo</v-btn>
-                    <v-btn variant="text" size="small" style="text-transform: none">Best picks</v-btn> -->
-                </v-col>
-                <v-spacer></v-spacer>
-                <v-col cols="auto">
-                    <!-- <v-btn class="mx-1" variant="outlined" rounded="pill" style="text-transform: none">Todos</v-btn> -->
-                    <event-list-genre-selector></event-list-genre-selector>
-                    <!-- <v-btn class="mx-1" variant="outlined" rounded="pill" style="text-transform: none">Novo</v-btn> -->
-                </v-col>
-            </v-row>
-        </v-container>
-    </div>
+  <div class="bg-black" color="#000">
+    <v-container>
+      <v-col class="d-flex flex-column">
+        <v-row cols="auto" class="mb-4">
+          <v-tabs color="primary" density="compact">
+            <v-tab
+              exact
+              variant="text"
+              size="small"
+              style="text-transform: none"
+              :to="{ name: 'events', query: route.query }"
+            >
+              All
+            </v-tab>
+            <v-tab
+              exact
+              variant="text"
+              size="small"
+              style="text-transform: none"
+              :to="{ name: 'events-carnaval', query: route.query }"
+            >
+              Carnaval
+            </v-tab>
+            <v-tab
+              exact
+              variant="text"
+              size="small"
+              style="text-transform: none"
+              :to="{ name: 'events-reveillon', query: route.query }"
+            >
+              Reveillon
+            </v-tab>
+          </v-tabs>
+        </v-row>
+        <v-row cols="auto">
+          <event-list-date-selector class="mr-2"></event-list-date-selector>
+          <event-list-genre-selector class="mr-2"></event-list-genre-selector>
+          <event-list-type-of-event-selector></event-list-type-of-event-selector>
+        </v-row>
+      </v-col>
+    </v-container>
+  </div>
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router';
+import { useRoute } from "vue-router";
 
-import EventListGenreSelector from './EventListGenreSelector.vue';
+import EventListGenreSelector from "./EventListGenreSelector.vue";
+import EventListDateSelector from "./EventListDateSelector.vue";
+import EventListTypeOfEventSelector from "./EventListTypeOfEventSelector.vue";
 
 const route = useRoute();
-
 </script>
-
-<style lang="scss" scoped></style>

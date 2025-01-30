@@ -76,7 +76,7 @@
 
                                             <!-- ACTION BUTTON -->
                                             <v-col cols="auto">
-                                                <v-btn color="grey" :disabled="step === 1" @click="prev">Prev</v-btn>
+                                                <v-btn color="grey" :disabled="step === 1" @click="prev">Anterior</v-btn>
                                             </v-col>
 
                                             <v-spacer></v-spacer>
@@ -104,8 +104,8 @@
                                                         schema.sections.length
                                                             === step
                                                             ?
-                                                            'Submit' :
-                                                            'Next' }}</v-btn>
+                                                            'Enviar' :
+                                                            'Próximo' }}</v-btn>
                                             </v-col>
 
                                             <!-- SLOT ACTION APPEND SECTION-->

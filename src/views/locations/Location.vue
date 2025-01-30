@@ -1,7 +1,7 @@
 <template>
     <div v-if="location">
         <!-- HERO  -->
-        <section class="bg-grey-darken-4">
+        <section>
             <v-container>
                 <v-row class="mt-10">
                     <v-col>
