@@ -1,7 +1,4 @@
 <template>
-  <div v-if="!mounted" id="loading" class="animated-gradient">
-    <div class="loader"></div>
-  </div>
   <router-view />
 </template>
 
