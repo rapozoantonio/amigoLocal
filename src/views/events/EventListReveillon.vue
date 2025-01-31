@@ -16,12 +16,6 @@
         </v-alert>
       </v-container>
    
-      <!-- Featured Events -->
-      <event-list-featured
-        v-else
-        :events="filteredEvents"
-      ></event-list-featured>
-   
       <!-- All Events List -->
       <event-list-next-events
         v-if="filteredEvents?.length"

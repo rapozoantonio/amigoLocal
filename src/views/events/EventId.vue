@@ -1,7 +1,6 @@
 <template>
     <div v-if="event">
         <event-id-header :event="event"></event-id-header>
-        <event-id-lineup :event="event"></event-id-lineup>
         <event-id-details :event="event"></event-id-details>
         <!-- <event-list-popular-news></event-list-popular-news> -->
         <event-list-links-footer></event-list-links-footer>
@@ -15,7 +14,6 @@ import { storeToRefs } from 'pinia';
 
 import EventIdDetails from '@/components/events/EventIdDetails.vue';
 import EventIdHeader from '@/components/events/EventIdHeader.vue';
-import EventIdLineup from '@/components/events/EventIdLineup.vue';
 import EventListLinksFooter from '@/components/events/EventListLinksFooter.vue';
 import { useEventsStore } from '@/store/events';
 

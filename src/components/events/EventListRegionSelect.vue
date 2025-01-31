@@ -1,23 +1,25 @@
 <template>
-    <v-container v-if="regions">
+    <v-container v-if="regions" class="py-0" >
         <v-row>
             <v-col cols="12">
-                <v-btn variant="plain" height="100" @click="regionSelectionOpened = true">
-                    <v-avatar size="30" class="mr-4">
+                <!-- Adjusted button size and font size for mobile -->
+                <v-btn variant="plain" height="60" @click="regionSelectionOpened = true">
+                    <v-avatar size="24" class="mr-2">
                         <v-img :src="'https://flagcdn.com/' + country.toLowerCase() + '.svg'"></v-img>
                     </v-avatar>
-                    <span class="text-h4">{{ regionById(region, country.toUpperCase()).name }}</span>
-                    <v-icon class="ml-2" size="x-large">mdi-chevron-down</v-icon>
+                    <span class="text-h6">{{ regionById(region, country.toUpperCase()).name }}</span>
+                    <v-icon class="ml-2" size="medium">mdi-chevron-down</v-icon>
                 </v-btn>
             </v-col>
         </v-row>
-        <v-navigation-drawer floating temporary width="350" location="right" v-model="regionSelectionOpened">
+        <!-- Responsive navigation drawer -->
+        <v-navigation-drawer floating temporary :width="drawerWidth" location="right" v-model="regionSelectionOpened">
             <v-list>
                 <v-list-item :to="{ name: 'events', params: { country, region: region.id } }"
                     v-for="(region) in regions[country.toUpperCase()]" :key="region.id" link>
 
                     <template v-slot:prepend>
-                        <v-avatar size="30">
+                        <v-avatar size="24">
                             <v-img :src="'https://flagcdn.com/' + country.toLowerCase() + '.svg'"></v-img>
                         </v-avatar>
                     </template>
@@ -32,6 +34,7 @@
 import {
   onMounted,
   ref,
+  computed,
 } from 'vue';
 
 import { storeToRefs } from 'pinia';
@@ -47,14 +50,12 @@ const { regions, regionById } = storeToRefs(configStore);
 
 const regionSelectionOpened = ref(false);
 
-// function selectRegion(region) {
-//     region.value = city;
-//     regionSelectionOpened.value = false;
-// }
+// Responsive drawer width
+const drawerWidth = computed(() => {
+    return window.innerWidth > 600 ? 350 : window.innerWidth * 0.9;
+});
 
 onMounted(() => {
     configStore.getEventConfig();
 })
 </script>
-
-<style lang="scss" scoped></style>

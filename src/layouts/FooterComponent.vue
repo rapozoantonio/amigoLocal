@@ -7,11 +7,11 @@
       <!-- First Row: Location and Language -->
       <v-row>
         <v-col>
-          <p>
+          <p class="text-grey">
             <v-icon size="x-small" class="mr-2">
               <flag-icon country="br"></flag-icon>
             </v-icon>
-            <span class="text-body-2">Brasil</span>
+            <span class="text-body-2 ">Brasil</span>
             <span class="ml-10 text-caption">Idioma</span>
             <span class="text-body-2 ml-2">Português</span>
           </p>
@@ -19,7 +19,6 @@
         <!-- Links -->
         <v-col cols="auto">
           <v-breadcrumbs
-            density="compact"
             class="pa-0 text-grey"
             divider="-"
             :items="items"
@@ -27,8 +26,7 @@
             <template v-slot:item="{ item }">
               <v-btn
                 variant="plain"
-                color="grey"
-                class="text-caption px-1"
+                class="text-caption px-1 text-grey"
                 :href="item.href"
                 height="24"
               >
@@ -42,12 +40,12 @@
       <!-- Second Row: Copyright and Social -->
       <v-row>
         <v-col class="mt-2">
-          <p class="text-caption">
+          <p class="text-caption text-grey">
             © 2025 Jubilos Ltd. Todos os direitos reservados.
           </p>
         </v-col>
         <v-col cols="auto" class="mt-2">
-          <div class="d-flex" style="gap: 20px">
+          <div class="d-flex text-grey" style="gap: 20px">
             <v-btn
               href="https://www.instagram.com/jubilos.you/"
               target="_blank"

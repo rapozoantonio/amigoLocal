@@ -1,60 +1,83 @@
 <template>
   <v-container>
+    <!-- Links Section -->
+    <div v-if="event.links" class="mb-6">
+      <v-card color="surface" variant="outlined" class="pa-4">
+        <div class="d-flex flex-column">
+          <v-btn
+            v-for="link in event.links"
+            :key="link.name"
+            :href="!link.url.includes('http') ? 'http://' + link.url : link.url"
+            target="_blank"
+            color="error"
+            block
+            class="link-button mb-3"
+            variant="flat"
+          >
+            <v-icon start size="20" class="mr-2">
+              {{ getLinkIcon(link.name) }}
+            </v-icon>
+            {{ link.name }}
+            <v-icon end size="16" class="ml-1">mdi-open-in-new</v-icon>
+          </v-btn>
+        </div>
+      </v-card>
+    </div>
+    <v-row>
+      <v-col cols="12" class="py-4">
+        <!-- Lineup Section -->
+        <p class="text-primary lineup-title font-weight-bold mb-3">
+          🎧 Line-up
+        </p>
+        <div class="lineup-content">
+          <p v-html="event.lineup" class="font-weight-bold"></p>
+        </div>
+      </v-col>
+    </v-row>
+
     <v-row>
       <v-col cols="12" md="6">
-        <div class="event-details">
-          <p>
-            {{ event.description }}
-          </p>
+        <p class="text-primary lineup-title font-weight-bold mb-3">
+          Detalhes
+        </p>
+        <div class="event-details mb-6">
+          <p class="text-body-1">{{ event.description }}</p>
         </div>
-        <v-row class="mt-4">
-          <v-col cols="12" v-if="event.links">
-            <p class="text-caption text-grey">Links</p>
-            <div v-for="link in event.links" :key="link.name">
-              <a
-                link
-                class="link text-link-text hover-primary"
-                target="_blank"
-                :href="
-                  !link.url.includes('http') ? 'http://' + link.url : link.url
-                "
-                >{{ link.name }}
-                <v-icon class="mb-1" size="x-small">mdi-open-in-new</v-icon></a
-              >
-            </div>
-          </v-col>
 
+        <!-- Additional Info -->
+        <v-row>
           <v-col cols="12" v-if="event.price">
-            <p class="text-caption text-grey">Preços</p>
-            <p class="text-OnSurface" v-for="{ name, value } in event.price" :key="name">
+            <p class="text-caption text-grey mb-2">Preços</p>
+            <p
+              v-for="{ name, value } in event.price"
+              :key="name"
+              class="text-subtitle-2 mb-1"
+            >
               {{ name }}: R$ {{ value }}
             </p>
           </v-col>
 
           <v-col cols="6">
-            <p class="text-caption text-grey">Última atualização</p>
-            <p>
+            <p class="text-caption text-grey mb-1">Última atualização</p>
+            <p class="text-subtitle-2">
               {{ new Date(event.updated_at?.toDate()).toLocaleString("pt-BR") }}
             </p>
           </v-col>
 
           <v-col cols="6">
-            <p class="text-caption text-grey">Idade mínima</p>
-            <p class="text-OnSurface">{{ event.age }}</p>
+            <p class="text-caption text-grey mb-1">Idade mínima</p>
+            <p class="text-subtitle-2">{{ event.age }}</p>
           </v-col>
         </v-row>
       </v-col>
+
+      <!-- Event Image -->
       <v-col cols="12" md="6">
         <v-img
-          :src="
-            event.image
-              ? event.image?.url
-              : event.flyerFront
-              ? event.flyerFront.url
-              : '/img/placeholder_event_1.jpg'
-          "
-        >
-        </v-img>
+          :src="event.image?.url || event.flyerFront?.url || '/img/placeholder_event_1.jpg'"
+          class="rounded"
+          :aspect-ratio="1"
+        ></v-img>
       </v-col>
     </v-row>
   </v-container>
@@ -62,10 +85,67 @@
 
 <script setup>
 const { event } = defineProps(["event"]);
+
+const getLinkIcon = (name) => {
+  const lowercaseName = name.toLowerCase();
+  if (lowercaseName.includes('ingresso')) return 'mdi-ticket';
+  if (lowercaseName.includes('instagram')) return 'mdi-instagram';
+  if (lowercaseName.includes('agenda')) return 'mdi-calendar';
+  return 'mdi-link';
+};
 </script>
 
 <style lang="scss" scoped>
+.link-button {
+  height: 48px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: none;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+  
+  @media (max-width: 600px) {
+    height: 44px;
+  }
+}
+
+:deep(.v-btn--variant-flat) {
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+:deep(.v-btn__content) {
+  justify-content: flex-start;
+}
+
 .event-details p {
-  padding-bottom: 16px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.lineup-title {
+  font-size: 1.75rem;
+  line-height: 1.2;
+  
+  @media (min-width: 600px) {
+    font-size: 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+}
+
+.lineup-content {
+  font-size: 1.125rem;
+  line-height: 1.4;
+  
+  @media (min-width: 600px) {
+    font-size: 1.25rem;
+  }
+  
+  :deep(p) {
+    margin-bottom: 0.5rem;
+  }
 }
 </style>

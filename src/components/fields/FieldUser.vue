@@ -40,7 +40,7 @@
       </template>
 
       <template #prepend>
-        <v-icon class="mt-4">mdi-account-multiple</v-icon>
+        <v-icon class="mt-4">mdi-account-group</v-icon>
       </template>
 
       <template #close>

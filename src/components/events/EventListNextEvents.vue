@@ -1,25 +1,40 @@
 <template>
   <section class="flex-grow-1">
     <v-container>
+      <!-- Loop through the days in nextEvents -->
       <v-row v-for="(events, day) in nextEvents" :key="day">
         <v-col cols="12">
           <v-toolbar
             color="background"
-            style="position: sticky; top: 48px; z-index: 999"
+            class="sticky-toolbar"
             density="compact"
           >
             <v-toolbar-title>
-              <p class="text-h5">
-                <v-icon size="x-small">mdi-calendar</v-icon>
-                {{ day }}
-              </p>
+              <div class="text-grey-darken-1 d-flex align-center py-1">
+                <v-icon size="18" class="mr-2">mdi-calendar</v-icon>
+                <span class="text-subtitle-1 text-sm-h6 font-weight-medium">
+                  {{ day }}
+                </span>
+              </div>
             </v-toolbar-title>
           </v-toolbar>
-          <event-card-horizontal
-            v-for="event in events"
-            :key="event.id"
-            :event="event"
-          ></event-card-horizontal>
+          <!-- If there are events, display them -->
+          <template v-if="events && events.length">
+            <event-card-horizontal
+              v-for="event in events"
+              :key="event.id"
+              :event="event"
+            />
+          </template>
+          <!-- Otherwise, show a skeleton placeholder -->
+          <template v-else>
+            <v-skeleton-loader
+              v-for="i in 3"
+              :key="i"
+              type="list-item-avatar"
+              class="mb-2"
+            />
+          </template>
         </v-col>
       </v-row>
     </v-container>
@@ -27,15 +42,11 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-
 import { storeToRefs } from "pinia";
-
 import EventCardHorizontal from "@/components/events/EventCardHorizontal.vue";
 import { useEventsStore } from "@/store/events";
 
 const eventsStore = useEventsStore();
-
 const { nextEvents } = storeToRefs(eventsStore);
 </script>
 
@@ -43,5 +54,11 @@ const { nextEvents } = storeToRefs(eventsStore);
 img {
   display: block;
   width: 100%;
+}
+
+.sticky-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 4;
 }
 </style>

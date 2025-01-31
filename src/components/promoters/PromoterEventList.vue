@@ -101,7 +101,7 @@
               density="compact"
             >
               <v-toolbar-title>
-                <p class="text-body-2">
+                <p class="text-body-2 text-grey-darken-1">
                   <v-icon size="x-small">mdi-calendar</v-icon>
                   {{ day }}
                 </p>

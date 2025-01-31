@@ -1,25 +1,42 @@
 <template>
   <section class="flex-grow-1">
-    <v-container>
-      <v-row v-for="(events, day) in nextEvents" :key="day">
-        <v-col cols="12">
+    <v-container class="pa-0 pa-sm-2">
+      <v-row v-for="(events, day) in nextEvents" :key="day" class="ma-0">
+        <v-col cols="12" class="pa-0 pa-sm-2">
           <v-toolbar
             color="background"
-            style="position: sticky; top: 48px; z-index: 999"
+            class="sticky-toolbar"
             density="compact"
           >
             <v-toolbar-title>
-              <p class="text-h5">
-                <v-icon size="x-small">mdi-calendar</v-icon>
-                {{ day }}
-              </p>
+              <div class="text-grey-darken-1 d-flex align-center py-1">
+                <v-icon size="18" class="mr-2">mdi-calendar</v-icon>
+                <span class="text-subtitle-1 text-sm-h6 font-weight-medium">
+                  {{ day }}
+                </span>
+              </div>
             </v-toolbar-title>
           </v-toolbar>
-          <event-card-horizontal
-            v-for="event in events"
-            :key="event.id"
-            :event="event"
-          ></event-card-horizontal>
+          <div class="events-list">
+            <!-- If no events, show skeleton placeholders -->
+            <template v-if="!events || !events.length">
+              <v-skeleton-loader
+                v-for="index in 3"
+                :key="index"
+                type="list-item-avatar"
+                class="mb-2"
+              />
+            </template>
+            <!-- Otherwise, show the event cards -->
+            <template v-else>
+              <event-card-horizontal
+                v-for="event in events"
+                :key="event.id"
+                :event="event"
+                class="mb-2"
+              />
+            </template>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -27,33 +44,29 @@
 </template>
 
 <script setup>
-import { onMounted, watch, ref } from "vue";
+import { onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
 
-// COMPONENTS
-import EventListFeatured from "@/components/events/EventListFeatured.vue";
-import EventListNextEvents from "@/components/events/EventListNextEvents.vue";
-
 import EventCardHorizontal from "@/components/events/EventCardHorizontal.vue";
-
 import { useEventsStore } from "@/store/events";
 
-const route = useRoute();
-const eventsStore = useEventsStore();
-const router = useRouter();
+// Props
+const { country, region } = defineProps(["country", "region"]);
 
+// Pinia Store
+const route = useRoute();
+const router = useRouter();
+const eventsStore = useEventsStore();
+
+// De-structure store refs (e.g., nextEvents, events, etc.)
 const {
-  events,
   nextEvents,
-  loading,
+  events,
   selectedGenres,
   selectedCategories,
   selectedDateRange,
 } = storeToRefs(eventsStore);
-
-// URL PARAMS - route.params
-const { country, region } = defineProps(["country", "region"]);
 
 watch(
   () => route.query.genre,
@@ -65,36 +78,59 @@ watch(
 watch(
   () => route.query.categories,
   (newValue) => {
-    selectedTypes.value = newValue;
+    selectedCategories.value = newValue;
   }
 );
 
 watch(
   () => route.query.dateRange,
   (newValue) => {
-    selectedTypes.value = newValue;
+    selectedDateRange.value = newValue;
   }
 );
 
 onMounted(() => {
   if (route.query.genre) {
-    selectedGenres.value =
-      typeof route.query.genre === "string"
-        ? [route.query.genre]
-        : route.query.genre;
+    selectedGenres.value = Array.isArray(route.query.genre)
+      ? route.query.genre
+      : [route.query.genre];
   }
   if (route.query.categories) {
-    selectedCategories.value =
-      typeof route.query.categories === "string"
-        ? [route.query.categories]
-        : route.query.categories;
+    selectedCategories.value = Array.isArray(route.query.categories)
+      ? route.query.categories
+      : [route.query.categories];
   }
   if (route.query.dateRange) {
-    selectedDateRange.value =
-      typeof route.query.dateRange === "string"
-        ? [route.query.dateRange]
-        : route.query.dateRange;
+    selectedDateRange.value = Array.isArray(route.query.dateRange)
+      ? route.query.dateRange
+      : [route.query.dateRange];
   }
+
+  // Fetch events from the store
   eventsStore.getEventsByRegion(country.toUpperCase(), region);
 });
 </script>
+
+<style scoped>
+.sticky-toolbar {
+  position: sticky;
+  top: 48px;
+  z-index: 4;
+  border-radius: 0;
+}
+
+.events-list {
+  padding: 8px 12px;
+}
+
+@media (min-width: 600px) {
+  .sticky-toolbar {
+    border-radius: 8px;
+    margin: 4px 0;
+  }
+
+  .events-list {
+    padding: 8px 0;
+  }
+}
+</style>

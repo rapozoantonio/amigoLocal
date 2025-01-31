@@ -2,7 +2,7 @@
   <v-container class="pb-16">
     <v-row class="pt-10">
       <v-col cols="12">
-        <p class="text-h5 text-grey mb-4">Você é um promoter?</p>
+        <p class="text-h5 mb-4">Você é um promoter?</p>
         <v-btn
           :to="{ name: 'pro-events-create' }"
           style="text-transform: none"

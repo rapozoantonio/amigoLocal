@@ -3,7 +3,7 @@
     <v-container v-if="featuredEvents.length > 0">
       <v-row>
         <v-col cols="12">
-          <div class="d-flex align-center justify-space-between mb-4">
+          <div class="d-flex align-center justify-space-between mb-2 mb-sm-4">
             <p class="text-caption text-grey-darken-1">
               {{ totalUpcomingEvents }} próximos eventos
             </p>
@@ -17,7 +17,7 @@
           </div>
         </v-col>
         <v-col cols="12">
-          <p class="text-h4 text-primary font-weight-bold">🔥 Em Alta</p>
+          <p class="text-h5 text-sm-h4 font-weight-bold text-grey-darken-1">🔥 Em Alta</p>
         </v-col>
       </v-row>
       <v-row>
@@ -37,6 +37,11 @@
         </v-col>
       </v-row>
     </v-container>
+
+    <!-- Loading State -->
+    <v-container v-else>
+      <v-skeleton-loader type="article" class="mb-4"></v-skeleton-loader>
+    </v-container>
   </section>
 </template>
 
@@ -44,7 +49,7 @@
 import { useEventsStore } from "@/store/events";
 import { storeToRefs } from "pinia";
 import EventCardVertical from "@/components/events/EventCardVertical.vue";
-import { computed } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 
@@ -59,16 +64,25 @@ const removeFilters = () => {
 const {
   nextEvents,
   featuredEvents,
-  loading,
   selectedGenres,
   filteredEvents,
   getTotalUpcomingEvents,
 } = storeToRefs(eventsStore);
 
+// Watch for featuredEvents changes and fetch if empty
+watch(
+  featuredEvents,
+  (newEvents) => {
+    if (!newEvents?.length) {
+      eventsStore.fetchFeaturedEvents?.();
+    }
+  },
+  { immediate: true }
+);
+
 // Create responsive events computed property with null check
 const responsiveEvents = computed(() => {
   if (!featuredEvents?.value) return [];
-
   const sliceSize = mobile.value ? 3 : 6;
   return featuredEvents?.value.slice(0, sliceSize) || [];
 });
@@ -76,10 +90,17 @@ const responsiveEvents = computed(() => {
 // Computed with null check
 const totalUpcomingEvents = computed(() => {
   if (!nextEvents?.value) return 0;
-
   return Object.values(nextEvents.value).reduce((total, events) => {
     if (!Array.isArray(events)) return total;
     return total + events.length;
   }, 0);
 });
 </script>
+
+<style scoped>
+@media (max-width: 600px) {
+  :deep(.v-slide-group__content) {
+    padding-left: 4px;
+  }
+}
+</style>

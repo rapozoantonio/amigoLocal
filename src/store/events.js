@@ -140,7 +140,7 @@ export const useEventsStore = defineStore("events", () => {
         });
       }
 
-      return eventsToReturn.filter((e) => e.genres.includes(genre)).length;
+      return eventsToReturn.filter((e) => e.genres?.includes(genre)).length;
     };
   });
 

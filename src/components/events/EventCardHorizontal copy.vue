@@ -18,12 +18,12 @@
         </p>
         <p class="text-caption pl-1 mt-2">
           <v-icon size="large" color="primaryIcon"
-            >mdi-map-marker-radius-outline</v-icon
+            >mdi-map-marker</v-icon
           >
           {{ event.location.name }}
         </p>
         <p class="text-caption pl-1 mt-2">
-          <v-icon size="large" color="primaryIcon">mdi-account-multiple</v-icon>
+          <v-icon size="large" color="primaryIcon">mdi-account-group</v-icon>
           {{ event.following }}
         </p>
       </v-col>

@@ -28,16 +28,14 @@
       <v-col cols="9" sm="7" class="px-4">
         <!-- Event Name -->
         <div class="event-title">
-          <router-link
-            :to="{ name: 'event-id', params: { id: event.id } }"
-          >
+          <router-link :to="{ name: 'event-id', params: { id: event.id } }">
             {{ event.name }}
           </router-link>
         </div>
 
         <!-- Event Location -->
         <div
-          class="d-flex align-center my-1 location"
+          class="d-flex align-center my-1 location text-grey-darken-1"
           v-if="event.location?.name"
         >
           <v-icon size="small" color="primaryIcon">mdi-map-marker</v-icon>
@@ -80,7 +78,7 @@
           <v-icon size="small" color="primaryIcon" class="mr-1"
             >mdi-account-group</v-icon
           >
-          <span>{{ event.followers }}</span>
+          <span class="text-grey-darken-1">{{ event.followers }}</span>
         </div>
       </v-col>
     </v-row>
