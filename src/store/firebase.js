@@ -337,12 +337,14 @@ export const useFirebaseStore = defineStore("firebase", () => {
 
       const notify = (
         title = "Document added",
-        text = `<p>Document added to <strong>${col}</strong> collection<p><p>ID: ${document.id}`
+        text = `<p>Document added to <strong>${col}</strong> collection<p><p>ID: ${document.id}`,
+        button = "OK"
       ) => {
-        Swal.fire({
+        return Swal.fire({
           title: title,
           html: text,
           icon: "success",
+          confirmButtonText: button,
         });
       };
       return {

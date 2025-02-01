@@ -26,7 +26,7 @@
                   :src="`http://flagcdn.com/${event.location && event.location.country ? event.location.country.toLowerCase() : 'br'}.svg`"></v-img>
               </v-avatar>
               <span class="text-caption">{{
-                event.location?.region.name || event.location?.region
+                event.location?.region?.name || event.location?.region
               }}</span>
             </v-btn>
           </v-col>
@@ -106,7 +106,7 @@
                 <v-img
                   :src="`http://flagcdn.com/${event.location && event.location.country ? event.location.country.toLowerCase() : 'br'}.svg`"></v-img>
               </v-avatar>
-              {{ event.location?.region.name || event.location?.region }}
+              {{ event.location?.region?.name || event.location?.region }}
             </v-btn>
           </v-col>
         </v-row>

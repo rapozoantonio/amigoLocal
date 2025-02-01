@@ -1,36 +1,19 @@
 <template>
-  <v-card
-    elevation="0"
-    flat
-    width="280"
-    color="transparent"
-    v-if="event"
-    tile
-    class="event-card pa-0"
-  >
+  <v-card elevation="0" flat width="280" color="transparent" v-if="event" tile class="event-card pa-0">
     <v-card-text class="pa-0">
       <router-link :to="{ name: 'event-id', params: { id: event.id } }">
-        <v-img
-          height="280"
-          width="280"
-          cover
-          class="rounded"
-          :src="
-            event.image?.url ||
-            event.flyerFront?.url ||
-            '/img/placeholder_event_1.jpg'
-          "
-        ></v-img>
+        <v-img height="280" width="280" cover class="rounded" :src="event.image?.url ||
+          event.flyerFront?.url ||
+          '/img/placeholder_event_1.jpg'
+          "></v-img>
       </router-link>
 
       <div class="py-2"> <!-- Changed mt-2 to py-2 for consistent spacing -->
         <p class="text-grey-darken-1 font-weight-bold text-caption mb-1">
           {{ formatDate(event.startDate) }}
         </p>
-        <router-link
-          :to="{ name: 'event-id', params: { id: event.id } }"
-          class="event-title font-weight-bold text-truncate d-block"
-        >
+        <router-link :to="{ name: 'event-id', params: { id: event.id } }"
+          class="event-title font-weight-bold text-truncate d-block">
           {{ event.name }}
         </router-link>
         <div class="d-flex align-center mt-2">
@@ -38,7 +21,7 @@
             mdi-map-marker
           </v-icon>
           <span class="text-caption text-grey-darken-1">{{
-            event.location.name
+            event.location?.name
           }}</span>
         </div>
         <div class="d-flex align-center mt-2">
@@ -94,7 +77,7 @@ const getMonthName = (monthIndex) => {
 <style lang="scss" scoped>
 .event-card {
   margin: 0; // Ensure no margins interfere with alignment
-  
+
   .event-title {
     text-decoration: none;
     color: rgb(var(--v-theme-link-text));

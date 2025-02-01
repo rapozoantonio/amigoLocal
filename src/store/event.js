@@ -126,9 +126,12 @@ export const useEventStore = defineStore("event", () => {
         "events"
       );
       const notify = () => {
-        response.notify(
-          "Evento criado",
-          `Evento ${event.name ? event.name : ""} criado com sucesso`
+        return response.notify(
+          "Evento criado!",
+          `<p><strong class="text-green">${
+            event.name ? event.name : ""
+          }</strong>`,
+          "Minha página 🎉"
         );
       };
 

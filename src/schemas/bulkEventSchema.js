@@ -42,25 +42,25 @@ export default {
           type: "time",
           size: "xs",
         },
-        {
-          id: "region",
-          label: "Region",
-          type: "custom-region",
-          size: "xs",
-          rules: ["required"],
-          initial: {
-            id: "riodejaneiro",
-            name: "Rio de Janeiro",
-          },
-        },
-        {
-          id: "country",
-          label: "Country",
-          type: "custom-country",
-          size: "xs",
-          rules: ["required"],
-          initial: "BR",
-        },
+        // {
+        //   id: "region",
+        //   label: "Region",
+        //   type: "custom-region",
+        //   size: "xs",
+        //   rules: ["required"],
+        //   initial: {
+        //     id: "riodejaneiro",
+        //     name: "Rio de Janeiro",
+        //   },
+        // },
+        // {
+        //   id: "country",
+        //   label: "Country",
+        //   type: "custom-country",
+        //   size: "xs",
+        //   rules: ["required"],
+        //   initial: "BR",
+        // },
 
         {
           id: "description",

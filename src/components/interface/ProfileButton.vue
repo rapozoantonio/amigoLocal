@@ -15,8 +15,7 @@
                 <template v-if="auth.user.photoURL">
                   <v-img :src="auth.user.photoURL"></v-img>
                 </template>
-                <span v-else>{{ initials }}</span></v-avatar
-              >
+                <span v-else>{{ initials }}</span></v-avatar>
             </template>
             <v-list-item-title class="d-flex justify-space-between">
               <span>
@@ -34,6 +33,11 @@
             <template #prepend> <v-icon>mdi-account</v-icon></template>
             <v-list-item-title> Perfil </v-list-item-title>
           </v-list-item>
+          <v-list-item :to="{ name: 'pro-events-create' }" link>
+            <template #prepend> <v-icon>mdi-calendar-star</v-icon></template>
+            <v-list-item-title> Criar Evento </v-list-item-title>
+          </v-list-item>
+
           <!-- Add theme toggle -->
           <v-list-item @click="toggleTheme" link>
             <template #prepend>

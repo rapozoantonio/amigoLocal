@@ -4,7 +4,7 @@ export default {
   name: "promoters",
   sections: [
     {
-      name: "Promoter Settings",
+      name: "Perfil Promoter",
       index: 1,
       type: "section",
       fields: [
@@ -22,7 +22,7 @@ export default {
           type: "custom-username",
           size: "lg",
           rules: ["required"],
-          // readOnly: true,
+          readOnly: true,
         },
         {
           id: "instagram",

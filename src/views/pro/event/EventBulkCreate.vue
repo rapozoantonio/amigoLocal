@@ -29,9 +29,12 @@
                           </v-textarea>
                         </v-col>
                         <v-col cols="12">
+                          <form-field type="custom-country" :rules="['required']" v-model:model="eventConfig"
+                            field="country" label="País" id="country"></form-field>
                           <form-field type="custom-region" :rules="['required']" v-model:model="eventConfig"
                             field="region" label="Região" id="region"></form-field>
                         </v-col>
+
                         <v-col cols="12" class="text-center">
                           <v-btn color="primary" class="mx-auto"
                             :disabled="(!text && text != '') || !eventConfig.region" @click="useAssistente(next)">
@@ -194,7 +197,7 @@ import FormField from "@/components/form/FormField.vue";
 const router = useRouter();
 const helpers = inject("$helpers");
 const auth = useAuthStore();
-const eventConfig = ref({ region: null });
+const eventConfig = ref({ country: "BR" });
 const chatgptStore = useChatgptStore();
 const firebaseStore = useFirebaseStore();
 const eventStore = useEventStore();
@@ -219,7 +222,7 @@ const events = ref([]);
 async function useAssistente(callback) {
   try {
     appStore.loading = true;
-    appStore.loadingText = "Analizando eventos..."
+    appStore.loadingText = "Analisando eventos..."
     const response = await chatgptStore.getBulkEventList(text.value);
 
     const content = JSON.parse(response.choices[0].message.content);
