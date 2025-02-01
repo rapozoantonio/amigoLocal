@@ -1,25 +1,10 @@
 <template>
-  <form-card
-    v-if="user"
-    @submit="saveProfile"
-    :schema="promoterSchema"
-    v-model:model="user"
-    v-model:files="files"
-    labelType="up"
-    title="Edit Promoter Info"
-    action="Save"
-    :items="{ language: languages, gender: genders }"
-  >
+  <form-card v-if="user" @submit="saveProfile" :schema="promoterSchema" v-model:model="user" v-model:files="files"
+    labelType="up" title="Editar perfil promoter" action="Salvar" :items="{ language: languages, gender: genders }">
     <template #prepend>
-      <v-alert
-        v-if="!user.completed"
-        title="Complete seu perfil"
-        variant="tonal"
-        closable
-        border="start"
-        >Complete seu perfil para aceder as funcionalidades
-        personalizadas</v-alert
-      >
+      <v-alert v-if="!user.completed" title="Complete seu perfil" variant="tonal" closable border="start">Complete seu
+        perfil para aceder as funcionalidades
+        personalizadas</v-alert>
     </template>
   </form-card>
 </template>

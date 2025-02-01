@@ -15,7 +15,36 @@
         <v-divider opacity="0.8" thickness="2" color="grey" v-else> </v-divider>
     </v-col>
 
+    <v-col v-else-if="readOnly" :cols="col" :md="md" :sm="sm" :lg="lg" :xl="xl" class="pt-1"
+        :class="{ 'd-flex': labelType === 'left', required: rules.find(i => i === 'required') }">
+        <!-- <p v-if="prepend" class="text-body-2">{{ prepend }}</p>
 
+
+        <p v-if="showLabelUp" class="mb-1 ml-2 text-caption" :for="id">
+            <v-icon start v-if="icon">
+                {{ icon }}
+            </v-icon>{{ label || name || id }}
+            <span class="ml-1" v-if="rules.find(i => i === 'required')">*</span>
+            <span class="ml-1" v-else><small>(opcional)</small></span>
+        </p>
+        <p v-else-if="labelType === 'left'" class="mt-3 text-caption  text-right mr-3 field-label" :for="id"> <v-icon
+                start v-if="icon">{{
+                    icon }}</v-icon><span v-if="showLabelLeft">
+                {{ label || name
+                    || id }}
+            </span>
+        </p> -->
+        <p class="text-caption ml-2"> {{ label || name
+            || id }}</p>
+        <v-chip label variant="tonal" class="ml-2">{{ model[id] }}</v-chip>
+
+        <!-- TEXT, DATE, TIME -->
+        <!-- <template v-if="['text', 'date', 'time', 'date+18'].includes(type)">
+            <v-text-field :type="type === 'date+18' ? 'date' : type" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :max="type === 'date+18' ? minDate : null">
+            </v-text-field>
+        </template> -->
+    </v-col>
 
     <v-col v-else :cols="col" :md="md" :sm="sm" :lg="lg" :xl="xl" class="pt-1"
         :class="{ 'd-flex': labelType === 'left', required: rules.find(i => i === 'required') }">

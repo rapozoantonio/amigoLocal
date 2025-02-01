@@ -4,12 +4,12 @@
             <v-btn :to="{ name: 'pro-profile-personal' }">
                 <v-icon>mdi-history</v-icon>
 
-                <span>Personal</span>
+                <span>Pessoal</span>
             </v-btn>
             <v-btn :to="{ name: 'pro-profile-account' }">
                 <v-icon>mdi-heart</v-icon>
 
-                <span>Account</span>
+                <span>Minha conta</span>
             </v-btn>
 
             <v-btn :to="{ name: 'pro-profile-promoter' }">
