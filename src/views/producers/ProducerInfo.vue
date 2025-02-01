@@ -43,8 +43,8 @@
                             </v-toolbar-title>
                         </v-toolbar>
 
-                        <event-card-horizontal v-for="event in events" :key="event.id"
-                            :event="event"></event-card-horizontal>
+                        <card-horizontal v-for="event in events" :key="event.id"
+                            :event="event"></card-horizontal>
                     </v-col>
                 </v-row>
             </v-container>
@@ -64,7 +64,7 @@ import {
 
 import { storeToRefs } from 'pinia';
 
-import EventCardHorizontal from '@/components/events/EventCardHorizontal.vue';
+import CardHorizontal from '@/components/events/CardHorizontal.vue';
 import EventHorizontalList from '@/components/events/EventHorizontalList.vue';
 import EventListNextEvents from '@/components/events/EventListNextEvents.vue';
 import FollowButton from '@/components/interface/FollowButton.vue';

@@ -18,7 +18,7 @@
           </template>
           <!-- If there are events, display them -->
           <template v-else>
-            <event-card-horizontal
+            <card-horizontal
               v-for="event in events"
               :key="event.id"
               :event="event"
@@ -33,7 +33,7 @@
 <script setup>
 import { computed } from "vue";
 import { storeToRefs } from "pinia";
-import EventCardHorizontal from "@/components/events/EventCardHorizontal.vue";
+import CardHorizontal from "@/components/events/CardHorizontal.vue";
 import EventCalendarDividerToolbar from "@/components/events/EventCalendarDividerToolbar.vue";
 import { useEventsStore } from "@/store/events";
 

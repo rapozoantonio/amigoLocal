@@ -52,11 +52,11 @@
               </v-toolbar-title>
             </v-toolbar>
 
-            <event-card-horizontal
+            <card-horizontal
               v-for="event in events"
               :key="event.id"
               :event="event"
-            ></event-card-horizontal>
+            ></card-horizontal>
           </v-col>
         </v-row>
       </v-container>
@@ -70,7 +70,7 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-import EventCardHorizontal from "@/components/events/EventCardHorizontal.vue";
+import CardHorizontal from "@/components/events/CardHorizontal.vue";
 import EventHorizontalList from "@/components/events/EventHorizontalList.vue";
 import { event } from "@/schemas/event.js";
 import { useEventsStore } from "@/store/events";

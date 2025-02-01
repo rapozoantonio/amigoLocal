@@ -11,7 +11,7 @@
 
         <v-col v-for="event in events" :key="event.id">
             <v-divider class="mb-2"></v-divider>
-            <event-card-horizontal :event="event"></event-card-horizontal>
+            <card-horizontal :event="event"></card-horizontal>
             <pre>
                 {{ events }}
             </pre>
@@ -20,7 +20,7 @@
 </template>
 
 <script setup>
-import EventCardHorizontal from '@/components/events/EventCardHorizontal.vue';
+import CardHorizontal from '@/components/events/CardHorizontal.vue';
 
 const { events } = defineProps(["events"]);
 </script>

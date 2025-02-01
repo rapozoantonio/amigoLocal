@@ -48,8 +48,6 @@ import {
 } from 'vue';
 
 import { storeToRefs } from 'pinia';
-
-import EventCardHorizontal from '@/components/events/EventCardHorizontal.vue';
 import EventHorizontalList from '@/components/events/EventHorizontalList.vue';
 import EventListNextEvents from '@/components/events/EventListNextEvents.vue';
 import FollowButton from '@/components/interface/FollowButton.vue';

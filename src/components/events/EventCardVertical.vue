@@ -1,36 +1,87 @@
 <template>
-  <v-card elevation="0" flat width="280" color="transparent" v-if="event" tile class="event-card pa-0">
+  <v-card 
+    elevation="0" 
+    flat 
+    width="280" 
+    color="transparent" 
+    v-if="event" 
+    tile 
+    class="event-card pa-0"
+    role="article"
+    :aria-label="`Event: ${event.name}`"
+  >
     <v-card-text class="pa-0">
-      <router-link :to="{ name: 'event-id', params: { id: event.id } }">
-        <v-img height="280" width="280" cover class="rounded" :src="event.image?.url ||
-          event.flyerFront?.url ||
-          '/img/placeholder_event_1.jpg'
-          "></v-img>
+      <router-link 
+        :to="{ name: 'event-id', params: { id: event.id } }"
+        :aria-label="`View details for event: ${event.name}`"
+      >
+        <v-img 
+          height="280" 
+          width="280" 
+          cover 
+          class="rounded" 
+          :src="event.image?.url || event.flyerFront?.url || '/img/placeholder_event_1.jpg'"
+          :alt="`Event image for ${event.name}`"
+          role="img"
+        ></v-img>
       </router-link>
 
-      <div class="py-2"> <!-- Changed mt-2 to py-2 for consistent spacing -->
-        <p class="text-grey-darken-1 font-weight-bold text-caption mb-1">
+      <div 
+        class="py-2"
+        role="group"
+        aria-label="Event details"
+      >
+        <time 
+          :datetime="event.startDate"
+          class="text-grey-darken-1 font-weight-bold text-caption mb-1"
+        >
           {{ formatDate(event.startDate) }}
-        </p>
-        <router-link :to="{ name: 'event-id', params: { id: event.id } }"
-          class="event-title font-weight-bold text-truncate d-block">
-          {{ event.name }}
-        </router-link>
-        <div class="d-flex align-center mt-2">
-          <v-icon size="18" color="primary" class="mr-2">
+        </time>
+        
+        <h2 class="event-title mb-2">
+          <router-link 
+            :to="{ name: 'event-id', params: { id: event.id } }"
+            class="font-weight-bold text-truncate d-block"
+            :aria-label="`View details for ${event.name}`"
+          >
+            {{ event.name }}
+          </router-link>
+        </h2>
+
+        <div 
+          class="d-flex align-center mt-2"
+          role="group"
+          aria-label="Event location"
+        >
+          <v-icon 
+            size="18" 
+            color="primary" 
+            class="mr-2"
+            aria-hidden="true"
+          >
             mdi-map-marker
           </v-icon>
-          <span class="text-caption text-grey-darken-1">{{
-            event.location?.name
-          }}</span>
+          <span class="text-caption text-grey-darken-1">
+            {{ event.location?.name }}
+          </span>
         </div>
-        <div class="d-flex align-center mt-2">
-          <v-icon size="18" color="primary" class="mr-2">
+
+        <div 
+          class="d-flex align-center mt-2"
+          role="status"
+          :aria-label="`${event.followers} followers`"
+        >
+          <v-icon 
+            size="18" 
+            color="primary" 
+            class="mr-2"
+            aria-hidden="true"
+          >
             mdi-account-group
           </v-icon>
-          <span class="text-caption text-grey-darken-1">{{
-            event.followers
-          }}</span>
+          <span class="text-caption text-grey-darken-1">
+            {{ event.followers }}
+          </span>
         </div>
       </div>
     </v-card-text>
@@ -102,5 +153,48 @@ const getMonthName = (monthIndex) => {
 // Remove any potential spacing from v-card-text
 :deep(.v-card-text) {
   padding: 0;
+}
+
+/* Improve focus visibility */
+.event-title a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  text-decoration: underline;
+}
+
+/* Ensure proper color contrast */
+.text-grey-darken-1 {
+  color: #757575; /* WCAG AA compliant */
+}
+
+/* Ensure proper text spacing */
+.event-title {
+  line-height: 1.5;
+  margin: 0;
+  font-size: 1rem;
+}
+
+/* Ensure link styles are visible */
+.event-title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.event-title a:hover {
+  text-decoration: underline;
+}
+
+/* Handle text truncation accessibly */
+.text-truncate {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Ensure proper focus on image link */
+a:focus-visible img {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
 }
 </style>

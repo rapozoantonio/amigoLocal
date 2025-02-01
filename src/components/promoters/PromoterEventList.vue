@@ -84,28 +84,11 @@
           :aria-label="`Events for ${day}`"
         >
           <v-col cols="12" class="py-0">
-            <v-toolbar
-              color="background"
-              :style="{
-                position: 'sticky',
-                top: `${tabsHeight}px`,
-                zIndex: 999,
-              }"
-              density="compact"
-              role="heading"
-              aria-level="2"
-            >
-              <v-toolbar-title>
-                <p class="text-body-2 text-grey-darken-1">
-                  <v-icon size="x-small" aria-hidden="true"
-                    >mdi-calendar</v-icon
-                  >
-                  <span>{{ day }}</span>
-                </p>
-              </v-toolbar-title>
-            </v-toolbar>
+            <event-calendar-divider-toolbar
+              :day="day"
+            ></event-calendar-divider-toolbar>
 
-            <promoter-card-horizontal
+            <card-horizontal
               v-for="(event, index) in events.slice(
                 0,
                 eventDisplayLimits[selectedCategory]
@@ -113,7 +96,7 @@
               :key="event.id"
               :event="event"
               :aria-label="`Event ${index + 1} of ${events.length}`"
-            ></promoter-card-horizontal>
+            ></card-horizontal>
           </v-col>
         </v-row>
         <v-row v-if="hasMoreEventsInCurrentTab" class="text-center">
@@ -199,7 +182,8 @@
 import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import { usePromotersStore } from "@/store/promoters";
-import PromoterCardHorizontal from "@/components/promoters/PromoterCardHorizontal.vue";
+import EventCalendarDividerToolbar from "@/components/events/EventCalendarDividerToolbar.vue";
+import CardHorizontal from "@/components/events/CardHorizontal.vue";
 import WhatsappGroupsModal from "@/components/promoters/WhatsappGroupsModal.vue";
 import EventCategoryTabs from "@/components/events/EventCategoryTabs.vue";
 import { useEventsStore } from "@/store/events";
