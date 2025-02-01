@@ -1,59 +1,59 @@
-import {
-  computed,
-  ref,
-  watch,
-} from 'vue';
+import { computed, ref, watch } from "vue";
 
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-import $genres from '@/assets/genres';
-import $eventCategories from '@/assets/eventCategories';
-import { useVuelidate } from '@vuelidate/core';
-import { required } from '@vuelidate/validators';
+import $genres from "@/assets/genres";
+import $eventCategories from "@/assets/eventCategories";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
 
-import { useAppStore } from './app';
-import { useFirebaseStore } from './firebase';
+import { useAppStore } from "./app";
+import { useFirebaseStore } from "./firebase";
 
 export const useEventStore = defineStore("event", () => {
   const firebaseStore = useFirebaseStore();
   const appStore = useAppStore();
 
-  const event = ref({
-    name: null,
-    startDate: new Date().toISOString().split("T")[0],
-    startTime: null,
-    endDate: new Date().toISOString().split("T")[0],
-    endTime: null,
-    // location: null,
-    location: {
-      name: null,
-      id: null,
-      country: "BR",
-      region: null,
-      address: null,
-      city: null,
-    },
-    genres: null,
-    categories: null,
-    lineup: null,
-    price: null,
-    description: null,
-    age: "+18",
-    links: null,
-    medias: null,
-    image: null,
-    promoter: firebaseStore.getCurrentUser(),
-    producer: null,
-  });
+  const event = ref(printEventInit());
   const files = ref({
     flyerFront: null,
     flyerBack: null,
     image: null,
   });
 
+  function printEventInit() {
+    return {
+      name: null,
+      startDate: null,
+      startTime: null,
+      endDate: null,
+      endTime: null,
+      // location: null,
+      location: {
+        name: null,
+        id: null,
+        country: "BR",
+        region: null,
+        address: null,
+        city: null,
+      },
+      genres: null,
+      categories: null,
+      lineup: null,
+      price: null,
+      description: null,
+      age: "+18",
+      links: null,
+      medias: null,
+      image: null,
+      promoter: firebaseStore.getCurrentUser(),
+      producer: null,
+    };
+  }
+
   const genres = ref($genres);
   const eventCategories = ref($eventCategories);
-  
+
   const ages = ref([
     { name: "+18", value: "+18" },
     { name: "+19", value: "+19" },
@@ -81,14 +81,11 @@ export const useEventStore = defineStore("event", () => {
 
   const $v = useVuelidate(rules, event);
 
-  async function createEvent() {
-    appStore.loading = true;
-    appStore.loadingText = "Criando evento...";
+  async function createEvent(event, files) {
     try {
       const id = firebaseStore.getPostDocRef("events").id;
 
-      const entries = Object.entries(files.value);
-      
+      const entries = Object.entries(files);
 
       const filesToUpload = entries.reduce((total, [name, value]) => {
         if (!value) return total;
@@ -110,38 +107,34 @@ export const useEventStore = defineStore("event", () => {
 
         return total;
       }, []);
-      
 
       const pictures = await firebaseStore.uploadPictures(filesToUpload);
-      
 
       pictures.forEach((p) => {
-        event.value[p.name] = {
+        event[p.name] = {
           path: p.path,
           url: p.url,
         };
       });
-      event.value.id = id;
+      event.id = id;
 
-      event.value.promoter = firebaseStore.getCurrentUser();
-      
+      event.promoter = firebaseStore.getCurrentUser();
 
       const response = await firebaseStore.postDocument(
         "events",
-        event.value,
+        event,
         "events"
       );
-      response.notify(
-        "Evento criado",
-        `Evento ${event.value.name ? event.value.name : ""} criado com sucesso`
-      );
-      return { ok: true };
+      const notify = () => {
+        response.notify(
+          "Evento criado",
+          `Evento ${event.name ? event.name : ""} criado com sucesso`
+        );
+      };
+
+      return { ok: true, notify, data: response.data };
     } catch (error) {
-      
       return { ok: false, error };
-    } finally {
-      appStore.loading = false;
-      appStore.loadingText = null;
     }
   }
 
@@ -151,7 +144,6 @@ export const useEventStore = defineStore("event", () => {
     try {
       const id = event.value.id;
       const entries = Object.entries(files.value);
-      
 
       const filesToUpload = entries.reduce((total, [name, value]) => {
         if (!value) return total;
@@ -173,10 +165,8 @@ export const useEventStore = defineStore("event", () => {
 
         return total;
       }, []);
-      
 
       const pictures = await firebaseStore.uploadPictures(filesToUpload);
-      
 
       pictures.forEach((p) => {
         event.value[p.name] = {
@@ -196,7 +186,6 @@ export const useEventStore = defineStore("event", () => {
       }
       return { ok: false };
     } catch (error) {
-      
       return { ok: false, error };
     } finally {
       appStore.loading = false;
@@ -270,6 +259,7 @@ export const useEventStore = defineStore("event", () => {
     $v,
     getEventById,
     updateEvent,
-    eventCategories
+    eventCategories,
+    printEventInit,
   };
 });

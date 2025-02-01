@@ -78,7 +78,16 @@ export const useChatgptStore = defineStore("chatgpt", () => {
         messages: [
           {
             role: "system",
-            content: `Atue como um especialista de eventos, receberá um texto de divulgação de eventos usado nos grupos de whatsapp. Preciso que retorne um JSON com um atributo 'events' que seja uma array com esses eventos, cada evento tem a seguinte configuração: {startDate: date, startTime: time, name: string, description: string, links: [{name: string, url: string}]}`,
+            content: `Atue como um especialista de eventos, receberá um texto de divulgação de eventos usado nos grupos de whatsapp. Preciso que extraia a informação desses eventos retorne um JSON com um atributo 'events' que seja uma array com esses eventos, deve tentar completar os seguintes campos com base nas informações extraidas do texto:
+            name: string;
+            description: string;
+            links: [{name: string, url: string}] (Se não tiver um nome explícito para o link podemos usar de nome algo como 'Mais Informações');
+            startDate: date (format yyyy-MM-dd);
+            endDate: date (format yyyy-MM-dd e somente terá valor se detectar um rango de datas para esse evento);
+            startTime: time (format HH:mm);
+            endDate: time (format HH:mm e somente terá valor se detectar que existe uma hora explicita para terminar);
+            genres: [string] (possivéis opções: Funk,Sertanejo,Pagode,Samba,Forró,Axé,Pop,Eletrônica,Reggaeton,Hip Hop,MPB,Rock,Brega,Arrocha,Trap,Indie,K-pop,Jazz,Blues);
+            categories: [string] (possivéis opções: carnaval,reveillon,open bar,day party,lista amiga);`,
           },
 
           {
