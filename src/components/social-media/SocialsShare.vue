@@ -2,10 +2,10 @@
   <v-dialog v-if="isLargeScreen">
     <template v-slot:activator="{ props: activatorProps }">
       <v-btn
-        class="d-flex"
         v-bind="activatorProps"
         color="primary"
         rounded="pill"
+        density="comfortable"
         :variant="isHovering ? 'elevated' : 'flat'"
       >
         <v-icon start>mdi-share</v-icon>

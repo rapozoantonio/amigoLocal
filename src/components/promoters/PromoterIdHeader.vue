@@ -1,12 +1,9 @@
 <template>
-  <v-card v-if="promoter">
+  <v-card v-if="promoter" role="article" aria-label="Promoter Information">
     <template #image>
-      <v-img
-        :src="computedImageSrc"
-        style="filter: blur(30px) brightness(0.3)"
-        cover
-      ></v-img>
+      <div class="pattern-black-red-bg" aria-hidden="true"></div>
     </template>
+
     <!-- Mobile Layout -->
     <div class="d-md-none">
       <v-container class="pa-2">
@@ -20,10 +17,16 @@
                   region: promoter.region?.id || 'riodejaneiro',
                 },
               }"
+              :aria-label="`Return to events in ${
+                promoter.region?.name || 'Brazil'
+              }`"
             >
-              <v-icon size="small">mdi-chevron-left</v-icon>
-              <v-avatar class="mx-1" size="16">
-                <v-img src="http://flagcdn.com/br.svg"></v-img>
+              <v-icon size="small" aria-hidden="true">mdi-chevron-left</v-icon>
+              <v-avatar class="mx-1" size="16" aria-hidden="true">
+                <v-img
+                  src="http://flagcdn.com/br.svg"
+                  alt="Brazil flag"
+                ></v-img>
               </v-avatar>
               <span class="text-caption">{{ promoter.region?.name }}</span>
             </v-btn>
@@ -35,6 +38,7 @@
               entity="promoters"
               :entity_id="promoter.Id"
               density="compact"
+              :aria-label="`Follow ${promoter.PromoterCode}`"
             />
           </v-col>
         </v-row>
@@ -49,12 +53,22 @@
 
         <v-row no-gutters>
           <v-col cols="12">
-            <div class="d-flex align-center text-caption text-grey-lighten-1 mt-1">
+            <div
+              class="d-flex align-center text-caption text-grey-lighten-1 mt-1"
+              role="list"
+              aria-label="Promoter details"
+            >
               <template v-if="promoter.LocationArray?.length">
-                <v-icon size="14" color="grey-lighten-1" class="mr-1"
-                  >mdi-map-marker</v-icon
-                >
-                {{ promoter.LocationArray[0] }}
+                <div role="listitem">
+                  <v-icon
+                    size="14"
+                    color="grey-lighten-1"
+                    class="mr-1"
+                    aria-hidden="true"
+                    >mdi-map-marker</v-icon
+                  >
+                  <span>{{ promoter.LocationArray[0] }}</span>
+                </div>
               </template>
 
               <template
@@ -63,27 +77,39 @@
                   (promoter.MusicTypeArray?.length || promoter.Followers)
                 "
               >
-                <v-divider vertical class="mx-2" />
+                <v-divider vertical class="mx-2" aria-hidden="true" />
               </template>
 
               <template v-if="promoter.MusicTypeArray?.length">
-                <v-icon size="14" color="grey-lighten-1" class="mr-1"
-                  >mdi-music</v-icon
-                >
-                {{ promoter.MusicTypeArray.join(", ") }}
+                <div role="listitem">
+                  <v-icon
+                    size="14"
+                    color="grey-lighten-1"
+                    class="mr-1"
+                    aria-hidden="true"
+                    >mdi-music</v-icon
+                  >
+                  <span>{{ promoter.MusicTypeArray.join(", ") }}</span>
+                </div>
               </template>
 
               <template
                 v-if="promoter.MusicTypeArray?.length && promoter.Followers"
               >
-                <v-divider vertical class="mx-2" />
+                <v-divider vertical class="mx-2" aria-hidden="true" />
               </template>
 
               <template v-if="promoter.Followers">
-                <v-icon size="14" color="grey-lighten-1" class="mr-1"
-                  >mdi-account-group</v-icon
-                >
-                {{ promoter.Followers }}
+                <div role="listitem">
+                  <v-icon
+                    size="14"
+                    color="grey-lighten-1"
+                    class="mr-1"
+                    aria-hidden="true"
+                    >mdi-account-group</v-icon
+                  >
+                  <span>{{ promoter.Followers }} followers</span>
+                </div>
               </template>
             </div>
           </v-col>
@@ -91,7 +117,11 @@
 
         <v-row no-gutters class="mt-1">
           <v-col cols="12">
-            <div class="d-flex overflow-x-auto hide-scrollbar">
+            <div
+              class="d-flex overflow-x-auto hide-scrollbar"
+              role="group"
+              aria-label="Event categories"
+            >
               <v-chip
                 v-for="category in promoter.EventCategoryArray"
                 :key="category"
@@ -126,10 +156,16 @@
                   region: promoter.region?.id,
                 },
               }"
+              :aria-label="`Return to events in ${
+                promoter.region?.name || 'Brazil'
+              }`"
             >
-              <v-icon>mdi-chevron-left</v-icon>
-              <v-avatar class="mr-2 ml-1" size="20">
-                <v-img src="http://flagcdn.com/br.svg"></v-img>
+              <v-icon aria-hidden="true">mdi-chevron-left</v-icon>
+              <v-avatar class="mr-2 ml-1" size="20" aria-hidden="true">
+                <v-img
+                  src="http://flagcdn.com/br.svg"
+                  alt="Brazil flag"
+                ></v-img>
               </v-avatar>
               {{ promoter.region?.name }}
             </v-btn>
@@ -148,61 +184,76 @@
               @unfollow="unfollow"
               entity="promoters"
               :entity_id="promoter.Id"
+              :aria-label="`Follow ${promoter.PromoterCode}`"
             />
           </v-col>
         </v-row>
 
         <v-row>
           <v-col cols="12" md="4">
-            <p class="text-caption text-grey">Localização</p>
-            <p class="text-caption text-grey">
-              {{ promoter.LocationArray.join(", ") }}
-            </p>
+            <dl>
+              <dt class="text-caption text-grey">Localização</dt>
+              <dd class="text-caption text-grey">
+                {{ promoter.LocationArray.join(", ") }}
+              </dd>
+            </dl>
           </v-col>
           <v-col cols="6" md="2">
-            <p class="text-caption text-grey">Última Atualização</p>
-            <p class="text-caption text-grey">
-              {{ helpers.toDate(promoter.LastUpdate) }}
-            </p>
+            <dl>
+              <dt class="text-caption text-grey">Última Atualização</dt>
+              <dd class="text-caption text-grey">
+                {{ helpers.toDate(promoter.LastUpdate) }}
+              </dd>
+            </dl>
           </v-col>
           <v-col cols="6" md="2">
-            <p class="text-caption text-grey">Nome</p>
-            <p class="text-caption text-grey">{{ promoter.PromoterName }}</p>
+            <dl>
+              <dt class="text-caption text-grey">Nome</dt>
+              <dd class="text-caption text-grey">
+                {{ promoter.PromoterName }}
+              </dd>
+            </dl>
           </v-col>
           <v-col cols="6" md="2">
-            <p class="text-caption text-grey">Categorias de Eventos</p>
-            <div class="d-flex flex-wrap">
-              <v-chip
-                v-for="category in promoter.EventCategoryArray"
-                :key="category"
-                class="mr-2 mb-2"
-                label
-                variant="outlined"
-                size="small"
-                color="primary"
-              >
-                <span>{{ category }}</span>
-              </v-chip>
+            <div role="region" aria-label="Event categories">
+              <h2 class="text-caption text-grey">Categorias de Eventos</h2>
+              <div class="d-flex flex-wrap" role="group">
+                <v-chip
+                  v-for="category in promoter.EventCategoryArray"
+                  :key="category"
+                  class="mr-2 mb-2"
+                  label
+                  variant="outlined"
+                  size="small"
+                  color="primary"
+                >
+                  <span>{{ category }}</span>
+                </v-chip>
+              </div>
             </div>
           </v-col>
           <v-col cols="6" md="2">
-            <p class="text-caption text-grey">Followers</p>
-            <span class="text-h6">{{ promoter.Followers }}</span>
+            <dl>
+              <dt class="text-caption text-grey">Followers</dt>
+              <dd class="text-h6">{{ promoter.Followers }}</dd>
+            </dl>
           </v-col>
           <v-col cols="12" md="4">
-            <p class="text-caption text-grey mb-2">Tipos de Música</p>
-            <div class="d-flex flex-wrap">
-              <v-chip
-                v-for="genre in promoter.MusicTypeArray"
-                :key="genre"
-                class="mr-2 mb-2"
-                label
-                variant="outlined"
-                size="small"
-                color="primary"
-              >
-                <span>{{ genre }}</span>
-              </v-chip>
+            <div role="region" aria-label="Music types">
+              <h2 class="text-caption text-grey mb-2">Tipos de Música</h2>
+              <div class="d-flex flex-wrap" role="group">
+                <v-chip
+                  v-for="genre in promoter.MusicTypeArray"
+                  :key="genre"
+                  class="mr-2 mb-2"
+                  label
+                  variant="outlined"
+                  size="small"
+                  color="primary"
+                >
+                  <span>{{ genre }}</span>
+                </v-chip>
+              </div>
             </div>
           </v-col>
         </v-row>

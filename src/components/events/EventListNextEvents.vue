@@ -7,21 +7,21 @@
           <event-calendar-divider-toolbar
             :day="day"
           ></event-calendar-divider-toolbar>
-          <!-- If there are events, display them -->
-          <template v-if="events && events.length">
-            <event-card-horizontal
-              v-for="event in events"
-              :key="event.id"
-              :event="event"
-            />
-          </template>
           <!-- Otherwise, show a skeleton placeholder -->
-          <template v-else>
+          <template v-if="isLoading">
             <v-skeleton-loader
               v-for="i in 3"
               :key="i"
               type="list-item-avatar"
               class="mb-2"
+            />
+          </template>
+          <!-- If there are events, display them -->
+          <template v-else>
+            <event-card-horizontal
+              v-for="event in events"
+              :key="event.id"
+              :event="event"
             />
           </template>
         </v-col>
@@ -31,6 +31,7 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import { storeToRefs } from "pinia";
 import EventCardHorizontal from "@/components/events/EventCardHorizontal.vue";
 import EventCalendarDividerToolbar from "@/components/events/EventCalendarDividerToolbar.vue";
@@ -38,6 +39,7 @@ import { useEventsStore } from "@/store/events";
 
 const eventsStore = useEventsStore();
 const { nextEvents } = storeToRefs(eventsStore);
+const loading = computed(() => eventsStore.loading("getEvents"));
 </script>
 
 <style lang="scss" scoped>

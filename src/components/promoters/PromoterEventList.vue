@@ -1,13 +1,18 @@
 <template>
   <!-- Tabs for event categories -->
-  <section class="bg-black" v-if="true">
+  <section class="bg-black" v-if="true" aria-label="Event Categories">
     <v-container>
-      <event-category-tabs v-model="selectedCategory" />
+      <event-category-tabs
+        v-model="selectedCategory"
+        role="tablist"
+        aria-label="Event Categories"
+      />
     </v-container>
-    <v-divider></v-divider>
+    <v-divider aria-hidden="true"></v-divider>
   </section>
+
   <!-- Action Buttons Row -->
-  <section class="action-buttons d-none d-md-block">
+  <section class="action-buttons d-none d-md-block" aria-label="Quick Actions">
     <v-container>
       <v-row no-gutters class="flex-column gap-2">
         <v-col cols="12">
@@ -16,9 +21,12 @@
             block
             variant="outlined"
             class="grey--text"
+            aria-label="Open WhatsApp Groups"
           >
-            <v-icon start class="mr-2 grey--text">mdi-account-group</v-icon>
-            Grupos de WhatsApp
+            <v-icon start class="mr-2 grey--text" aria-hidden="true"
+              >mdi-account-group</v-icon
+            >
+            <span>Grupos de WhatsApp</span>
           </v-btn>
         </v-col>
 
@@ -28,9 +36,12 @@
             block
             variant="outlined"
             class="grey--text"
+            aria-label="Contact for Events, Birthdays, Pix, or Questions"
           >
-            <v-icon start class="mr-2 grey--text">mdi-message-text</v-icon>
-            Despedidas, Aniversários, Pix ou Dúvidas
+            <v-icon start class="mr-2 grey--text" aria-hidden="true"
+              >mdi-message-text</v-icon
+            >
+            <span>Despedidas, Aniversários, Pix ou Dúvidas</span>
           </v-btn>
         </v-col>
 
@@ -41,28 +52,37 @@
             block
             variant="outlined"
             class="grey--text"
+            aria-label="Share Event List via WhatsApp"
           >
-            <v-icon start class="mr-2 grey--text">mdi-whatsapp</v-icon>
-            Enviar Lista de Transmissão
+            <v-icon start class="mr-2 grey--text" aria-hidden="true"
+              >mdi-whatsapp</v-icon
+            >
+            <span>Enviar Lista de Transmissão</span>
           </v-btn>
         </v-col>
       </v-row>
     </v-container>
-    <v-divider></v-divider>
+    <v-divider aria-hidden="true"></v-divider>
   </section>
 
   <!-- Content section -->
-  <section class="content-section">
+  <section class="content-section" aria-label="Event Listings">
     <v-container>
       <template v-if="Object.keys(filteredEvents || {}).length === 0">
         <v-row>
           <v-col cols="12" class="text-center py-4">
-            <p class="text-h6 grey--text">Nenhum evento disponível</p>
+            <p class="text-h6 grey--text" role="status">
+              Nenhum evento disponível
+            </p>
           </v-col>
         </v-row>
       </template>
       <template v-else>
-        <v-row v-for="(events, day) in filteredEvents" :key="day">
+        <v-row
+          v-for="(events, day) in filteredEvents"
+          :key="day"
+          :aria-label="`Events for ${day}`"
+        >
           <v-col cols="12" class="py-0">
             <v-toolbar
               color="background"
@@ -72,11 +92,15 @@
                 zIndex: 999,
               }"
               density="compact"
+              role="heading"
+              aria-level="2"
             >
               <v-toolbar-title>
                 <p class="text-body-2 text-grey-darken-1">
-                  <v-icon size="x-small">mdi-calendar</v-icon>
-                  {{ day }}
+                  <v-icon size="x-small" aria-hidden="true"
+                    >mdi-calendar</v-icon
+                  >
+                  <span>{{ day }}</span>
                 </p>
               </v-toolbar-title>
             </v-toolbar>
@@ -88,6 +112,7 @@
               )"
               :key="event.id"
               :event="event"
+              :aria-label="`Event ${index + 1} of ${events.length}`"
             ></promoter-card-horizontal>
           </v-col>
         </v-row>
@@ -99,8 +124,9 @@
               variant="outlined"
               color="primary"
               class="px-6"
+              aria-label="Load More Events"
             >
-              mais eventos
+              <span>mais eventos</span>
             </v-btn>
           </v-col>
         </v-row>
@@ -115,47 +141,64 @@
     class="d-md-none"
     color="primary"
     fixed
+    role="navigation"
+    aria-label="Mobile Navigation"
   >
     <!-- Events Tab - Primary Focus -->
-
     <v-btn
-      value="events"
       @click="toggleEventView"
       :class="{
         'v-btn--active': activeNav === (showingTodayEvents ? 'today' : 'all'),
       }"
+      :aria-pressed="activeNav === (showingTodayEvents ? 'today' : 'all')"
+      :aria-label="
+        showingTodayEvents ? 'View Today\'s Events' : 'View All Events'
+      "
     >
-      <v-icon>{{
+      <v-icon aria-hidden="true">{{
         showingTodayEvents ? "mdi-calendar" : "mdi-calendar-today"
       }}</v-icon>
-      {{ buttonText }}
+      <span>{{ buttonText }}</span>
     </v-btn>
 
     <!-- Quick Share/Save -->
-    <v-btn value="share" @click="shareList">
-      <v-icon>mdi-share</v-icon>
-      Compartilhar
+    <v-btn value="share" @click="shareList" aria-label="Share Event List">
+      <v-icon aria-hidden="true">mdi-share</v-icon>
+      <span>Compartilhar</span>
     </v-btn>
 
     <!-- Contact Button -->
-    <v-btn value="contact" @click="openDirectContact">
-      <v-icon>mdi-whatsapp</v-icon>
-      Contato
+    <v-btn
+      value="contact"
+      @click="openDirectContact"
+      aria-label="Contact via WhatsApp"
+    >
+      <v-icon aria-hidden="true">mdi-whatsapp</v-icon>
+      <span>Contato</span>
     </v-btn>
 
     <!-- Groups -->
-    <v-btn value="groups" @click="openWhatsappGroups">
-      <v-icon>mdi-account-group</v-icon>
-      Grupos
+    <v-btn
+      value="groups"
+      @click="openWhatsappGroups"
+      aria-label="Open WhatsApp Groups"
+    >
+      <v-icon aria-hidden="true">mdi-account-group</v-icon>
+      <span>Grupos</span>
     </v-btn>
   </v-bottom-navigation>
 
-  <WhatsappGroupsModal ref="whatsappGroupsModal" />
+  <WhatsappGroupsModal
+    ref="whatsappGroupsModal"
+    :groups="whatsappGroups"
+    role="dialog"
+    aria-label="WhatsApp Groups"
+  />
 </template>
 <script setup>
-//TODO: Pass group property to WhatsappGroupsModal
 import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { storeToRefs } from "pinia";
+import { usePromotersStore } from "@/store/promoters";
 import PromoterCardHorizontal from "@/components/promoters/PromoterCardHorizontal.vue";
 import WhatsappGroupsModal from "@/components/promoters/WhatsappGroupsModal.vue";
 import EventCategoryTabs from "@/components/events/EventCategoryTabs.vue";
@@ -168,11 +211,25 @@ const { events } = defineProps(["events"]);
 const eventsStore = useEventsStore();
 const { nextEvents } = storeToRefs(eventsStore);
 
+// Get promoter data from the store (loaded in the parent component)
+const promotersStore = usePromotersStore();
+const { promoter } = storeToRefs(promotersStore);
+
+// Create a computed property that maps promoter.whatsapp_groups to the modal’s expected format
+const whatsappGroups = computed(() => {
+  if (!promoter.value || !promoter.value.WhatsappGroups) return [];
+  return promoter.value.WhatsappGroups.map((group) => ({
+    name: group.group_name,
+    category: group.group_category,
+    link: group.group_url,
+  }));
+});
+
 // Reactive state
 const selectedCategory = ref("proximos");
 const whatsappGroupsModal = ref(null);
 const tabsHeight = ref(48);
-const activeNav = ref("events");
+const activeNav = ref("null");
 
 const eventDisplayLimits = ref({
   proximos: 5,
@@ -266,8 +323,18 @@ function shareList() {
 
 // Add this with the other functions in the script setup
 function openDirectContact() {
-  const phoneNumber = "YOUR_WHATSAPP_NUMBER"; // Replace with actual number
-  const whatsappUrl = `https://wa.me/${phoneNumber}`;
+  // Get the WhatsApp number from the promoter object (ensure promoter is available)
+  const phoneNumber = promoter.value?.whatsapp || "";
+
+  // Remove any non-digit characters (e.g. spaces, +, dashes)
+  const cleanedNumber = phoneNumber.replace(/[^0-9]/g, "");
+
+  if (!cleanedNumber) {
+    console.error("No valid WhatsApp number provided");
+    return;
+  }
+
+  const whatsappUrl = `https://wa.me/${cleanedNumber}`;
   window.open(whatsappUrl, "_blank");
 }
 

@@ -1,33 +1,25 @@
+// vite.config.js
 import { fileURLToPath, URL } from "node:url";
-import { VitePWA } from "vite-plugin-pwa"; // <-- Added PWA plugin
+import { VitePWA } from "vite-plugin-pwa";
 import ViteFonts from "unplugin-fonts/vite";
 import { defineConfig } from "vite";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 import vue from "@vitejs/plugin-vue";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue({
-      template: { transformAssetUrls },
-    }),
+    vue({ template: { transformAssetUrls } }),
     vuetify({
       autoImport: true,
-      styles: {
-        configFile: "src/styles/settings.scss",
-      },
+      styles: { configFile: "src/styles/settings.scss" },
     }),
     ViteFonts({
       google: {
         families: [
-          {
-            name: "Inter",
-            styles: "wght@100;300;400;500;700;900",
-          },
+          { name: "Inter", styles: "wght@100;300;400;500;700;900" },
         ],
       },
     }),
-    // Added PWA configuration
     VitePWA({
       registerType: "autoUpdate",
       manifest: {
@@ -58,13 +50,13 @@ export default defineConfig({
           src: "/img/screenshots/desktop.png",
           sizes: "1280x800",
           type: "image/png",
-          form_factor: "wide", // For desktop
+          form_factor: "wide",
         },
         {
           src: "/img/screenshots/mobile.png",
           sizes: "375x812",
           type: "image/png",
-          form_factor: "narrow", // For mobile
+          form_factor: "narrow",
         },
       ],
       workbox: {
@@ -74,12 +66,33 @@ export default defineConfig({
   ],
   define: { "process.env": {} },
   resolve: {
-    alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-    },
+    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
     extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
   server: {
     port: 3001,
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        // Create separate chunks for vendor modules to reduce initial payload
+        manualChunks(id) {
+          if (id.includes("node_modules")) {
+            return id
+              .toString()
+              .split("node_modules/")[1]
+              .split("/")[0]
+              .toString();
+          }
+        },
+      },
+    },
+    minify: "terser",
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
   },
 });

@@ -49,23 +49,24 @@ export const usePromotersStore = defineStore("promoters", () => {
           Id: documentSnapshot.id,
           PromoterName: data.name,
           PromoterCode: data.code,
-          country: data.country || 'BR',
-          region: data.region || 'riodejaneiro',
+          country: data.country || "BR",
+          region: data.region || "riodejaneiro",
           LastUpdate: data.updated_at ? data.updated_at.toDate() : new Date(),
           Followers: data.followers || 0,
           LocationArray: [data.region?.name].filter(Boolean),
           EventCategoryArray: data.eventCategories || [],
           MusicTypeArray: data.musicTypes || [],
-          Instagram: data.instagram || '',
-          Twitter: data.twitter || '',
-          Tiktok: data.tiktok || '',
-          Whatsapp: data.whatsapp || ''
+          Instagram: data.instagram || "",
+          Twitter: data.twitter || "",
+          Tiktok: data.tiktok || "",
+          Whatsapp: data.whatsapp || "",
+          WhatsappGroups: data.whatsapp_groups || "",
         };
         return { ok: true, data: promoter.value };
       }
-      return { ok: false, error: 'Promoter not found' };
+      return { ok: false, error: "Promoter not found" };
     } catch (error) {
-      console.error('Error:', error);
+      console.error("Error:", error);
       notifyError(error);
       return { ok: false, error };
     }

@@ -7,31 +7,18 @@
             :day="day"
           ></event-calendar-divider-toolbar>
           <div class="events-list">
-            <!-- If no events, show skeleton placeholders -->
-            <template v-if="!events || !events.length">
-              <v-skeleton-loader
-                v-for="index in 3"
-                :key="index"
-                type="list-item-avatar"
-                class="mb-2"
-              />
-            </template>
-            <!-- Otherwise, show the event cards -->
-            <template v-else>
-              <event-card-horizontal
-                v-for="event in events"
-                :key="event.id"
-                :event="event"
-                class="mb-2"
-              />
-            </template>
+            <event-card-horizontal
+              v-for="event in events"
+              :key="event.id"
+              :event="event"
+              class="mb-2"
+            />
           </div>
         </v-col>
       </v-row>
     </v-container>
   </section>
 </template>
-
 <script setup>
 import { onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";

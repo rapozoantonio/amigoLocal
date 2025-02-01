@@ -92,4 +92,46 @@ label.required:after {
 .hover-primary:hover {
   color: rgb(var(--v-theme-primary)) !important;
 }
+
+.pattern-black-red-bg {
+  position: relative;  
+  width: 100%;
+  min-height: 300px;   
+  filter: blur(30px) brightness(0.3);
+
+  /* Dark red/gray/black layered gradients */
+  background-color: #0a0a0a;
+  background-image:
+    /* Subtle repeating radial “noise” */
+    repeating-radial-gradient(
+      circle at 50% 50%, 
+      rgba(255, 255, 255, 0.02),
+      rgba(255, 255, 255, 0.02) 2px,
+      transparent 3px,
+      transparent 30px
+    ),
+    /* Soft radial hotspots of deep red */
+    radial-gradient(
+      circle at 20% 30%, 
+      rgba(60, 0, 0, 0.3), 
+      transparent 60%
+    ),
+    radial-gradient(
+      circle at 80% 70%, 
+      rgba(100, 0, 0, 0.2), 
+      transparent 70%
+    ),
+    /* Main linear gradient from blackish grey to red */
+    linear-gradient(
+      to bottom right,
+      #000 0%,
+      #1a1a1a 25%,
+      #2c0202 50%,
+      #1c0101 75%,
+      #000 100%
+    );
+  background-blend-mode: overlay, screen, screen, normal;
+  background-size: cover;
+  background-position: center;
+}
 </style>
