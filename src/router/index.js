@@ -344,39 +344,12 @@ const routes = [
           ),
       },
       {
-        path: "events/autocreate",
-        name: "pro-events-autocreate",
-
-        component: () =>
-          import(
-            /* webpackChunkName: "pro-event-autocreate" */ "@/views/pro/event/EventAutoCreate2.vue"
-          ),
-      },
-      {
         path: "events/bulkcreate",
         name: "pro-events-bulk-create",
 
         component: () =>
           import(
             /* webpackChunkName: "pro-events-bulk-create" */ "@/views/pro/event/EventBulkCreate.vue"
-          ),
-      },
-      {
-        path: "events/create-steps",
-        name: "pro-events-create-steps",
-        props: true,
-        component: () =>
-          import(
-            /* webpackChunkName: "pro-events-edit" */ "@/views/pro/event/EventTestSteps.vue"
-          ),
-      },
-      {
-        path: "events/:id/edit",
-        name: "pro-events-edit",
-        props: true,
-        component: () =>
-          import(
-            /* webpackChunkName: "pro-events-edit" */ "@/views/pro/event/EventTest.vue"
           ),
       },
       {
