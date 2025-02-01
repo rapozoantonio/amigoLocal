@@ -4,16 +4,8 @@
     <v-container v-if="!events">
       <v-progress-circular color="primary"></v-progress-circular>
     </v-container>
-    <v-container v-else-if="events.length === 0">
-      <v-alert
-        icon="mdi-calendar-remove-outline"
-        color="warning"
-        variant="tonal"
-      >
-        Não ha eventos
-      </v-alert>
-    </v-container>
-
+    <!-- No Events State -->
+    <no-event-alert v-else-if="events.length === 0" />
     <event-list-featured
       v-if="events && events.length > 0"
     ></event-list-featured>
@@ -29,6 +21,7 @@ import { onMounted } from "vue";
 import { storeToRefs } from "pinia";
 
 // COMPONENTS
+import NoEventAlert from "@/components/events/NoEventAlert.vue";
 import EventListFeatured from "@/components/events/EventListFeatured.vue";
 import EventListNextEvents from "@/components/events/EventListNextEvents.vue";
 // import { ref } from "vue";

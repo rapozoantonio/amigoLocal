@@ -5,17 +5,6 @@
       <v-progress-circular color="primary" indeterminate></v-progress-circular>
     </v-container>
 
-    <!-- No Events State -->
-    <v-container v-else-if="!filteredEvents?.length">
-      <v-alert
-        icon="mdi-calendar-remove-outline"
-        color="warning"
-        variant="tonal"
-      >
-        Não ha eventos
-      </v-alert>
-    </v-container>
-
     <!-- Events List -->
     <event-list-next-events
       v-else
@@ -28,7 +17,6 @@
 import { onMounted, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-
 import EventListNextEvents from "@/components/events/EventListNextEvents.vue";
 import { useEventsStore } from "@/store/events";
 

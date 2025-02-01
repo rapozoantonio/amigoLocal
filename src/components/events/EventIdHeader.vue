@@ -63,7 +63,7 @@
         <!-- Essential Info -->
         <v-row no-gutters>
           <v-col cols="12">
-            <div class="d-flex align-center text-caption text-grey-lighten-1">
+            <div class="d-flex align-center text-caption text-grey-lighten-1 mt-1">
               <v-icon size="14" color="grey-lighten-1" class="mr-1"
                 >mdi-map-marker</v-icon
               >

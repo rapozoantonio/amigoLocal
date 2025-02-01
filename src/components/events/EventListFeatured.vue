@@ -1,6 +1,15 @@
 <template>
   <section class="flex-grow-1">
-    <v-container v-if="featuredEvents.length > 0">
+    <!-- Show skeleton when loading -->
+    <v-container v-if="loading">
+      <v-skeleton-loader type="article" class="mb-4"></v-skeleton-loader>
+    </v-container>
+
+    <!-- Show no events alert when there are no events -->
+    <no-event-alert v-else-if="!featuredEvents?.length" type="empty" />
+
+    <!-- Show content when not loading and has events -->
+    <v-container v-else>
       <v-row>
         <v-col cols="12">
           <div class="d-flex align-center justify-space-between mb-2 mb-sm-4">
@@ -17,7 +26,9 @@
           </div>
         </v-col>
         <v-col cols="12">
-          <p class="text-h5 text-sm-h4 font-weight-bold text-grey-darken-1">🔥 Em Alta</p>
+          <p class="text-h5 text-sm-h4 font-weight-bold text-grey-darken-1">
+            🔥 Em Alta
+          </p>
         </v-col>
       </v-row>
       <v-row>
@@ -37,19 +48,15 @@
         </v-col>
       </v-row>
     </v-container>
-
-    <!-- Loading State -->
-    <v-container v-else>
-      <v-skeleton-loader type="article" class="mb-4"></v-skeleton-loader>
-    </v-container>
   </section>
 </template>
 
 <script setup>
+import { computed, onMounted, watch } from "vue";
 import { useEventsStore } from "@/store/events";
 import { storeToRefs } from "pinia";
 import EventCardVertical from "@/components/events/EventCardVertical.vue";
-import { computed, onMounted, watch } from "vue";
+import NoEventAlert from "@/components/events/NoEventAlert.vue";
 import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify";
 
@@ -79,6 +86,8 @@ watch(
   },
   { immediate: true }
 );
+
+const loading = computed(() => eventsStore.loading("getEvents"));
 
 // Create responsive events computed property with null check
 const responsiveEvents = computed(() => {

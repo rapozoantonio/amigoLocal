@@ -4,20 +4,9 @@
       <!-- Loop through the days in nextEvents -->
       <v-row v-for="(events, day) in nextEvents" :key="day">
         <v-col cols="12">
-          <v-toolbar
-            color="background"
-            class="sticky-toolbar"
-            density="compact"
-          >
-            <v-toolbar-title>
-              <div class="text-grey-darken-1 d-flex align-center py-1">
-                <v-icon size="18" class="mr-2">mdi-calendar</v-icon>
-                <span class="text-subtitle-1 text-sm-h6 font-weight-medium">
-                  {{ day }}
-                </span>
-              </div>
-            </v-toolbar-title>
-          </v-toolbar>
+          <event-calendar-divider-toolbar
+            :day="day"
+          ></event-calendar-divider-toolbar>
           <!-- If there are events, display them -->
           <template v-if="events && events.length">
             <event-card-horizontal
@@ -44,6 +33,7 @@
 <script setup>
 import { storeToRefs } from "pinia";
 import EventCardHorizontal from "@/components/events/EventCardHorizontal.vue";
+import EventCalendarDividerToolbar from "@/components/events/EventCalendarDividerToolbar.vue";
 import { useEventsStore } from "@/store/events";
 
 const eventsStore = useEventsStore();

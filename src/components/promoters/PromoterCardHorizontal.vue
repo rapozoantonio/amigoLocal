@@ -41,12 +41,11 @@
           <v-icon size="small" color="primaryIcon">mdi-map-marker</v-icon>
           <span class="text-caption ml-1">{{ event.location.name }}</span>
         </div>
-
         <!-- Event Tags -->
         <div class="d-flex flex-wrap gap-1 mt-1">
           <!-- Categories -->
           <v-chip
-            v-for="category in event.categories"
+            v-for="category in displayedCategories"
             :key="'cat-' + category"
             size="x-small"
             label
@@ -56,9 +55,18 @@
           >
             {{ category }}
           </v-chip>
+          <v-chip
+            v-if="hasMoreCategories"
+            size="x-small"
+            label
+            variant="outlined"
+            color="primaryIcon"
+            class="mr-1 mb-1"
+          >
+            +{{ event.categories.length - 3 }}
+          </v-chip>
         </div>
       </v-col>
-
       <!-- Promoter and Followers (stacked for mobile) -->
       <v-col cols="12" sm="3" class="d-flex flex-column align-end mt-1">
         <!-- Promoter Code Button -->
@@ -86,7 +94,22 @@
 </template>
 
 <script setup>
-const { event } = defineProps(["event"]);
+import { computed } from "vue";
+import { useDisplay } from "vuetify";
+
+const props = defineProps(["event"]);
+const { mobile } = useDisplay();
+
+const displayedCategories = computed(() => {
+  if (!props.event?.categories) return [];
+  return mobile.value
+    ? props.event.categories.slice(0, 3)
+    : props.event.categories;
+});
+
+const hasMoreCategories = computed(() => {
+  return mobile.value && props.event?.categories?.length > 3;
+});
 </script>
 
 <style lang="scss" scoped>

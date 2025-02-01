@@ -1,19 +1,8 @@
 <template>
   <div class="d-flex flex-column">
-    <!-- <h2>All events</h2> -->
     <v-container v-if="!events">
       <v-progress-circular color="primary"></v-progress-circular>
     </v-container>
-    <v-container v-else-if="events.length === 0">
-      <v-alert
-        icon="mdi-calendar-remove-outline"
-        color="warning"
-        variant="tonal"
-      >
-        Não ha eventos
-      </v-alert>
-    </v-container>
-
     <event-list-featured
       v-if="events && events.length > 0"
     ></event-list-featured>

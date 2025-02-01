@@ -2,37 +2,10 @@
   <!-- Tabs for event categories -->
   <section class="bg-black" v-if="true">
     <v-container>
-      <v-row>
-        <v-col cols="12">
-          <v-tabs
-            v-model="selectedCategory"
-            color="primary"
-            density="compact"
-            class="px-0"
-            slider-color="primary"
-          >
-            <v-tab
-              v-for="(label, value) in {
-                proximos: 'Próximos eventos',
-                carnaval: 'Carnaval',
-                reveillon: 'Reveillon',
-              }"
-              :key="value"
-              :value="value"
-              class="text-subtitle-2 px-0 mr-4 w-min-0"
-              exact
-              variant="plain"
-              slim
-            >
-              {{ label }}
-            </v-tab>
-          </v-tabs>
-        </v-col>
-      </v-row>
+      <event-category-tabs v-model="selectedCategory" />
     </v-container>
     <v-divider></v-divider>
   </section>
-
   <!-- Action Buttons Row -->
   <section class="action-buttons d-none d-md-block">
     <v-container>
@@ -107,7 +80,7 @@
                 </p>
               </v-toolbar-title>
             </v-toolbar>
-            
+
             <promoter-card-horizontal
               v-for="(event, index) in events.slice(
                 0,
@@ -185,6 +158,7 @@ import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { storeToRefs } from "pinia";
 import PromoterCardHorizontal from "@/components/promoters/PromoterCardHorizontal.vue";
 import WhatsappGroupsModal from "@/components/promoters/WhatsappGroupsModal.vue";
+import EventCategoryTabs from "@/components/events/EventCategoryTabs.vue";
 import { useEventsStore } from "@/store/events";
 
 // Props

@@ -17,7 +17,7 @@
                 name: 'events',
                 params: {
                   country: promoter.country || 'BR',
-                  region: promoter.region?.id || 'riodejaneiro', 
+                  region: promoter.region?.id || 'riodejaneiro',
                 },
               }"
             >
@@ -49,11 +49,43 @@
 
         <v-row no-gutters>
           <v-col cols="12">
-            <p class="text-caption text-grey-lighten-1">
-              {{ promoter.LocationArray[0] }} •
-              {{ promoter.MusicTypeArray.join(", ") }} •
-              {{ promoter.Followers }} followers
-            </p>
+            <div class="d-flex align-center text-caption text-grey-lighten-1 mt-1">
+              <template v-if="promoter.LocationArray?.length">
+                <v-icon size="14" color="grey-lighten-1" class="mr-1"
+                  >mdi-map-marker</v-icon
+                >
+                {{ promoter.LocationArray[0] }}
+              </template>
+
+              <template
+                v-if="
+                  promoter.LocationArray?.length &&
+                  (promoter.MusicTypeArray?.length || promoter.Followers)
+                "
+              >
+                <v-divider vertical class="mx-2" />
+              </template>
+
+              <template v-if="promoter.MusicTypeArray?.length">
+                <v-icon size="14" color="grey-lighten-1" class="mr-1"
+                  >mdi-music</v-icon
+                >
+                {{ promoter.MusicTypeArray.join(", ") }}
+              </template>
+
+              <template
+                v-if="promoter.MusicTypeArray?.length && promoter.Followers"
+              >
+                <v-divider vertical class="mx-2" />
+              </template>
+
+              <template v-if="promoter.Followers">
+                <v-icon size="14" color="grey-lighten-1" class="mr-1"
+                  >mdi-account-group</v-icon
+                >
+                {{ promoter.Followers }}
+              </template>
+            </div>
           </v-col>
         </v-row>
 
