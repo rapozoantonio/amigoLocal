@@ -219,7 +219,7 @@ const changed = computed(() => {
 })
 
 
-const { id, size, type, rules, label, labelType, field, items, initial, icon, multiple, text, prepend, readOnly, placeholder, hint } = defineProps({
+const { id, size, type, rules, label, labelType, field, items, initial, icon, multiple, text, prepend, readOnly, placeholder, hint, rows } = defineProps({
     // name: {
     //     type: String, required: true,
     // },
@@ -242,7 +242,7 @@ const { id, size, type, rules, label, labelType, field, items, initial, icon, mu
         type: String
     },
     items: {
-        type: Object, default: () => []
+        type: Array, default: () => []
     },
     children: {
         type: Array, default: () => []
@@ -273,6 +273,9 @@ const { id, size, type, rules, label, labelType, field, items, initial, icon, mu
     },
     hint: {
         type: [String, null]
+    },
+    rows: {
+        type: [Number, null]
     },
 })
 
@@ -373,6 +376,7 @@ const attrs = computed(() => {
             required: rules.find(i => i === 'required'),
             "flex-grow-1": true
         },
+        rows: rows ? rows : type === "textarea" ? 2 : 1,
         required: rules.find(i => i === 'required'),
         multiple: !!multiple,
         disabled: readOnly ? true : false,

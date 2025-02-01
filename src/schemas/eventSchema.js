@@ -19,6 +19,7 @@ export default {
           type: "date",
           size: "xs",
           rules: ["required"],
+          initial: new Date().toISOString().split("T")[0],
         },
         {
           id: "startTime",
@@ -31,6 +32,7 @@ export default {
           label: "Data fim",
           type: "date",
           size: "xs",
+          initial: new Date().toISOString().split("T")[0],
         },
         {
           id: "endTime",

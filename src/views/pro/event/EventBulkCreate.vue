@@ -28,9 +28,13 @@
                           <v-textarea v-bind="helpers.fieldAttrs" rows="12" color="primary" v-model="text">
                           </v-textarea>
                         </v-col>
+                        <v-col cols="12">
+                          <form-field type="custom-region" :rules="['required']" v-model:model="eventConfig"
+                            field="region" label="Região" id="region"></form-field>
+                        </v-col>
                         <v-col cols="12" class="text-center">
-                          <v-btn color="primary" class="mx-auto" :disabled="!text && text != ''"
-                            @click="useAssistente(next)">
+                          <v-btn color="primary" class="mx-auto"
+                            :disabled="(!text && text != '') || !eventConfig.region" @click="useAssistente(next)">
                             Use ✨️AI Iris
                           </v-btn></v-col>
                         <v-col cols="12">
@@ -49,36 +53,87 @@
                       <v-row>
                         <v-col cols="12" v-for="(event, index) in events" :key="event.name">
                           <v-card variant="tonal" @click="openEditDialog(index)">
-                            <v-card-text v-if="false">
-                              <form-box :schema="bulkEventSchema" v-model:model="events[index]"></form-box>
-                            </v-card-text>
-                            <v-card-text v-if="true">
-                              <p class="text-subtitle-1 font-weight-bold">
-                                <span class="text-grey text-subtitle-2">
-                                  Name:</span>
-                                {{ event.name }}
-                              </p>
-                              <p class="text-subtitle-2">
-                                <span class="text-grey"> Date:</span>
-                                {{ event.startDate }}
-                              </p>
-                              <p class="text-body-2">
-                                <span class="text-grey"> Description:</span>
-                                {{ event.description }}
-                              </p>
-                              <p class="text-body-2">
-                                <span class="text-grey"> Links:</span>
-                              </p>
-                              <template v-for="link in event.links" :key="link.url">
-                                <p class="text-caption ml-4">
-                                  <span class="text-grey"> Name:</span>
-                                  {{ link.name }}
-                                </p>
-                                <p class="text-caption ml-4">
-                                  <span class="text-grey"> URL:</span>
-                                  {{ link.url }}
-                                </p>
-                              </template>
+                            <v-card-text>
+                              <v-row no-gutters>
+                                <v-col cols="12">
+                                  <p class="text-subtitle-1 font-weight-bold">
+                                    <span class="text-grey text-subtitle-2">
+                                      Nome:</span>
+                                    {{ event.name }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="6">
+                                  <p class="text-subtitle-2">
+                                    <span class="text-grey"> Data Início:</span>
+                                    {{ event.startDate }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="6">
+                                  <p class="text-subtitle-2">
+                                    <span class="text-grey"> Hora Início:</span>
+                                    {{ event.startTime }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="6">
+                                  <p class="text-subtitle-2">
+                                    <span class="text-grey"> Data Fim:</span>
+                                    {{ event.endDate }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="6">
+                                  <p class="text-subtitle-2">
+                                    <span class="text-grey"> Hora Fim:</span>
+                                    {{ event.endTime }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="12">
+                                  <p class="text-body-2">
+                                    <span class="text-grey"> Description:</span>
+                                    {{ event.description }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="12">
+                                  <p class="text-body-2">
+                                    <span class="text-grey"> Estilos:</span>
+                                    {{ event.genres }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="12">
+                                  <p class="text-body-2">
+                                    <span class="text-grey"> Categorias:</span>
+                                    {{ event.categories }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="12">
+                                  <p class="text-body-2">
+                                    <span class="text-grey"> Região:</span>
+                                    {{ event.region ? event.region.name : "" }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="12">
+                                  <p class="text-body-2">
+                                    <span class="text-grey"> País:</span>
+                                    {{ event.country }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="12">
+                                  <p class="text-body-2">
+                                    <span class="text-grey"> Links:</span>
+                                  </p>
+                                </v-col>
+                                <v-col cols="12">
+                                  <template v-for="link in event.links" :key="link.url">
+                                    <p class="text-caption ml-4">
+                                      <span class="text-grey"> Name:</span>
+                                      {{ link.name }}
+                                    </p>
+                                    <p class="text-caption ml-4">
+                                      <span class="text-grey"> URL:</span>
+                                      {{ link.url }}
+                                    </p>
+                                  </template>
+                                </v-col>
+                              </v-row>
                             </v-card-text>
                           </v-card>
                         </v-col>
@@ -95,11 +150,14 @@
 
                 <!-- STEP 3 - CONFIRMATION -->
                 <v-stepper-window-item title="Imagem" value="3" @click:next="onClickFinish">
-                  <v-card variant="flat" max-width="500" class="mx-auto text-center">
+                  <v-card min-height="400" variant="flat" max-width="500" class="mx-auto text-center">
                     <v-card-title> Confirmação </v-card-title>
                     <v-card-text>
-                      <p>Total de eventos: {{ events.length }} </p>
-                      <v-btn @click="onClickFinish">Criar {{ events.length }} eventos</v-btn>
+                      <v-btn class="mt-4" :disabled="events.length === 0" size="large" color="primary"
+                        @click="onClickFinish">Criar
+                        {{ events.length
+                        }}
+                        eventos</v-btn>
                     </v-card-text>
                   </v-card>
                 </v-stepper-window-item>
@@ -109,39 +167,8 @@
 
           <v-dialog v-model="selection.opened" :overlay="false" max-width="500px" transition="dialog-transition">
             <v-card>
-              <!-- <v-card-title>Edit event</v-card-title> -->
-              <v-card-text v-if="false">
-                <v-row>
-                  <v-col cols="12" class="pb-0">
-                    <p class="mb-1 ml-2 text-body-2">Name</p>
-                    <v-text-field v-bind="helpers.fieldAttrs" v-model="events[selection.index].name"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" class="pb-0">
-                    <p class="mb-1 ml-2 text-body-2">Start Date</p>
-                    <v-text-field type="date" v-bind="helpers.fieldAttrs"
-                      v-model="events[selection.index].startDate"></v-text-field>
-                  </v-col>
-                  <v-col cols="12" class="pb-0">
-                    <p class="mb-1 ml-2 text-body-2">Description</p>
-                    <v-textarea v-bind="helpers.fieldAttrs" rows="1"
-                      v-model="events[selection.index].description"></v-textarea>
-                  </v-col>
-                  <template v-for="(link, i) in events[selection.index].links" :key="link.url">
-                    <v-col cols="12">
-                      <p class="mb-1 ml-2 text-body-2">Links</p>
-
-                      <v-text-field v-model="link.url" v-bind="helpers.fieldAttrs" label="Url">
-                        <template #prepend>
-                          <v-text-field min-width="120" v-bind="helpers.fieldAttrs" label="Name" v-model="link.name">
-                          </v-text-field>
-                        </template>
-                      </v-text-field>
-                    </v-col>
-                  </template>
-                </v-row>
-              </v-card-text>
               <form-box @submit="selection.opened = false" labelType="up" :schema="bulkEventSchema"
-                v-model:model="events[selection.index]"></form-box>
+                v-model:model="events[selection.index]" v-model:files="files[selection.index]"></form-box>
             </v-card>
           </v-dialog>
         </v-col>
@@ -159,14 +186,22 @@ import { useFirebaseStore } from "@/store/firebase.js";
 import eventSchema from "@/schemas/eventSchema";
 import bulkEventSchema from "@/schemas/bulkEventSchema";
 import FormBox from "@/components/form/FormBox.vue";
-
+import { useEventStore } from "@/store/event";
+import Swal from "sweetalert2";
+import { useAuthStore } from "@/store/auth";
+import { useRouter } from "vue-router";
+import FormField from "@/components/form/FormField.vue";
+const router = useRouter();
 const helpers = inject("$helpers");
-
+const auth = useAuthStore();
+const eventConfig = ref({ region: null });
 const chatgptStore = useChatgptStore();
 const firebaseStore = useFirebaseStore();
+const eventStore = useEventStore();
 const appStore = useAppStore();
 const text = ref(null);
 const step = ref(null);
+const files = ref([]);
 const selection = ref({
   edit: false,
   index: -1,
@@ -179,86 +214,25 @@ function openEditDialog(index) {
   selection.value.opened = true;
 }
 
-// const events = ref([]);
-const events = ref([
-  {
-    "startDate": "2024-05-16",
-    "name": "BOSQUINTA: A MELHOR QUINTA DO RIO",
-    "description": "LISTA VIP até 23:00 horas",
-    "links": [
-      {
-        "name": "festaserrejota",
-        "url": "http://festaserrejota.com.br/bosquinta-lista-vip"
-      }
-    ]
-  },
-  {
-    "startDate": "2024-05-16",
-    "name": "PARQUE BAR QUINTA",
-    "description": "LISTA VIP até 22:00 horas",
-    "links": [
-      {
-        "name": "festaserrejota",
-        "url": "http://festaserrejota.com.br/parque-bar-quinta"
-      }
-    ]
-  },
-  {
-    "startDate": "2024-05-17",
-    "name": "INCOSTA COM HAWAIANOS NO BOSQUE",
-    "description": "LISTA VIP até 21:00 horas",
-    "links": [
-      {
-        "name": "festaserrejota",
-        "url": "http://festaserrejota.com.br/bosque-bar-sexta"
-      }
-    ]
-  },
-  {
-    "startDate": "2024-05-17",
-    "name": "Q’BELEZA EXC JOCKEY",
-    "description": "LISTA VIP até 00:00 horas",
-    "links": [
-      {
-        "name": "festaserrejota",
-        "url": "http://festaserrejota.com.br/qbeleza"
-      }
-    ]
-  },
-  {
-    "startDate": "2024-05-17",
-    "name": "ALDEIA SEXTA",
-    "description": "LISTA VIP até 23:00 horas",
-    "links": [
-      {
-        "name": "festaserrejota",
-        "url": "http://festaserrejota.com.br/aldeia-sexta"
-      }
-    ]
-  },
-  {
-    "startDate": "2024-05-17",
-    "name": "PARQUE BAR SEXTA",
-    "description": "LISTA VIP até 23:00 horas",
-    "links": [
-      {
-        "name": "festaserrejota",
-        "url": "http://festaserrejota.com.br/parque-bar-sexta"
-      }
-    ]
-  },
-]);
+const events = ref([]);
 
 async function useAssistente(callback) {
   try {
     appStore.loading = true;
+    appStore.loadingText = "Analizando eventos..."
     const response = await chatgptStore.getBulkEventList(text.value);
 
     const content = JSON.parse(response.choices[0].message.content);
 
     if (content.events) {
-      events.value = content.events;
-      console.log("events", content.events)
+      const transformedEvents = content.events.map((event) => {
+        const defaultEvent = eventStore.printEventInit();
+        event.endDate = event.endDate || event.startDate;
+        return { ...defaultEvent, ...event, region: eventConfig.value.region, country: "BR" }
+      });
+      events.value = transformedEvents;
+      files.value = transformedEvents.map(() => ({}))
+      console.log("events", events.value, files.value);
     }
   } catch (error) {
   } finally {
@@ -274,13 +248,30 @@ async function onClickFinish() {
     console.log("no events to send");
     return false;
   }
-
+  appStore.loading = true;
+  appStore.loadingText = "Analizando eventos...";
   try {
-    const response = await firebaseStore.postBulkDocuments("events", events.value);
+    // const response = await firebaseStore.postBulkDocuments("events", events.value);
+
+    const promises = events.value.map((event, index) => {
+      return eventStore.createEvent(event, {});
+    })
+
+    const response = await Promise.all(promises);
+    if (response.every(r => r.ok)) {
+      Swal.fire({ title: "Eventos criados com sucesso", icon: "success" }).then(() => {
+        router.push("/promoters/" + auth.user.uid);
+      });
+
+    }
     console.log({ response });
   }
   catch (error) {
     console.log(error);
+  }
+  finally {
+    appStore.loading = false;
+    appStore.loadingText = null;
   }
 
 

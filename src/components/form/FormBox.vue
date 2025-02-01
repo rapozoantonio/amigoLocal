@@ -2,38 +2,20 @@
   <v-form class="form-container" @submit.prevent="submitForm">
     <v-card flat class="mx-auto" color="transparent">
       <template v-for="(section, index) in schema.sections" :key="section.name">
-        <v-card-title
-          v-if="section.name && section.name !== ''"
-          class="mb-4"
-          :class="[index > 0 ? 'mt-4' : '']"
-        >
+        <v-card-title v-if="section.name && section.name !== ''" class="mb-4" :class="[index > 0 ? 'mt-4' : '']">
           {{ section.name }}
         </v-card-title>
         <v-card-text>
           <v-row :dense="dense">
             <template v-for="field in section.fields" :key="field.id">
               <template v-if="field.type === 'object'">
-                <form-field
-                  :labelType="labelType"
-                  v-for="child in field.children"
-                  :key="child.id"
-                  :items="items ? items[child.id] : null"
-                  v-model:files="files"
-                  v-model:model="model[field.id]"
-                  :field="child.id"
-                  v-bind="child"
-                ></form-field>
+                <form-field :labelType="labelType" v-for="child in field.children" :key="child.id"
+                  :items="items[child.id] || child.items || null" v-model:files="files" v-model:model="model[field.id]"
+                  :field="child.id" v-bind="child"></form-field>
               </template>
 
-              <form-field
-                :labelType="labelType"
-                :items="items[field.id] || null"
-                v-else
-                v-model:files="files"
-                v-model:model="model"
-                :field="field.id"
-                v-bind="field"
-              ></form-field>
+              <form-field :labelType="labelType" :items="items[field.id] || field.items || null" v-else
+                v-model:files="files" v-model:model="model" :field="field.id" v-bind="field"></form-field>
             </template>
           </v-row>
         </v-card-text>
@@ -41,24 +23,13 @@
       <v-card-text>
         <v-row>
           <v-col v-if="error" cols="12">
-            <v-alert
-              density="compact"
-              border="start"
-              type="error"
-              variant="outlined"
-            >
+            <v-alert density="compact" border="start" type="error" variant="outlined">
               {{ error }}
             </v-alert>
           </v-col>
           <v-col cols="12" :class="['text-' + buttonPosition]">
-            <v-btn
-              :block="block"
-              class="my-2"
-              type="submit"
-              variant="elevated"
-              color="primary"
-              >{{ action || "Enviar" }}</v-btn
-            >
+            <v-btn :block="block" class="my-2" type="submit" variant="elevated" color="primary">{{ action || "Enviar"
+              }}</v-btn>
           </v-col>
         </v-row>
         <slot name="append">

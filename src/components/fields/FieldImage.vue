@@ -33,14 +33,13 @@
 
         </template>
     </v-file-input>
-    {{ files[field] }}
 
 </template>
 
 <script setup>
 import {
-  computed,
-  inject,
+    computed,
+    inject,
 } from 'vue';
 
 const { fieldAttrs, rules } = inject("$helpers");

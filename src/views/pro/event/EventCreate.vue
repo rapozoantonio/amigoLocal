@@ -29,18 +29,36 @@ import EventCreateGptAssistence from "@/components/pro/event/EventCreateGptAssis
 import eventSchema from "@/schemas/eventSchema";
 import { useConfigStore } from "@/store/config";
 import { useEventStore } from "@/store/event";
+import { useAppStore } from "@/store/app";
 
 // Components
 const eventStore = useEventStore();
 const configStore = useConfigStore();
+const appStore = useAppStore();
 const opened = ref(true);
 const { event, files, eventCategories } = storeToRefs(eventStore);
 const { genres } = storeToRefs(configStore);
 
 async function submitEvent() {
-  const response = await eventStore.createEvent();
-  if (response.ok) {
-    eventStore.$reset();
+  console.log("submit Event", event.value, files.value);
+  appStore.loading = true;
+  appStore.loadingText = "Criando evento...";
+  try {
+    const response = await eventStore.createEvent(event.value, files.value);
+    console.log({ response });
+    if (response.ok) {
+      response.notify();
+      eventStore.$reset();
+    }
+    else {
+      throw new Error(response.error);
+    }
+  } catch (error) {
+    console.log({ error });
+  } finally {
+    appStore.loading = false;
+    appStore.loadingText = null;
   }
+
 }
 </script>
