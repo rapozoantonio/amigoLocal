@@ -9,7 +9,8 @@
                     v-slot:default="{ next, prev }">
 
                     <!-- HEADER -->
-                    <v-stepper-header flat v-show="!xs" class="flex-column justify-start pt-5 mr-4 flex-shrink-0">
+                    <v-stepper-header flat v-show="!xs && !sm"
+                        class="flex-column justify-start pt-5 mr-4 flex-shrink-0">
                         <!-- SLOT HEADER PREPEND -->
                         <slot name="header-prepend"></slot>
                         <!-- HEADER ITEM -->
@@ -76,7 +77,8 @@
 
                                             <!-- ACTION BUTTON -->
                                             <v-col cols="auto">
-                                                <v-btn color="grey" :disabled="step === 1" @click="prev">Anterior</v-btn>
+                                                <v-btn color="grey" :disabled="step === 1"
+                                                    @click="prev">Anterior</v-btn>
                                             </v-col>
 
                                             <v-spacer></v-spacer>
@@ -188,7 +190,7 @@ const formValid = ref(schema.sections.map(() => null));
 
 const stepper = ref(null);
 const step = ref(1);
-const { xs } = useDisplay();
+const { xs, sm } = useDisplay();
 
 async function submitForm() {
     // await formEl.value[formEl.value.length - 1].validate();

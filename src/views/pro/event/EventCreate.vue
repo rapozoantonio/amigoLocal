@@ -1,36 +1,19 @@
 <template>
-  <form-steps
-    v-model:opened="opened"
-    @submit="submitEvent"
-    title="Editar Evento"
-    action="Save event"
-    labelType="up"
-    :schema="eventSchema"
-    :items="{ genres, categories: eventCategories }"
-    v-model:model="event"
-    v-model:files="files"
-  >
-    <template #header-prepend v-if="!$vuetify.display.xs">
+  <form-steps v-model:opened="opened" @submit="submitEvent" title="Editar Evento" action="Save event" labelType="up"
+    :schema="eventSchema" :items="{ genres, categories: eventCategories }" v-model:model="event" v-model:files="files">
+
+
+    <template #header-prepend v-if="!$vuetify.display.xs && !$vuetify.display.sm">
       <div class="w-100 px-4">
-        <event-create-gpt-assistence
-          block
-          variant="elevated"
-          action="Use ✨️AI Iris"
-          title="✨️AI Iris"
-          text="Transforme texto em evento ✨️AI Iris"
-        ></event-create-gpt-assistence>
+        <event-create-gpt-assistence block variant="elevated" action="Use ✨️AI Iris" title="✨️AI Iris"
+          text="Transforme texto em evento ✨️AI Iris"></event-create-gpt-assistence>
       </div>
     </template>
 
-    <template #prepend-section-1 v-if="$vuetify.display.xs">
+    <template #prepend-section-1 v-if="$vuetify.display.xs || $vuetify.display.sm">
       <div>
-        <event-create-gpt-assistence
-          variant="elevated"
-          block
-          action="Use ✨️AI Iris"
-          title="✨️AI Iris"
-          text="Transforme texto em evento ✨️AI Iris"
-        ></event-create-gpt-assistence>
+        <event-create-gpt-assistence variant="elevated" block action="Use ✨️AI Iris" title="✨️AI Iris"
+          text="Transforme texto em evento ✨️AI Iris"></event-create-gpt-assistence>
       </div>
     </template>
   </form-steps>

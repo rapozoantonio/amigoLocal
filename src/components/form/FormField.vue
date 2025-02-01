@@ -17,7 +17,7 @@
 
 
 
-    <v-col v-else :cols="col" :md="md" :sm="md" class="pt-1"
+    <v-col v-else :cols="col" :md="md" :sm="sm" :lg="lg" :xl="xl" class="pt-1"
         :class="{ 'd-flex': labelType === 'left', required: rules.find(i => i === 'required') }">
         <p v-if="prepend" class="text-body-2">{{ prepend }}</p>
 
@@ -286,7 +286,29 @@ const col = computed(() => {
     return size === "xs" ? "6" : size === "sm" ? "12" : size === "md" ? "12" : "12"
 })
 
+
+
+const sm = computed(() => {
+    if (typeof size === "number") {
+        return size
+    }
+    if (size === "auto") {
+        return size
+    }
+    return size === "xs" ? "6" : size === "sm" ? "6" : size === "md" ? "9" : "12"
+})
+
 const md = computed(() => {
+    if (typeof size === "number") {
+        return size
+    }
+    if (size === "auto") {
+        return size
+    }
+    return size === "xs" ? "6" : size === "sm" ? "6" : size === "md" ? "9" : "12"
+})
+
+const lg = computed(() => {
     if (typeof size === "number") {
         return size
     }
@@ -295,6 +317,17 @@ const md = computed(() => {
     }
     return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
 })
+
+const xl = computed(() => {
+    if (typeof size === "number") {
+        return size
+    }
+    if (size === "auto") {
+        return size
+    }
+    return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
+})
+
 
 function updateInput(event) {
 

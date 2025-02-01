@@ -4,7 +4,7 @@ export default {
     {
       name: "Informações básicas",
       index: 1,
-      type: "section", 
+      type: "section",
       fields: [
         {
           id: "name", // Keep id unchanged
@@ -16,28 +16,48 @@ export default {
         {
           id: "startDate",
           label: "Data início",
-          type: "date", 
-          size: "sm",
+          type: "date",
+          size: "xs",
           rules: ["required"],
         },
         {
           id: "startTime",
           label: "Horário início",
           type: "time",
-          size: "sm", 
+          size: "xs",
         },
         {
           id: "endDate",
           label: "Data fim",
           type: "date",
-          size: "sm",
+          size: "xs",
         },
         {
           id: "endTime",
-          label: "Horário fim", 
+          label: "Horário fim",
           type: "time",
-          size: "sm",
+          size: "xs",
         },
+        {
+          id: "region",
+          label: "Region",
+          type: "custom-region",
+          size: "sm",
+          rules: ["required"],
+          initial: {
+            id: "riodejaneiro",
+            name: "Rio de Janeiro",
+          },
+        },
+        {
+          id: "country",
+          label: "Country",
+          type: "custom-country",
+          size: "sm",
+          rules: ["required"],
+          initial: "BR",
+        },
+
         {
           id: "location",
           label: "Local",
@@ -59,7 +79,7 @@ export default {
           rules: ["required"],
         },
         {
-          id: "categories", 
+          id: "categories",
           label: "Categorias",
           type: "autocomplete",
           size: "sm",
@@ -73,7 +93,7 @@ export default {
         {
           id: "description",
           label: "Sobre",
-          type: "textarea", 
+          type: "textarea",
           size: "lg",
         },
         {
@@ -85,7 +105,7 @@ export default {
         {
           id: "promoter",
           label: "Promoter",
-          type: "custom-promoter", 
+          type: "custom-promoter",
           size: "sm",
         },
       ],
@@ -122,4 +142,4 @@ export default {
       ],
     },
   ],
- };
+};

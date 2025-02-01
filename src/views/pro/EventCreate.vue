@@ -2,76 +2,38 @@
     <v-container>
         <v-row>
             <v-col cols="12">
-                <v-stepper
-                    bg-color="transparent"
-                    flat
-                    ref="stepper"
-                    v-model="step"
-                    class="d-flex"
-                    color="primary"
-                    v-slot:default="{ next, prev }"
-                >
-                    <v-stepper-header
-                        v-show="!xs"
-                        class="flex-column justify-start pt-5 mr-4"
-                    >
-                        <v-stepper-item
-                            v-for="(header, index) in headers"
-                            :key="header"
-                            class="pb-2 pt-2"
-                            :complete="
-                                eventStore.sections[index + 1] &&
-                                index + 1 !== step
-                            "
-                            :editable="
-                                index + 1 === 1
-                                    ? true
-                                    : step > index + 1 ||
-                                      eventStore.sections[index + 1]
-                            "
-                            :title="header"
-                            :value="index + 1"
-                            color="primary"
-                            selected-class="text-primary font-weight-bold"
-                        >
+                <v-stepper bg-color="transparent" flat ref="stepper" v-model="step" class="d-flex" color="primary"
+                    v-slot:default="{ next, prev }">
+                    <v-stepper-header v-show="!xs" class="flex-column justify-start pt-5 mr-4">
+                        <v-stepper-item v-for="(header, index) in headers" :key="header" class="pb-2 pt-2" :complete="eventStore.sections[index + 1] &&
+                            index + 1 !== step
+                            " :editable="index + 1 === 1
+                                ? true
+                                : step > index + 1 ||
+                                eventStore.sections[index + 1]
+                                " :title="header" :value="index + 1" color="primary"
+                            selected-class="text-primary font-weight-bold">
                         </v-stepper-item>
                     </v-stepper-header>
 
                     <div class="flex-grow-1">
-                        <v-stepper-window
-                            class="flex-grow-1 mx-0 ma-0"
-                            style="margin: 0px"
-                        >
+                        <v-stepper-window class="flex-grow-1 mx-0 ma-0" style="margin: 0px">
                             <!-- BASIC -->
                             <v-stepper-window-item :value="1">
-                                <event-create-basic
-                                    :next="next"
-                                    :rules="rules"
-                                ></event-create-basic>
+                                <event-create-basic :next="next" :rules="rules"></event-create-basic>
                             </v-stepper-window-item>
                             <!-- LINEUP -->
                             <v-stepper-window-item :value="2">
-                                <event-create-lineup
-                                    :next="next"
-                                    :prev="prev"
-                                    :rules="rules"
-                                ></event-create-lineup>
+                                <event-create-lineup :next="next" :prev="prev" :rules="rules"></event-create-lineup>
                             </v-stepper-window-item>
                             <!-- DETALHES -->
                             <v-stepper-window-item :value="3">
-                                <event-create-details
-                                    :next="next"
-                                    :prev="prev"
-                                    :rules="rules"
-                                ></event-create-details>
+                                <event-create-details :next="next" :prev="prev" :rules="rules"></event-create-details>
                             </v-stepper-window-item>
                             <!-- PROMOCIONAL -->
                             <v-stepper-window-item :value="4">
-                                <event-create-promotional
-                                    @submit="submit"
-                                    :prev="prev"
-                                    :rules="rules"
-                                ></event-create-promotional>
+                                <event-create-promotional @submit="submit" :prev="prev"
+                                    :rules="rules"></event-create-promotional>
                             </v-stepper-window-item>
                         </v-stepper-window>
                     </div>
@@ -116,15 +78,14 @@ const rules = ref({
 //     stepper.value.prev();
 // }
 async function submit() {
-    
+
     const response = await eventStore.createEvent();
     if (response.ok) {
         eventStore.$reset();
         step.value = 1;
     }
-    
+
 }
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
