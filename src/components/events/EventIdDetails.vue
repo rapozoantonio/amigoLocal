@@ -82,7 +82,7 @@
       <v-col cols="12" md="6">
         <LazyImage
           :src="event.image?.url || event.flyerFront?.url"
-          fallbackSrc="/img/placeholder_event_2.jpg"
+          fallbackSrc="/img/placeholder_event_2.webp"
           class="rounded"
           :aspect-ratio="1"
           rounded

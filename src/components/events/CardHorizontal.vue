@@ -1,138 +1,73 @@
 <template>
-  <div  :aria-label="$props['aria-label']">
-  <!-- Optional top divider -->
-  <v-divider class="mb-2" aria-hidden="true" v-if="showDividerTop"></v-divider>
+  <div :aria-label="$props['aria-label']">
+    <!-- Optional top divider -->
+    <v-divider class="mb-2" aria-hidden="true" v-if="showDividerTop"></v-divider>
 
-  <v-card
-    v-if="event"
-    flat
-    color="transparent"
-    tile
-    class="event-card"
-    :to="{ name: 'event-id', params: { id: event.id } }"
-    role="article"
-    :aria-label="`Event: ${event.name}`"
-  >
-    <v-row no-gutters class="align-center">
-      <!-- Event Image -->
-      <v-col
-        :cols="leftCol.cols"
-        :sm="leftCol.sm"
-        class="d-flex justify-center"
-      >
-        <LazyImage
-          :src="event.image?.url || event.flyerFront?.url"
-          fallbackSrc="/img/placeholder_event_1.jpg"
-          :alt="`Event image for ${event.name}`"
-          height="60"
-          width="96"
-          rounded
-        />
-      </v-col>
-      <!-- Event Info -->
-      <v-col :cols="middleCol.cols" :sm="middleCol.sm" :class="middleCol.class">
-        <!-- Event Name -->
-        <h2 :class="eventNameClass">
-          <router-link
-            :to="{ name: 'event-id', params: { id: event.id } }"
-            :aria-label="`View details for ${event.name}`"
-            class="text-decoration-none"
-          >
-            {{ event.name }}
-          </router-link>
-        </h2>
+    <v-card v-if="event" flat color="transparent" tile class="event-card"
+      :to="{ name: 'event-id', params: { id: event.id } }" role="article" :aria-label="`Event: ${event.name}`">
+      <v-row no-gutters class="align-center">
+        <!-- Event Image -->
+        <v-col :cols="leftCol.cols" :sm="leftCol.sm" class="d-flex justify-center">
+          <LazyImage :src="event.image?.url || event.flyerFront?.url" fallbackSrc="/img/placeholder_event_1.webp"
+            :alt="`Event image for ${event.name}`" height="60" width="96" rounded />
+        </v-col>
+        <!-- Event Info -->
+        <v-col :cols="middleCol.cols" :sm="middleCol.sm" :class="middleCol.class">
+          <!-- Event Name -->
+          <h2 :class="eventNameClass">
+            <router-link :to="{ name: 'event-id', params: { id: event.id } }"
+              :aria-label="`View details for ${event.name}`" class="text-decoration-none">
+              {{ event.name }}
+            </router-link>
+          </h2>
 
-        <!-- Conditional Section: Either display promoter code line or event categories -->
-        <div
-          v-if="mode === 'promoter'"
-          class="d-flex flex-wrap gap-1 mt-1"
-          role="group"
-          :aria-label="displayPromoterCode ? 'Promoter' : 'Event categories'"
-        >
-          <!-- If displayPromoterCode is true, display a combined line with location and promoter name -->
-          <template v-if="displayPromoterCode">
-            <div class="d-flex align-center">
-              <template v-if="event.location?.name">
-                <v-icon size="small" color="primaryIcon" aria-hidden="true"
-                  >mdi-map-marker</v-icon
-                >
+          <!-- Conditional Section: Either display promoter code line or event categories -->
+          <div v-if="mode === 'promoter'" class="d-flex flex-wrap gap-1 mt-1" role="group"
+            :aria-label="displayPromoterCode ? 'Promoter' : 'Event categories'">
+            <!-- If displayPromoterCode is true, display a combined line with location and promoter name -->
+            <template v-if="displayPromoterCode">
+              <div class="d-flex align-center">
+                <template v-if="event.location?.name">
+                  <v-icon size="small" color="primaryIcon" aria-hidden="true">mdi-map-marker</v-icon>
+                  <span class="text-caption ml-1 text-grey-darken-1">{{
+                    event.location.name
+                    }}</span>
+                </template>
+                <v-icon size="small" color="primaryIcon" aria-hidden="true" class="ml-2">mdi-ticket</v-icon>
                 <span class="text-caption ml-1 text-grey-darken-1">{{
-                  event.location.name
-                }}</span>
-              </template>
-              <v-icon
-                size="small"
-                color="primaryIcon"
-                aria-hidden="true"
-                class="ml-2"
-                >mdi-ticket</v-icon
-              >
-              <span class="text-caption ml-1 text-grey-darken-1">{{
-                event.promoter?.name
-              }}</span>
-            </div>
-          </template>
-          <!-- Otherwise, display event categories -->
-          <template v-else>
-            <v-chip
-              v-for="category in displayedCategories"
-              :key="'cat-' + category"
-              size="x-small"
-              label
-              variant="outlined"
-              color="primaryIcon"
-              class="mr-1 mb-1"
-              role="listitem"
-            >
-              {{ category }}
-            </v-chip>
-            <v-chip
-              v-if="hasMoreCategories"
-              size="x-small"
-              label
-              variant="outlined"
-              color="primaryIcon"
-              class="mr-1 mb-1"
-              role="listitem"
-              :aria-label="`Plus ${
-                event.categories.length - 3
-              } more categories`"
-            >
-              +{{ event.categories.length - 3 }}
-            </v-chip>
-          </template>
-        </div>
-      </v-col>
+                  event.promoter?.name
+                  }}</span>
+              </div>
+            </template>
+            <!-- Otherwise, display event categories -->
+            <template v-else>
+              <v-chip v-for="category in displayedCategories" :key="'cat-' + category" size="x-small" label
+                variant="outlined" color="primaryIcon" class="mr-1 mb-1" role="listitem">
+                {{ category }}
+              </v-chip>
+              <v-chip v-if="hasMoreCategories" size="x-small" label variant="outlined" color="primaryIcon"
+                class="mr-1 mb-1" role="listitem" :aria-label="`Plus ${event.categories.length - 3
+                  } more categories`">
+                +{{ event.categories.length - 3 }}
+              </v-chip>
+            </template>
+          </div>
+        </v-col>
 
-      <!-- Stats: Only Followers Count -->
-      <v-col
-        :cols="rightCol.cols"
-        :sm="rightCol.sm"
-        :class="rightCol.class"
-        role="group"
-        aria-label="Event details"
-      >
-        <div
-          class="d-flex align-center text-caption text-grey-darken-1"
-          role="status"
-          :aria-label="`${event.followers} followers`"
-        >
-          <v-icon
-            size="small"
-            color="primaryIcon"
-            class="mr-1"
-            aria-hidden="true"
-            >mdi-account-group</v-icon
-          >
-          <span>{{ event.followers }}</span>
-        </div>
-      </v-col>
-    </v-row>
-  </v-card>
+        <!-- Stats: Only Followers Count -->
+        <v-col :cols="rightCol.cols" :sm="rightCol.sm" :class="rightCol.class" role="group" aria-label="Event details">
+          <div class="d-flex align-center text-caption text-grey-darken-1" role="status"
+            :aria-label="`${event.followers} followers`">
+            <v-icon size="small" color="primaryIcon" class="mr-1" aria-hidden="true">mdi-account-group</v-icon>
+            <span>{{ event.followers }}</span>
+          </div>
+        </v-col>
+      </v-row>
+    </v-card>
 
-  <!-- Optional bottom divider -->
-  <v-divider aria-hidden="true" v-if="showDividerBottom"></v-divider>
-</div>
+    <!-- Optional bottom divider -->
+    <v-divider aria-hidden="true" v-if="showDividerBottom"></v-divider>
+  </div>
 </template>
 
 <script setup>
@@ -196,6 +131,7 @@ a {
   color: inherit;
   transition: color 0.2s;
 }
+
 a:hover {
   color: rgba(var(--v-theme-secondary), 1);
 }
@@ -206,6 +142,7 @@ a:hover {
   border-radius: 8px;
   transition: background-color 0.2s;
 }
+
 .event-card:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
@@ -228,6 +165,7 @@ a:hover {
 .text-caption {
   font-size: 0.85rem;
 }
+
 .text-grey-darken-1 {
   color: #757575;
 }
@@ -237,6 +175,7 @@ a:hover {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
+
 .v-btn:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;

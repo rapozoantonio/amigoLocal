@@ -18,7 +18,7 @@
           :src="
             event.image?.url ||
             event.flyerFront?.url ||
-            '/img/placeholder_event_1.jpg'
+            '/img/placeholder_event_1.webp'
           "
           class="rounded event-image"
           contain

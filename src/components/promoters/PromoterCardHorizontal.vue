@@ -15,7 +15,7 @@
       <v-col cols="3" sm="2" class="d-flex justify-center">
         <LazyImage
           :src="event.image.url || event.flyerFront.url"
-          fallbackSrc="/img/placeholder_event_1.jpg"
+          fallbackSrc="/img/placeholder_event_1.webp"
           height="60"
           fit="contain"
           rounded

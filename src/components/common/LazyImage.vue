@@ -50,7 +50,7 @@ const props = defineProps({
   },
   fallbackSrc: {
     type: String,
-    default: '/img/placeholder_event_280x280.jpg'
+    default: '/img/placeholder_event_280x280.webp'
   },
   alt: {
     type: String,

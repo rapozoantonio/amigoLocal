@@ -276,7 +276,7 @@ const props = defineProps({
 
 const helpers = inject("$helpers");
 
-const computedImageSrc = computed(() => "/img/placeholder_event_1.jpg");
+const computedImageSrc = computed(() => "/img/placeholder_event_1.webp");
 
 function follow() {
   props.promoter.Followers++;
