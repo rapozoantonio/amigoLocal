@@ -22,7 +22,7 @@
                 {{ auth.user?.displayName }}
               </span>
               <v-chip label size="x-small">
-                {{ auth.user.role }}
+                {{ auth.user?.role }}
               </v-chip>
             </v-list-item-title>
             <v-list-item-subtitle>{{ auth.user?.email }}</v-list-item-subtitle>
@@ -63,11 +63,12 @@
 
 <script setup>
 import { computed, ref } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useAuthStore } from "@/store/auth";
 import { useTheme } from 'vuetify'
 
 const route = useRoute();
+const router = useRouter();
 
 const initials = computed(() => {
   if (!auth.user || !auth.user.displayName) return null;
@@ -85,8 +86,9 @@ const redirect = computed(() => {
 
 const auth = useAuthStore();
 
-function logout() {
-  auth.logout();
+async function logout() {
+  await auth.logout();
+  navigation.reload();
 }
 
 const theme = useTheme()

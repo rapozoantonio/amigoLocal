@@ -275,26 +275,17 @@ const routes = [
     children: [
       {
         path: "profile",
-        name: "pro-profile",
         component: () =>
           import(
             /* webpackChunkName: "pro-profile" */ "@/views/pro/profile/Profile.vue"
           ),
         children: [
           {
-            path: "personal",
-            name: "pro-profile-personal",
+            path: "",
+            name: "pro-profile",
             component: () =>
               import(
                 /* webpackChunkName: "pro-profile-personal" */ "@/views/pro/profile/ProfilePersonal.vue"
-              ),
-          },
-          {
-            path: "account",
-            name: "pro-profile-account",
-            component: () =>
-              import(
-                /* webpackChunkName: "pro-profile-account" */ "@/views/pro/profile/ProfileAccount.vue"
               ),
           },
           {
@@ -454,7 +445,7 @@ router.beforeEach(async (to, from, next) => {
   if (!isRouteActive(to)) {
     next({ name: "path-not-found" });
     return;
-  }  // Added missing closing brace here
+  } // Added missing closing brace here
 
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
