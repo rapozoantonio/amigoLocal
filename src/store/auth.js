@@ -29,15 +29,15 @@ export const useAuthStore = defineStore("auth", () => {
 
   // Error mapping
   const ERROR_MESSAGES = {
-    'auth/invalid-email': 'Email inválido',
-    'auth/user-disabled': 'Conta desativada',
-    'auth/user-not-found': 'Usuário não encontrado',
-    'auth/wrong-password': 'Senha incorreta',
-    'auth/email-already-in-use': 'Email já está em uso',
-    'auth/weak-password': 'Senha muito fraca',
-    'auth/network-request-failed': 'Erro de conexão',
-    'auth/too-many-requests': 'Muitas tentativas. Tente mais tarde.',
-    'auth/popup-closed-by-user': 'Login cancelado',
+    "auth/invalid-email": "Email inválido",
+    "auth/user-disabled": "Conta desativada",
+    "auth/user-not-found": "Usuário não encontrado",
+    "auth/wrong-password": "Senha incorreta",
+    "auth/email-already-in-use": "Email já está em uso",
+    "auth/weak-password": "Senha muito fraca",
+    "auth/network-request-failed": "Erro de conexão",
+    "auth/too-many-requests": "Muitas tentativas. Tente mais tarde.",
+    "auth/popup-closed-by-user": "Login cancelado",
   };
 
   // User state management
@@ -64,12 +64,12 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       loading.value = true;
       error.value = { message: "", code: "" };
-      
+
       const provider = new GoogleAuthProvider();
       provider.addScope("https://www.googleapis.com/auth/user.birthday.read");
-      
+
       const result = await signInWithPopup(auth, provider);
-      
+
       if (result.user) {
         // Try to fetch birthday data if needed
         try {
@@ -89,18 +89,19 @@ export const useAuthStore = defineStore("auth", () => {
         const { claims } = await getIdTokenResult(result.user);
         updateUserState(result.user, claims);
 
-        if (route.query.redirect && route.query.redirect !== "") {
-          await router.push(atob(route.query.redirect));
-        }
+        // if (route.query.redirect && route.query.redirect !== "") {
+        //   await router.push(atob(route.query.redirect));
+        // }
 
-        return result.user;
+        return { ok: true, data: result.user };
       }
     } catch (err) {
       error.value = {
-        message: ERROR_MESSAGES[err.code] || 'Erro durante o login',
-        code: err.code
+        message: ERROR_MESSAGES[err.code] || "Erro durante o login",
+        code: err.code,
       };
-      throw error.value;
+      // throw error.value;
+      return { ok: false, error: error.value };
     } finally {
       loading.value = false;
     }
@@ -110,25 +111,31 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       loading.value = true;
       error.value = { message: "", code: "" };
-      
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      
+
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
       if (userCredential.user) {
         const { claims } = await getIdTokenResult(userCredential.user);
         updateUserState(userCredential.user, claims);
-        
+
         if (route.query.redirect && route.query.redirect !== "") {
           await router.push(atob(route.query.redirect));
         }
-        
-        return userCredential.user;
+
+        return { ok: true, data: userCredential.user };
       }
+      throw new Error("nenhum usuario foi encontrado");
     } catch (err) {
       error.value = {
-        message: ERROR_MESSAGES[err.code] || 'Erro durante o login',
-        code: err.code
+        message: ERROR_MESSAGES[err.code] || "Erro durante o login",
+        code: err.code,
       };
-      throw error.value;
+      // throw error.value;
+      return { ok: false, error: error.value };
     } finally {
       loading.value = false;
     }
@@ -138,18 +145,18 @@ export const useAuthStore = defineStore("auth", () => {
     try {
       loading.value = true;
       error.value = { message: "", code: "" };
-      
+
       const userCredential = await createUserWithEmailAndPassword(
         auth,
         userState.email,
         password
       );
-      
+
       userState.id = userCredential.user.uid;
       const firebaseResponse = await firebase.registerUser(userState);
-      
+
       await updateProfile(userCredential.user, { displayName: userState.name });
-      
+
       return {
         ok: true,
         data: userCredential.user,
@@ -157,8 +164,8 @@ export const useAuthStore = defineStore("auth", () => {
       };
     } catch (err) {
       error.value = {
-        message: ERROR_MESSAGES[err.code] || 'Erro durante o registro',
-        code: err.code
+        message: ERROR_MESSAGES[err.code] || "Erro durante o registro",
+        code: err.code,
       };
       return {
         ok: false,
@@ -176,8 +183,8 @@ export const useAuthStore = defineStore("auth", () => {
       updateUserState(null);
     } catch (err) {
       error.value = {
-        message: ERROR_MESSAGES[err.code] || 'Erro ao fazer logout',
-        code: err.code
+        message: ERROR_MESSAGES[err.code] || "Erro ao fazer logout",
+        code: err.code,
       };
       throw error.value;
     } finally {

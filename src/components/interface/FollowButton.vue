@@ -1,26 +1,13 @@
 <template>
   <div>
     <!-- Follow Button -->
-    <v-btn
-      v-if="!isFollowing"
-      @click="follow"
-      color="primary"
-      rounded="pill"
-      variant="outlined"
-      density="comfortable"
-    >
+    <v-btn v-if="!isFollowing" @click="follow" color="primary" rounded="pill" variant="outlined" density="comfortable">
       <v-icon start size="18">{{ followIcon }}</v-icon>
       Seguir
     </v-btn>
 
     <!-- Following Button with Menu -->
-    <v-btn
-      v-else
-      color="green"
-      rounded="pill"
-      variant="outlined"
-      density="comfortable"
-    >
+    <v-btn v-else color="green" rounded="pill" variant="outlined" density="comfortable">
       <v-icon start size="18">{{ followingIcon }}</v-icon>
       Seguindo
       <v-menu activator="parent">
@@ -34,17 +21,26 @@
         </v-list>
       </v-menu>
     </v-btn>
+
+    <v-dialog v-model="loginDialog">
+      <v-card>
+        <v-card-text>
+          <login-box @success="onLoginSuccess"></login-box>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useAuthStore } from "@/store/auth";
 import { useEventsStore } from "@/store/events";
 import { useFirebaseStore } from "@/store/firebase";
 import { useLocationsStore } from "@/store/locations";
 import { useUserStore } from "@/store/user";
+import LoginBox from "./LoginBox.vue";
 
 // Stores
 const firebase = useFirebaseStore();
@@ -52,6 +48,7 @@ const auth = useAuthStore();
 const userStore = useUserStore();
 const eventsStore = useEventsStore();
 const locationsStore = useLocationsStore();
+const loginDialog = ref(false);
 
 // Store refs
 const { event } = storeToRefs(eventsStore);
@@ -67,7 +64,7 @@ const props = defineProps({
   entity: {
     type: String,
     required: true,
-    validator: (value) => ["events", "locations", "promoters"].includes(value),
+    validator: (value) => ["events", "locations", "promoters", "producers"].includes(value),
   },
 });
 
@@ -120,9 +117,25 @@ const unfollowIcon = computed(() => {
   }
 });
 
+function onLoginSuccess() {
+  console.log("onLoginSuccess");
+  loginDialog.value = false;
+  if (isFollowing.value) {
+    console.log("Usuario ja esta seguindo esse evento");
+    return;
+  }
+  follow();
+  return;
+}
+
 // Methods
 async function follow() {
   try {
+
+    if (!auth.user) {
+      loginDialog.value = true;
+      return
+    }
     await firebase.addFollow(props.entity, props.entity_id, auth.user);
     await userStore.getFollows(auth.user.uid);
     emit("follow");
