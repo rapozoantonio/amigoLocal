@@ -346,6 +346,7 @@ import { ref, onMounted } from "vue";
 import { useMediaQuery } from "@vueuse/core";
 import tiktokSvg from "@/assets/svg/tiktokSvg.svg";
 import InstagramSvg from "@/assets/svg/InstagramSvg.svg";
+
 const isHovering = ref(false);
 const isLargeScreen = useMediaQuery("(min-width: 1024px)");
 const shareOptions = ref({

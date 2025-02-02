@@ -1,4 +1,6 @@
 <template>
+  <EventListFeatured />
+
   <div class="d-flex flex-column">
     <!-- Loading State -->
     <v-container v-if="loading?.value">
@@ -17,6 +19,7 @@
 import { onMounted, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
+import EventListFeatured from "@/components/events/EventListFeatured.vue"; 
 import EventListNextEvents from "@/components/events/EventListNextEvents.vue";
 import { useEventsStore } from "@/store/events";
 

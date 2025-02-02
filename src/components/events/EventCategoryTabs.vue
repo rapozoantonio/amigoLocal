@@ -55,9 +55,14 @@ const route = useRoute();
 
 const defaultTabs = computed(() => [
   {
-    value: "all",
-    label: "All",
+    value: "nextevents",
+    label: "Todos",
     to: { name: "events", query: route.query },
+  },
+  {
+    value: "foryou",
+    label: "Pra Você",
+    to: { name: "events-foryou", query: route.query },
   },
   {
     value: "carnaval",
@@ -74,7 +79,7 @@ const defaultTabs = computed(() => [
 const localTabs = computed(() => [
   {
     value: "proximos",
-    label: "Próximos eventos",
+    label: "Todos",
   },
   {
     value: "carnaval",

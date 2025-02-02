@@ -8,7 +8,7 @@
             :day="day"
           ></event-calendar-divider-toolbar>
           <!-- Otherwise, show a skeleton placeholder -->
-          <template v-if="isLoading">
+          <template v-if="loading">
             <v-skeleton-loader
               v-for="i in 3"
               :key="i"

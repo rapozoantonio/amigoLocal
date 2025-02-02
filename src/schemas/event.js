@@ -88,5 +88,4 @@ export const event = {
         email: "danielalves.ef@gmail.com",
         username: "danielalves"
     },
-
 }

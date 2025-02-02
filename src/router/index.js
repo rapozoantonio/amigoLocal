@@ -13,34 +13,19 @@ const routes = [
       {
         path: "",
         name: "home",
-        component: () =>
-          import(/* webpackChunkName: "home" */ "@/views/Home.vue"),
-        redirect: "/events",
+        component: () => import("@/views/events/RegionSelector.vue"),
       },
+      //TODO: REVISAR
       {
-        path: "about",
-        name: "About",
-        component: () =>
-          import(/* webpackChunkName: "about" */ "@/views/About.vue"),
-        meta: {
-          isActive: false,
-        },
-      },
-      {
-        path: "select-region", // Removed the leading slash
+        path: "select-region", //TODO OS EVENTOS
         name: "event-region-selector",
         component: () => import("@/views/events/EventRegionSelector.vue"),
       },
+      //TODO: HOME RENDERIZAR
       {
         path: "events",
+        name: "event-list",
         component: () => import("@/views/events/RegionSelector.vue"),
-        children: [
-          {
-            path: "",
-            name: "event-list",
-            component: () => import("@/views/events/RegionSelector.vue"),
-          },
-        ],
       },
       {
         path: "events/:country/:region",
@@ -54,24 +39,6 @@ const routes = [
             component: () => import("@/views/events/EventListAll.vue"),
           },
           {
-            path: "foryou",
-            name: "events-foryou",
-            props: true,
-            component: () => import("@/views/events/EventListForyou.vue"),
-          },
-          {
-            path: "new",
-            name: "events-new",
-            props: true,
-            component: () => import("@/views/events/EventListNew.vue"),
-          },
-          {
-            path: "openbar",
-            name: "events-openbar",
-            props: true,
-            component: () => import("@/views/events/EventListOpenbar.vue"),
-          },
-          {
             path: "carnaval",
             name: "events-carnaval",
             props: true,
@@ -82,6 +49,12 @@ const routes = [
             name: "events-reveillon",
             props: true,
             component: () => import("@/views/events/EventListReveillon.vue"),
+          },
+          {
+            path: "foryou",
+            name: "events-foryou",
+            props: true,
+            component: () => import("@/views/events/EventListForyou.vue"),
           },
         ],
       },
@@ -237,7 +210,7 @@ const routes = [
             /* webpackChunkName: "location-id" */ "@/views/locations/Location.vue"
           ),
         meta: {
-          isActive: false,
+          isActive: true,
         },
         children: [
           {
@@ -249,7 +222,7 @@ const routes = [
                 /* webpackChunkName: "location-info" */ "@/views/locations/LocationInfo.vue"
               ),
             meta: {
-              isActive: false,
+              isActive: true,
             },
           },
           {
@@ -261,7 +234,7 @@ const routes = [
                 /* webpackChunkName: "location-events" */ "@/views/locations/LocationEvents.vue"
               ),
             meta: {
-              isActive: false,
+              isActive: true,
             },
           },
           {
@@ -273,7 +246,7 @@ const routes = [
                 /* webpackChunkName: "location-past-events" */ "@/views/locations/LocationPastEvents.vue"
               ),
             meta: {
-              isActive: false,
+              isActive: true,
             },
           },
           {
@@ -285,7 +258,7 @@ const routes = [
                 /* webpackChunkName: "location-news" */ "@/views/locations/LocationNews.vue"
               ),
             meta: {
-              isActive: false,
+              isActive: true,
             },
           },
         ],

@@ -1,23 +1,15 @@
 <template>
-  <section 
-    class="flex-grow-1"
-    aria-label="Events Calendar"
-    role="region"
-  >
+  <EventListFeatured />
+  <section class="flex-grow-1" aria-label="Events Calendar" role="region">
     <v-container class="pa-0 pa-sm-2">
       <template v-if="nextEvents && Object.keys(nextEvents).length > 0">
-        <v-row 
-          v-for="(events, day) in nextEvents" 
-          :key="day" 
-          class="ma-0"
-        >
+        <v-row v-for="(events, day) in nextEvents" :key="day" class="ma-0">
           <v-col cols="12" class="pa-0 pa-sm-2">
             <event-calendar-divider-toolbar
               :day="day"
               :aria-label="`Events for ${day}`"
             ></event-calendar-divider-toolbar>
-            
-            <div 
+            <div
               class="events-list"
               role="feed"
               :aria-label="`List of events for ${day}`"
@@ -26,6 +18,7 @@
                 v-for="(event, index) in events"
                 :key="event.id"
                 :event="event"
+                :displayPromoterCode="true"
                 class="mb-2"
                 :aria-setsize="events.length"
                 :aria-posinset="index + 1"
@@ -33,17 +26,6 @@
             </div>
           </v-col>
         </v-row>
-      </template>
-      
-      <!-- No events state -->
-      <template v-else>
-        <div 
-          role="status"
-          class="text-center pa-4"
-          aria-live="polite"
-        >
-          <p>No events found for the selected filters.</p>
-        </div>
       </template>
     </v-container>
   </section>
@@ -53,6 +35,7 @@
 import { onMounted, watch, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { storeToRefs } from "pinia";
+import EventListFeatured from "@/components/events/EventListFeatured.vue";
 import CardHorizontal from "@/components/events/CardHorizontal.vue";
 import EventCalendarDividerToolbar from "@/components/events/EventCalendarDividerToolbar.vue";
 import { useEventsStore } from "@/store/events";
@@ -61,12 +44,12 @@ import { useEventsStore } from "@/store/events";
 const props = defineProps({
   country: {
     type: String,
-    required: true
+    required: true,
   },
   region: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 // Pinia Store
@@ -90,28 +73,34 @@ const isLoading = ref(false);
 watch(
   () => route.query.genre,
   (newValue) => {
-    selectedGenres.value = Array.isArray(newValue) ? newValue : [newValue].filter(Boolean);
+    selectedGenres.value = Array.isArray(newValue)
+      ? newValue
+      : [newValue].filter(Boolean);
   }
 );
 
 watch(
   () => route.query.categories,
   (newValue) => {
-    selectedCategories.value = Array.isArray(newValue) ? newValue : [newValue].filter(Boolean);
+    selectedCategories.value = Array.isArray(newValue)
+      ? newValue
+      : [newValue].filter(Boolean);
   }
 );
 
 watch(
   () => route.query.dateRange,
   (newValue) => {
-    selectedDateRange.value = Array.isArray(newValue) ? newValue : [newValue].filter(Boolean);
+    selectedDateRange.value = Array.isArray(newValue)
+      ? newValue
+      : [newValue].filter(Boolean);
   }
 );
 
 // Initialize component
 onMounted(async () => {
   isLoading.value = true;
-  
+
   // Initialize filters from URL
   if (route.query.genre) {
     selectedGenres.value = Array.isArray(route.query.genre)
@@ -131,9 +120,12 @@ onMounted(async () => {
 
   try {
     // Fetch events from the store
-    await eventsStore.getEventsByRegion(props.country.toUpperCase(), props.region);
+    await eventsStore.getEventsByRegion(
+      props.country.toUpperCase(),
+      props.region
+    );
   } catch (error) {
-    console.error('Failed to fetch events:', error);
+    console.error("Failed to fetch events:", error);
   } finally {
     isLoading.value = false;
   }

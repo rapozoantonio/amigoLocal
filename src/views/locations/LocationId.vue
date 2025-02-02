@@ -16,7 +16,7 @@
             </v-container>
         </section>
         <!-- TOOLBAR VIEW -->
-        <section class="bg-black" v-if="true">
+        <section class="bg-black" v-if="false">
             <v-container>
                 <v-row>
                     <v-col cols="12">

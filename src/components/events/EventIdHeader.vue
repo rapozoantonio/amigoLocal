@@ -205,7 +205,7 @@
             <p class="text-caption text-grey">Local</p>
             <router-link
               v-if="event.location?.id"
-              :to="{ name: 'location-info', params: { id: event.location.id } }"
+              :to="{ name: 'location-id', params: { id: event.location.id } }"
               class="text-h6 link"
               >{{ event.location.name }}</router-link
             >
@@ -242,7 +242,7 @@
             <div>
               <router-link
                 :to="{
-                  name: 'producer-info',
+                  name: 'producer-id',
                   params: { id: event.producer?.id },
                 }"
                 class="link"

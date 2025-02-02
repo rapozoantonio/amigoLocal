@@ -1,45 +1,41 @@
 <template>
-  <v-card 
-    elevation="0" 
-    flat 
-    width="280" 
-    color="transparent" 
-    v-if="event" 
-    tile 
+  <v-card
+    elevation="0"
+    flat
+    width="280"
+    color="transparent"
+    v-if="event"
+    tile
     class="event-card pa-0"
     role="article"
     :aria-label="`Event: ${event.name}`"
   >
     <v-card-text class="pa-0">
-      <router-link 
+      <router-link
         :to="{ name: 'event-id', params: { id: event.id } }"
         :aria-label="`View details for event: ${event.name}`"
       >
-        <v-img 
-          height="280" 
-          width="280" 
-          cover 
-          class="rounded" 
-          :src="event.image?.url || event.flyerFront?.url || '/img/placeholder_event_1.jpg'"
+        <LazyImage
+          :src="event.image?.url || event.flyerFront?.url"
+          fallbackSrc="/img/placeholder_event_280x280.jpg"
           :alt="`Event image for ${event.name}`"
-          role="img"
-        ></v-img>
+          height="280"
+          width="280"
+          fit="cover"
+          rounded
+        />
       </router-link>
 
-      <div 
-        class="py-2"
-        role="group"
-        aria-label="Event details"
-      >
-        <time 
+      <div class="py-2" role="group" aria-label="Event details">
+        <time
           :datetime="event.startDate"
           class="text-grey-darken-1 font-weight-bold text-caption mb-1"
         >
           {{ formatDate(event.startDate) }}
         </time>
-        
+
         <h2 class="event-title mb-2">
-          <router-link 
+          <router-link
             :to="{ name: 'event-id', params: { id: event.id } }"
             class="font-weight-bold text-truncate d-block"
             :aria-label="`View details for ${event.name}`"
@@ -48,17 +44,12 @@
           </router-link>
         </h2>
 
-        <div 
+        <div
           class="d-flex align-center mt-2"
           role="group"
           aria-label="Event location"
         >
-          <v-icon 
-            size="18" 
-            color="primary" 
-            class="mr-2"
-            aria-hidden="true"
-          >
+          <v-icon size="18" color="primary" class="mr-2" aria-hidden="true">
             mdi-map-marker
           </v-icon>
           <span class="text-caption text-grey-darken-1">
@@ -66,17 +57,12 @@
           </span>
         </div>
 
-        <div 
+        <div
           class="d-flex align-center mt-2"
           role="status"
           :aria-label="`${event.followers} followers`"
         >
-          <v-icon 
-            size="18" 
-            color="primary" 
-            class="mr-2"
-            aria-hidden="true"
-          >
+          <v-icon size="18" color="primary" class="mr-2" aria-hidden="true">
             mdi-account-group
           </v-icon>
           <span class="text-caption text-grey-darken-1">
@@ -89,7 +75,7 @@
 </template>
 
 <script setup>
-// Script remains the same
+import LazyImage from "@/components/common/LazyImage.vue";
 const { event } = defineProps(["event"]);
 
 const formatDate = (dateString) => {

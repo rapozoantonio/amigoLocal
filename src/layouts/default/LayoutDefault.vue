@@ -1,6 +1,6 @@
 <template>
-  <v-app>
-    <default-view />
+  <v-app class="d-flex flex-column min-vh-100">
+    <default-view class="flex-grow-1" />
     <default-bar />
     <default-footer />
     <loading-overlay />

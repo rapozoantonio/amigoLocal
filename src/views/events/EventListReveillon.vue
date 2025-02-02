@@ -1,4 +1,6 @@
 <template>
+  <EventListFeatured />
+
   <div class="d-flex flex-column">
     <!-- Loading State -->
     <v-container v-if="loading?.value">

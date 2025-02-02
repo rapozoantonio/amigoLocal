@@ -1,10 +1,10 @@
 <template>
-    <v-app>
-        <admin-bar />
-        <admin-view />
-        <footer-component />
-        <loading-overlay />
-    </v-app>
+  <v-app class="d-flex flex-column min-vh-100">
+    <admin-bar />
+    <admin-view class="flex-grow-1" />
+    <footer-component />
+    <loading-overlay />
+  </v-app>
 </template>
 
 <script setup>

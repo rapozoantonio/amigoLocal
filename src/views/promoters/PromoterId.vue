@@ -24,6 +24,5 @@ const { event } = storeToRefs(eventsStore);
 
 onMounted(async () => {
   await promotersStore.getPromoterById(props.id);
-  await eventsStore.getEventsByPromoterId(props.id);
 });
 </script>

@@ -23,9 +23,9 @@
             class="grey--text"
             aria-label="Open WhatsApp Groups"
           >
-            <v-icon start class="mr-2 grey--text" aria-hidden="true"
-              >mdi-account-group</v-icon
-            >
+            <v-icon start class="mr-2 grey--text" aria-hidden="true">
+              mdi-account-group
+            </v-icon>
             <span>Grupos de WhatsApp</span>
           </v-btn>
         </v-col>
@@ -38,9 +38,9 @@
             class="grey--text"
             aria-label="Contact for Events, Birthdays, Pix, or Questions"
           >
-            <v-icon start class="mr-2 grey--text" aria-hidden="true"
-              >mdi-message-text</v-icon
-            >
+            <v-icon start class="mr-2 grey--text" aria-hidden="true">
+              mdi-message-text
+            </v-icon>
             <span>Despedidas, Aniversários, Pix ou Dúvidas</span>
           </v-btn>
         </v-col>
@@ -54,9 +54,9 @@
             class="grey--text"
             aria-label="Share Event List via WhatsApp"
           >
-            <v-icon start class="mr-2 grey--text" aria-hidden="true"
-              >mdi-whatsapp</v-icon
-            >
+            <v-icon start class="mr-2 grey--text" aria-hidden="true">
+              mdi-whatsapp
+            </v-icon>
             <span>Enviar Lista de Transmissão</span>
           </v-btn>
         </v-col>
@@ -84,19 +84,13 @@
           :aria-label="`Events for ${day}`"
         >
           <v-col cols="12" class="py-0">
-            <event-calendar-divider-toolbar
-              :day="day"
-            ></event-calendar-divider-toolbar>
-
+            <event-calendar-divider-toolbar :day="day" />
             <card-horizontal
-              v-for="(event, index) in events.slice(
-                0,
-                eventDisplayLimits[selectedCategory]
-              )"
+              v-for="(event, index) in events.slice(0, eventDisplayLimits[selectedCategory])"
               :key="event.id"
               :event="event"
               :aria-label="`Event ${index + 1} of ${events.length}`"
-            ></card-horizontal>
+            />
           </v-col>
         </v-row>
         <v-row v-if="hasMoreEventsInCurrentTab" class="text-center">
@@ -130,17 +124,13 @@
     <!-- Events Tab - Primary Focus -->
     <v-btn
       @click="toggleEventView"
-      :class="{
-        'v-btn--active': activeNav === (showingTodayEvents ? 'today' : 'all'),
-      }"
+      :class="{ 'v-btn--active': activeNav === (showingTodayEvents ? 'today' : 'all') }"
       :aria-pressed="activeNav === (showingTodayEvents ? 'today' : 'all')"
-      :aria-label="
-        showingTodayEvents ? 'View Today\'s Events' : 'View All Events'
-      "
+      :aria-label="showingTodayEvents ? 'View Today\'s Events' : 'View All Events'"
     >
-      <v-icon aria-hidden="true">{{
-        showingTodayEvents ? "mdi-calendar" : "mdi-calendar-today"
-      }}</v-icon>
+      <v-icon aria-hidden="true">
+        {{ showingTodayEvents ? "mdi-calendar" : "mdi-calendar-today" }}
+      </v-icon>
       <span>{{ buttonText }}</span>
     </v-btn>
 
@@ -151,21 +141,13 @@
     </v-btn>
 
     <!-- Contact Button -->
-    <v-btn
-      value="contact"
-      @click="openDirectContact"
-      aria-label="Contact via WhatsApp"
-    >
+    <v-btn value="contact" @click="openDirectContact" aria-label="Contact via WhatsApp">
       <v-icon aria-hidden="true">mdi-whatsapp</v-icon>
       <span>Contato</span>
     </v-btn>
 
     <!-- Groups -->
-    <v-btn
-      value="groups"
-      @click="openWhatsappGroups"
-      aria-label="Open WhatsApp Groups"
-    >
+    <v-btn value="groups" @click="openWhatsappGroups" aria-label="Open WhatsApp Groups">
       <v-icon aria-hidden="true">mdi-account-group</v-icon>
       <span>Grupos</span>
     </v-btn>
@@ -178,6 +160,7 @@
     aria-label="WhatsApp Groups"
   />
 </template>
+
 <script setup>
 import { ref, computed, onMounted, watch, nextTick } from "vue";
 import { storeToRefs } from "pinia";
@@ -188,7 +171,7 @@ import WhatsappGroupsModal from "@/components/promoters/WhatsappGroupsModal.vue"
 import EventCategoryTabs from "@/components/events/EventCategoryTabs.vue";
 import { useEventsStore } from "@/store/events";
 
-// Props
+// Props (if any)
 const { events } = defineProps(["events"]);
 
 // Store setup
@@ -199,7 +182,7 @@ const { nextEvents } = storeToRefs(eventsStore);
 const promotersStore = usePromotersStore();
 const { promoter } = storeToRefs(promotersStore);
 
-// Create a computed property that maps promoter.whatsapp_groups to the modal’s expected format
+// Map promoter WhatsApp groups to the expected format for the modal
 const whatsappGroups = computed(() => {
   if (!promoter.value || !promoter.value.WhatsappGroups) return [];
   return promoter.value.WhatsappGroups.map((group) => ({
@@ -215,6 +198,7 @@ const whatsappGroupsModal = ref(null);
 const tabsHeight = ref(48);
 const activeNav = ref("null");
 
+// For each category, we start with a display limit of 5 events.
 const eventDisplayLimits = ref({
   proximos: 5,
   carnaval: 5,
@@ -222,20 +206,22 @@ const eventDisplayLimits = ref({
 });
 
 // Computed properties
+
+// Filter events by category (and by today's date if enabled)
 const filteredEvents = computed(() => {
   if (!nextEvents.value) return {};
 
   return Object.entries(nextEvents.value).reduce((acc, [day, eventsForDay]) => {
     let filtered = eventsForDay;
 
-    // Category filter
+    // Category filter: if "proximos" is selected, show all; otherwise, filter by category.
     filtered = filtered.filter(
       (event) =>
         selectedCategory.value === "proximos" ||
         event.categories?.includes(selectedCategory.value)
     );
 
-    // Today filter
+    // Today filter (if enabled)
     if (showingTodayEvents.value) {
       const today = new Date().toLocaleDateString("pt-BR", {
         day: "2-digit",
@@ -254,22 +240,24 @@ const filteredEvents = computed(() => {
   }, {});
 });
 
+// Show the "Load More" button if there are more events than the current display limit.
 const hasMoreEventsInCurrentTab = computed(() => {
   const totalEvents = Object.values(filteredEvents.value || {}).flat().length;
   return totalEvents > eventDisplayLimits.value[selectedCategory.value];
 });
 
+// (Optional) Sorting function if you want to sort the events by date/time.
 const sortedEvents = computed(() => sortEventsByDateTime(filteredEvents.value));
 
 // Lifecycle hooks
 onMounted(async () => {
   try {
-    await fetchEventsByPromoterId("1");
+    await fetchEventsByPromoterId(promoter.id);
   } catch (error) {
     console.error("Failed to fetch events:", error);
   }
 
-  // Initialize tabs height after component is mounted
+  // Initialize tabs height after component is mounted.
   nextTick(() => {
     const tabsElement = document.querySelector(".v-tabs");
     if (tabsElement) {
@@ -286,11 +274,13 @@ watch(selectedCategory, (newCategory) => {
 });
 
 // Actions
+
 async function fetchEventsByPromoterId(promoterId) {
   await eventsStore.getEventsByPromoterId(promoterId);
 }
 
 function loadMoreEvents() {
+  // Increase the visible count for the current category by 5.
   eventDisplayLimits.value[selectedCategory.value] += 5;
 }
 
@@ -305,24 +295,25 @@ function shareList() {
   window.open(whatsappUrl, "_blank");
 }
 
-// Add this with the other functions in the script setup
 function openDirectContact() {
-  // Get the WhatsApp number from the promoter object (ensure promoter is available)
+  // Get the WhatsApp number from the promoter object.
   const phoneNumber = promoter.value?.whatsapp || "";
-
-  // Remove any non-digit characters (e.g. spaces, +, dashes)
   const cleanedNumber = phoneNumber.replace(/[^0-9]/g, "");
-
   if (!cleanedNumber) {
     console.error("No valid WhatsApp number provided");
     return;
   }
-
   const whatsappUrl = `https://wa.me/${cleanedNumber}`;
   window.open(whatsappUrl, "_blank");
 }
 
+function toggleEventView() {
+  showingTodayEvents.value = !showingTodayEvents.value;
+  activeNav.value = showingTodayEvents.value ? "today" : "all";
+}
+
 // Event processing
+
 function sortEventsByDateTime(events) {
   if (!events) return {};
 
@@ -333,34 +324,22 @@ function sortEventsByDateTime(events) {
     ];
   }, []);
 
-  const sortedEvents = flatEvents.sort((a, b) => {
+  const sorted = flatEvents.sort((a, b) => {
     const dateTimeA = new Date(a.startDate || a.listDate);
     const dateTimeB = new Date(b.startDate || b.listDate);
     return dateTimeA - dateTimeB;
   });
 
-  return sortedEvents.reduce((acc, event) => {
-    const date = formatDate(event.startDate || event.listDate);
-    if (!acc[date]) acc[date] = [];
-    acc[date].push(event);
+  return sorted.reduce((acc, event) => {
+    const dateKey = formatDate(event.startDate || event.listDate);
+    if (!acc[dateKey]) acc[dateKey] = [];
+    acc[dateKey].push(event);
     return acc;
   }, {});
 }
 
-const headerText = computed(() =>
-  showingTodayEvents.value ? "Eventos de Hoje" : "Todos os Eventos"
-);
-const showingTodayEvents = ref(false);
-const buttonText = computed(() =>
-  showingTodayEvents.value ? "Todos os Eventos" : "Eventos Hoje"
-);
-
-function toggleEventView() {
-  showingTodayEvents.value = !showingTodayEvents.value;
-  activeNav.value = showingTodayEvents.value ? "today" : "all";
-}
-
 // Formatting utilities
+
 function formatEventsForWhatsApp(events) {
   return Object.entries(events)
     .map(([date, events]) => {
@@ -419,7 +398,17 @@ function formatLink(links) {
   const validLink = links?.[0]?.url;
   return validLink && validLink !== "Link não fornecido" ? validLink : "";
 }
+
+// Additional computed properties for the header and button text.
+const showingTodayEvents = ref(false);
+const headerText = computed(() =>
+  showingTodayEvents.value ? "Eventos de Hoje" : "Todos os Eventos"
+);
+const buttonText = computed(() =>
+  showingTodayEvents.value ? "Todos os Eventos" : "Eventos Hoje"
+);
 </script>
+
 
 <style lang="scss" scoped>
 .action-buttons {
