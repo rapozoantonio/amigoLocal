@@ -27,11 +27,17 @@
                                         <td class="text-center"><v-icon>{{ item.customClaims.admin ? 'mdi-check' :
                                             'mdi-close' }}</v-icon></td>
                                         <td class="text-center">{{ item.customClaims.levelAccess }}</td>
-                                        <td class="text-right"><v-btn @click.stop="openPromoterRequestForm(item)"
-                                                v-if="isHovering" size="x-small" variant="elevated" icon
-                                                color="primary">
+                                        <td class="text-right">
+                                            <v-btn @click.stop="openPromoterRequestForm(item)"
+                                                v-if="isHovering && item.customClaims.role !== 'admin' && item.customClaims.role !== 'pro'"
+                                                size="x-small" variant="elevated" icon color="primary">
                                                 <v-icon>mdi-account-edit</v-icon>
-                                            </v-btn></td>
+                                            </v-btn>
+                                            <v-btn @click.stop="openPromoterEditForm(item)" v-else size="x-small"
+                                                variant="elevated" icon color="secondary">
+                                                <v-icon>mdi-account-edit</v-icon>
+                                            </v-btn>
+                                        </td>
                                     </tr>
                                 </v-hover>
 
@@ -41,34 +47,13 @@
                 </v-card>
             </v-col>
         </v-row>
-        <!-- <v-dialog v-model="dialog.opened">
-            <v-card width="320" class="mx-auto">
-
-                <v-card-title class="d-flex">
-                    {{ dialog.title || 'Edit user' }}
-                    <v-spacer></v-spacer>
-                    <v-btn @click="closeDialog" variant="text" icon size="x-small"><v-icon>mdi-close</v-icon></v-btn>
-                </v-card-title>
-
-                <v-card-text>
-
-                    <v-list-item class="bg-primary">
-                        <v-list-item-title>{{ dialog.item?.email }}</v-list-item-title>
-                        <v-list-item-subtitle>{{ dialog.item?.customClaims?.role }}</v-list-item-subtitle>
-                    </v-list-item>
-
-                    <v-select class="mt-4" v-model="newRole" :items="roles" item-title="role" return-object
-                        label="New Role"></v-select>
-                    <v-btn :loading="loading" :disabled="newRole?.role === dialog.item?.customClaims?.role"
-                        color="primary" variant="elevated" @click="updateUserRole(dialog.item?.uid, newRole)"
-                        block>Change
-                        Role</v-btn>
-                </v-card-text>
-            </v-card>
-        </v-dialog> -->
         <form-dialog @submit="createPromoter" :schema="promoterRequestSchema" v-model:model="promoter"
             v-model:opened="dialog.opened" title="Criar promoter" labelType="left"
             action="Criar promoter"></form-dialog>
+
+        <form-dialog @submit="updatePromoter" :schema="promoterRequestSchema" v-model:model="promoter"
+            v-model:opened="editDialog.opened" title="Editar promoter" labelType="left"
+            action="Update promoter"></form-dialog>
     </v-container>
 </template>
 
@@ -129,6 +114,13 @@ const dialog = ref({
     item: null,
     title: "Create Promoter"
 })
+
+const editDialog = ref({
+    opened: false,
+    item: null,
+    title: "Edit Promoter"
+})
+
 const headers = [
     { title: "User ID", value: "uid" },
     { title: "Email", value: "email" },
@@ -145,10 +137,10 @@ const headers = [
 ]
 
 async function grantAdminRole() {
-    
+
     const user = users.value.find((u) => selectedUser.value === u.uid);
     if (!user) return;
-    
+
     user.role = "admin";
     user.admin = true;
     const updateUserCustomClaims = httpsCallable(
@@ -156,7 +148,7 @@ async function grantAdminRole() {
         "updateUserCustomClaims"
     );
     const response = await updateUserCustomClaims(user);
-    
+
 }
 
 function closeDialog() {
@@ -171,16 +163,16 @@ async function updateUserRole(uid, customClaims) {
     try {
         loading.value = true;
         const updateRole = httpsCallable(functions, "updateRole");
-        
+
         const response = await updateRole({ uid, customClaims });
-        
+
         if (response.data.ok) {
             dialog.value.item.customClaims = response.data.data.customClaims
             dialog.value.item = null;
             dialog.value.opened = false;
         }
     } catch (error) {
-        
+
     }
     finally {
         loading.value = false;
@@ -191,7 +183,7 @@ async function updateUserRole(uid, customClaims) {
 async function getAllUsers() {
     const getUsers = httpsCallable(functions, "getAllUsers");
     const response = await getUsers();
-    
+
     users.value = response.data.data;
 }
 
@@ -203,12 +195,20 @@ function editRole(item) {
 
 async function openPromoterRequestForm(pro) {
     promoter.value.name = pro.displayName;
-    promoter.value.username = pro.displayName;
     promoter.value.email = pro.email;
     promoter.value.id = pro.uid;
     dialog.value.opened = true;
     dialog.value.item = pro;
 
+}
+
+async function openPromoterEditForm(pro) {
+    promoter.value.name = pro.displayName;
+    promoter.value.email = pro.email;
+    promoter.value.id = pro.uid;
+    promoter.value.code = pro.customClaims.code;
+    editDialog.value.opened = true;
+    editDialog.value.item = pro;
 }
 
 async function createPromoter(promoter) {
@@ -217,9 +217,9 @@ async function createPromoter(promoter) {
         appStore.loadingText = "Creating promoter..."
         promoter.createMethod = "admin-panel"
         const response = await firebaseStore.postDocument("promoters", promoter, "promoters");
-        
+
         if (dialog.value.item?.customClaims.role !== "admin") {
-            await updateUserRole(promoter.id, { role: "pro", levelAccess: 3, admin: false },)
+            await updateUserRole(promoter.id, { role: "pro", levelAccess: 3, admin: false, code: promoter.code },)
         }
 
         if (response.ok) {
@@ -227,7 +227,7 @@ async function createPromoter(promoter) {
         }
 
     } catch (error) {
-        
+
     } finally {
         dialog.value.opened = false;
         dialog.value.item = null;
@@ -236,10 +236,36 @@ async function createPromoter(promoter) {
     }
 }
 
+async function updatePromoter(promoter) {
+    try {
+        appStore.loading = true;
+        appStore.loadingText = "Creating promoter..."
+        promoter.createMethod = "admin-panel"
+        const response = await firebaseStore.putDocument("promoters", promoter.uid, promoter);
 
-watch(() => promoter.value.name, (newValue) => {
-    promoter.value.username = newValue;
-})
+        if (dialog.value.item?.customClaims.role !== "admin") {
+            await updateUserRole(promoter.id, { role: "pro", levelAccess: 3, admin: false, code: promoter.code },)
+        }
+        else {
+            await updateUserRole(promoter.id, { role: "admin", levelAccess: 9, admin: true, code: promoter.code },)
+        }
+
+        if (response.ok) {
+            response.notify("Promoter actualizado", "")
+        }
+
+    } catch (error) {
+
+    } finally {
+        dialog.value.opened = false;
+        dialog.value.item = null;
+        appStore.loading = false;
+        appStore.loadingText = ""
+    }
+}
+// watch(() => promoter.value.name, (newValue) => {
+//     promoter.value.username = newValue;
+// })
 
 
 onMounted(() => {

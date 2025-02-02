@@ -14,7 +14,7 @@
                     <!-- SLOT HEADER PREPEND -->
                     <slot name="header-prepend"></slot>
                     <!-- FORM NAME -->
-                    <span v-if="schema.name && schema.name !== ''">{{ schema.name }}</span>
+                    <span>{{ title || schema.name }}</span>
                     <!-- SLOT HEADER APPEND -->
                     <slot name="header-append"></slot>
                     <v-spacer></v-spacer>
@@ -130,14 +130,14 @@ async function submitForm(event) {
     try {
         loading.value = true;
         const results = await event;
-        
+
         if (!results.valid) {
             document.querySelector("#" + results.errors[0].id).focus();
             return false;
         }
         emit("submit", model.value);
     } catch (error) {
-        
+
     } finally {
         loading.value = false;
     }

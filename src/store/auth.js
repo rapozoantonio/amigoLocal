@@ -52,6 +52,7 @@ export const useAuthStore = defineStore("auth", () => {
         admin: claims.admin || false,
         role: claims.role || "user",
         levelAccess: claims.levelAccess || 1,
+        code: claims.code,
       };
     } else {
       loggedIn.value = false;
