@@ -1,16 +1,13 @@
-import {
-  ref,
-  watch,
-} from 'vue';
+import { ref, watch } from "vue";
 
-import { onAuthStateChanged } from 'firebase/auth';
+import { onAuthStateChanged, getIdTokenResult } from "firebase/auth";
 // Utilities
-import { defineStore } from 'pinia';
-import { useRouter } from 'vue-router';
+import { defineStore } from "pinia";
+import { useRouter } from "vue-router";
 
-import { auth } from '@/plugins/firebase';
+import { auth } from "@/plugins/firebase";
 
-import { useFirebaseStore } from './firebase';
+import { useFirebaseStore } from "./firebase";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref(null);
@@ -19,14 +16,14 @@ export const useUserStore = defineStore("user", () => {
     promoters: null,
     locations: null,
   });
+  const promoter = ref(null);
   const usernameLocked = ref(false);
   const firebaseStore = useFirebaseStore();
   const router = useRouter();
 
   async function getUser(uid) {
-    
     const response = await firebaseStore.getDocumentById("users", uid);
-    
+
     if (response.ok) {
       user.value = response.data;
     }
@@ -46,14 +43,13 @@ export const useUserStore = defineStore("user", () => {
       "users/" + uid + "/follows",
       entity
     );
-    
+
     if (entityFollows.ok) {
       follows.value[entity] = entityFollows.data?.following;
     }
   }
 
   function resetUser() {
-    
     user.value = null;
     follows.value = {
       events: null,
@@ -64,7 +60,6 @@ export const useUserStore = defineStore("user", () => {
 
   async function init() {
     const unsubscribe = onAuthStateChanged(auth, async (userState) => {
-      
       if (userState) {
         try {
           const response = await firebaseStore.getDocumentById(
@@ -72,22 +67,27 @@ export const useUserStore = defineStore("user", () => {
             userState.uid
           );
           if (response.ok) {
-            
-            if (response.data.username) {
-              
-              usernameLocked.value = true;
-            }
             user.value = response.data;
             await getFollows(userState.uid);
+
+            const { claims } = await getIdTokenResult(userState);
+            if (claims.role === "pro" || claims.role === "admin") {
+              const promoterResponse = await firebaseStore.getDocumentById(
+                "promoters",
+                userState.uid
+              );
+              if (promoterResponse.ok) {
+                console.log("promoter", promoterResponse.data);
+                promoter.value = promoterResponse.data;
+              }
+            }
           }
         } catch (error) {
-          
+          console.log({ error });
           resetUser();
         } finally {
-          
         }
       } else {
-        
         resetUser();
       }
     });
@@ -95,14 +95,5 @@ export const useUserStore = defineStore("user", () => {
 
   init();
 
-  watch(
-    () => user.value?.name,
-    (newValue) => {
-      if (newValue && !usernameLocked.value) {
-        user.value.username = newValue;
-      }
-    }
-  );
-
-  return { user, follows, getUser, getFollows };
+  return { user, follows, getUser, getFollows, promoter };
 });
