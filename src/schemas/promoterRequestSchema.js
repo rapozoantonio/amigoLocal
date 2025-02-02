@@ -35,7 +35,7 @@ export default {
           label: "Instagram",
           type: "text",
           size: "lg",
-          rules: ["required"],
+          // rules: ["required"],
         },
 
         {
@@ -50,7 +50,6 @@ export default {
           label: "Whatsapp",
           type: "text",
           size: "lg",
-          rules: ["required"],
           placeholder: "+55 21 999 888 777",
         },
         {

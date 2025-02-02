@@ -114,7 +114,7 @@ async function approveRequest(request) {
         request.model.createMethod = "user-request"
         await firebaseStore.postDocument(request.entity, request.model, "promoters");
         await firebaseStore.putDocument("requests", request.id, { approved: true, status: "approved" });
-        await updateUserRole(request.id, { role: "pro", levelAccess: 3, admin: false },)
+        await updateUserRole(request.id, { role: "pro", levelAccess: 3, admin: false, code: request.model.code },)
         request.approved = true;
     } catch (error) {
 
@@ -127,7 +127,7 @@ async function createPromoter(promoter) {
         appStore.loadingText = "Creating promoter..."
         promoter.createMethod = "user-request"
         await firebaseStore.postDocument("promoters", promoter, "promoters");
-        await updateUserRole(request.id, { role: "pro", levelAccess: 3, admin: false },)
+        await updateUserRole(request.id, { role: "pro", levelAccess: 3, admin: false, code: promoter.code },)
         request.approved = true;
     } catch (error) {
 

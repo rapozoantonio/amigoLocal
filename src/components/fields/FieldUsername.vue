@@ -8,10 +8,10 @@
 
 <script setup>
 import {
-  defineModel,
-  inject,
-  onMounted,
-  watch,
+    defineModel,
+    inject,
+    onMounted,
+    watch,
 } from 'vue';
 
 const { label } = defineProps({ label: { type: [Boolean, String], default: false } })
@@ -20,12 +20,12 @@ const username = defineModel();
 const { fieldAttrs } = inject("$helpers");
 
 watch(() => username.value, (newValue) => {
-    username.value = newValue?.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
+    username.value = newValue?.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
 })
 
 onMounted(() => {
     if (username.value) {
-        username.value = username.value.replace(/[^a-zA-Z0-9]/g, "_").toLowerCase();
+        username.value = username.value.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
     }
 })
 
