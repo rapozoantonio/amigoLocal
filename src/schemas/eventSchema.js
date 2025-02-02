@@ -41,6 +41,14 @@ export default {
           size: "xs",
         },
         {
+          id: "country",
+          label: "Country",
+          type: "custom-country",
+          size: "sm",
+          rules: ["required"],
+          initial: "BR",
+        },
+        {
           id: "region",
           label: "Region",
           type: "custom-region",
@@ -50,14 +58,6 @@ export default {
             id: "riodejaneiro",
             name: "Rio de Janeiro",
           },
-        },
-        {
-          id: "country",
-          label: "Country",
-          type: "custom-country",
-          size: "sm",
-          rules: ["required"],
-          initial: "BR",
         },
 
         {

@@ -1,5 +1,5 @@
 <template>
-  <form-card v-if="promoter" @submit="saveProfile" :schema="promoterSchema" v-model:model="promoter"
+  <form-card v-if="promoter" @submit="savePromoter" :schema="promoterSchema" v-model:model="promoter"
     v-model:files="files" labelType="up" title="Editar perfil promoter" action="Salvar"
     :items="{ language: languages, gender: genders }">
 
@@ -14,7 +14,8 @@ import FormCard from "@/components/form/FormCard.vue";
 import { useFirebaseStore } from "@/store/firebase";
 import { useUserStore } from "@/store/user";
 import promoterSchema from "@/schemas/promoterSchema";
-
+import { useAppStore } from "@/store/app";
+const appStore = useAppStore();
 const userStore = useUserStore();
 const { promoter } = storeToRefs(userStore);
 const loading = ref(false);
@@ -34,23 +35,59 @@ const files = ref({});
 
 const firebaseStore = useFirebaseStore();
 
-async function saveProfile(event) {
+async function savePromoter() {
+  console.log("savepromoter")
+  appStore.loading = true;
+  appStore.loadingText = "Atualizando promoter...";
   try {
-    loading.value = true;
-    const results = await event;
-    promoter.value.completed = true;
+    const id = promoter.value.id;
+    const entries = Object.entries(files.value);
+
+    const filesToUpload = entries.reduce((total, [name, value]) => {
+      if (!value) return total;
+      if (Array.isArray(value)) {
+        if (value[0]) {
+          total.push({
+            name: name,
+            path: `promoters/${id}/${name}.${value[0].type.split("/").pop()}`,
+            file: value[0],
+          });
+        }
+      } else {
+        total.push({
+          name: name,
+          path: `promoters/${id}/${name}.${value.type.split("/").pop()}`,
+          file: value,
+        });
+      }
+
+      return total;
+    }, []);
+
+    const pictures = await firebaseStore.uploadPictures(filesToUpload);
+
+    pictures.forEach((p) => {
+      promoter.value[p.name] = {
+        path: p.path,
+        url: p.url,
+      };
+    });
+
     const response = await firebaseStore.putDocument(
       "promoters",
-      promoter.value.uid,
+      id,
       promoter.value
     );
-
     if (response.ok) {
-      response.notify("", "Your promoter settings is successfully updated");
+      response.notify();
+      return { ok: true };
     }
+    return { ok: false };
   } catch (error) {
+    return { ok: false, error };
   } finally {
-    loading.value = false;
+    appStore.loading = false;
+    appStore.loadingText = null;
   }
 }
 </script>

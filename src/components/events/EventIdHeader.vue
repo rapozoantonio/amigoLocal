@@ -9,49 +9,28 @@
         <!-- Navigation -->
         <v-row no-gutters class="align-center">
           <v-col cols="9">
-            <v-btn
-              color="white"
-              variant="plain"
-              size="small"
-              :to="{
-                name: 'events',
-                params: {
-                  country: event.location
-                    ? event.location.country
-                      ? event.location.country
-                      : 'BR'
-                    : event.country ?? 'BR',
-                  region: event.location
-                    ? event.location.region
-                      ? event.location.region.id || event.location.region
-                      : 'riodejaneiro'
-                    : 'riodejaneiros',
-                },
-              }"
-            >
+            <v-btn color="white" variant="plain" size="small" :to="{
+              name: 'events',
+              params: {
+                country: event.country || 'BR',
+                region: event.region?.id || 'riodejaneiro'
+              },
+            }">
               <v-icon size="small">mdi-chevron-left</v-icon>
               <v-avatar class="mx-1" size="16">
-                <v-img
-                  :src="`http://flagcdn.com/${
-                    event.location && event.location.country
-                      ? event.location.country.toLowerCase()
-                      : 'br'
-                  }.svg`"
-                ></v-img>
+                <v-img :src="`http://flagcdn.com/${event.country
+                  ? event.country.toLowerCase()
+                  : 'br'
+                  }.svg`"></v-img>
               </v-avatar>
               <span class="text-caption">{{
-                event.location?.region?.name || event.location?.region
+                event.region?.name
               }}</span>
             </v-btn>
           </v-col>
           <v-col cols="3" class="d-flex justify-end">
-            <follow-button
-              @follow="follow"
-              @unfollow="unfollow"
-              entity="events"
-              :entity_id="event.id"
-              density="compact"
-            />
+            <follow-button @follow="follow" @unfollow="unfollow" entity="events" :entity_id="event.id"
+              density="compact" />
           </v-col>
         </v-row>
 
@@ -66,29 +45,19 @@
         <!-- Essential Info -->
         <v-row no-gutters>
           <v-col cols="12">
-            <div
-              class="d-flex align-center text-caption text-grey-lighten-1 mt-1"
-            >
+            <div class="d-flex align-center text-caption text-grey-lighten-1 mt-1">
               <!-- Location - only show if exists -->
               <template v-if="event.location?.name">
-                <v-icon size="14" color="grey-lighten-1" class="mr-1"
-                  >mdi-map-marker</v-icon
-                >
+                <v-icon size="14" color="grey-lighten-1" class="mr-1">mdi-map-marker</v-icon>
                 {{ event.location.name }}
 
                 <!-- Only show divider if there's a next element -->
-                <v-divider
-                  v-if="event.startDate || event.followers"
-                  vertical
-                  class="mx-2"
-                />
+                <v-divider v-if="event.startDate || event.followers" vertical class="mx-2" />
               </template>
 
               <!-- Date - only show if exists -->
               <template v-if="event.startDate">
-                <v-icon size="14" color="grey-lighten-1" class="mr-1"
-                  >mdi-calendar</v-icon
-                >
+                <v-icon size="14" color="grey-lighten-1" class="mr-1">mdi-calendar</v-icon>
                 {{ helpers.toDate(event.startDate) }}
 
                 <!-- Only show divider if there's a next element -->
@@ -96,24 +65,18 @@
               </template>
               <!-- Followers - only show if exists -->
               <template v-if="event.followers">
-                <v-icon size="14" color="grey-lighten-1" class="mr-1"
-                  >mdi-account-group</v-icon
-                >
+                <v-icon size="14" color="grey-lighten-1" class="mr-1">mdi-account-group</v-icon>
                 {{ event.followers }}
               </template>
             </div>
           </v-col>
           <!-- Promoter - only show if exists -->
           <v-col v-if="event.promoter?.name">
-            <div
-              class="d-flex align-center text-caption text-grey-lighten-1 mt-1"
-            >
-              <router-link
-                :to="{
-                  name: 'promoter-id',
-                  params: { id: event.promoter?.id },
-                }"
-              >
+            <div class="d-flex align-center text-caption text-grey-lighten-1 mt-1">
+              <router-link :to="{
+                name: 'promoter-id',
+                params: { id: event.promoter?.id },
+              }">
                 <v-icon size="14" class="mr-1">mdi-ticket</v-icon>
                 {{ event.promoter.name }}
               </router-link>
@@ -124,15 +87,8 @@
         <v-row no-gutters class="mt-3">
           <v-col cols="12">
             <div class="d-flex overflow-x-auto hide-scrollbar">
-              <v-chip
-                v-for="genre in event.genres"
-                :key="genre"
-                size="x-small"
-                label
-                variant="outlined"
-                color="primary"
-                class="mr-1"
-              >
+              <v-chip v-for="genre in event.genres" :key="genre" size="x-small" label variant="outlined" color="primary"
+                class="mr-1">
                 {{ genre }}
               </v-chip>
             </div>
@@ -147,38 +103,21 @@
         <!-- Navigation Row -->
         <v-row>
           <v-col cols="12">
-            <v-btn
-              color="white"
-              variant="plain"
-              class="pl-0"
-              size="small"
-              :to="{
-                name: 'events',
-                params: {
-                  country: event.location
-                    ? event.location.country
-                      ? event.location.country
-                      : 'BR'
-                    : event.country ?? 'BR',
-                  region: event.location
-                    ? event.location.region
-                      ? event.location.region.id || event.location.region
-                      : 'riodejaneiro'
-                    : 'riodejaneiros',
-                },
-              }"
-            >
+            <v-btn color="white" variant="plain" class="pl-0" size="small" :to="{
+              name: 'events',
+              params: {
+                country: event.country || 'BR',
+                region: event.region.id || 'riodejaneiros',
+              },
+            }">
               <v-icon>mdi-chevron-left</v-icon>
               <v-avatar class="mr-2 ml-1" size="20">
-                <v-img
-                  :src="`http://flagcdn.com/${
-                    event.location && event.location.country
-                      ? event.location.country.toLowerCase()
-                      : 'br'
-                  }.svg`"
-                ></v-img>
+                <v-img :src="`http://flagcdn.com/${event.country
+                  ? event.country.toLowerCase()
+                  : 'br'
+                  }.svg`"></v-img>
               </v-avatar>
-              {{ event.location?.region?.name || event.location?.region }}
+              {{ event.region?.name }}
             </v-btn>
           </v-col>
         </v-row>
@@ -186,15 +125,13 @@
         <!-- Title Row -->
         <v-row>
           <v-col cols="12" class="pt-0 d-flex align-center">
-            <h1
-              :class="[
-                'text-h2',
-                'text-white',
-                'font-weight-bold',
-                'text-break',
-                'my-4',
-              ]"
-            >
+            <h1 :class="[
+              'text-h2',
+              'text-white',
+              'font-weight-bold',
+              'text-break',
+              'my-4',
+            ]">
               {{ event.name }}
             </h1>
           </v-col>
@@ -203,12 +140,8 @@
         <v-row>
           <v-col cols="12" md="4" class="d-flex flex-column">
             <p class="text-caption text-grey">Local</p>
-            <router-link
-              v-if="event.location?.id"
-              :to="{ name: 'location-id', params: { id: event.location.id } }"
-              class="text-h6 link"
-              >{{ event.location.name }}</router-link
-            >
+            <router-link v-if="event.location?.id" :to="{ name: 'location-id', params: { id: event.location.id } }"
+              class="text-h6 link">{{ event.location.name }}</router-link>
             <p v-else class="text-h6 link">{{ event.location?.name }}</p>
             <p class="text-caption text-grey">
               {{ event.location?.address }} {{ event.location?.postalcode }}
@@ -226,28 +159,20 @@
           <v-col cols="6" md="2" class="d-flex flex-column">
             <p class="text-caption text-grey">Promoter</p>
             <div>
-              <router-link
-                :to="{
-                  name: 'promoter-id',
-                  params: { id: event.promoter?.id },
-                }"
-                class="link"
-                >{{ event.promoter?.name }}</router-link
-              >
+              <router-link :to="{
+                name: 'promoter-id',
+                params: { id: event.promoter?.id },
+              }" class="link">{{ event.promoter?.name }}</router-link>
             </div>
           </v-col>
 
           <v-col cols="6" md="2" class="d-flex flex-column">
             <p class="text-caption text-grey">Produtora</p>
             <div>
-              <router-link
-                :to="{
-                  name: 'producer-id',
-                  params: { id: event.producer?.id },
-                }"
-                class="link"
-                >{{ event.producer?.name }}</router-link
-              >
+              <router-link :to="{
+                name: 'producer-id',
+                params: { id: event.producer?.id },
+              }" class="link">{{ event.producer?.name }}</router-link>
             </div>
           </v-col>
 
@@ -261,16 +186,8 @@
           <v-col cols="12" class="d-flex flex-column">
             <p class="text-caption text-grey">Tipos de musica</p>
             <div class="d-flex flex-wrap">
-              <v-chip
-                v-for="genre in event.genres"
-                :key="genre"
-                class="mr-2 mt-2"
-                label
-                variant="outlined"
-                size="small"
-                color="primary"
-                link
-              >
+              <v-chip v-for="genre in event.genres" :key="genre" class="mr-2 mt-2" label variant="outlined" size="small"
+                color="primary" link>
                 {{ genre }}
               </v-chip>
             </div>
@@ -278,12 +195,7 @@
 
           <v-divider class="mt-2"></v-divider>
           <v-col cols="12" class="d-flex flex-row justify-end mt-1 mb-1 px-4">
-            <follow-button
-              @follow="follow"
-              @unfollow="unfollow"
-              entity="events"
-              :entity_id="event.id"
-            />
+            <follow-button @follow="follow" @unfollow="unfollow" entity="events" :entity_id="event.id" />
             <div class="ml-3"><socials-share /></div>
           </v-col>
         </v-row>
