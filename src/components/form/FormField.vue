@@ -179,7 +179,8 @@
 
         <!-- CUSTOM-LOCATION -->
         <template v-else-if="type === 'custom-location'">
-            <field-location v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            <field-location v-model="model[id]" :country="model.country" :region="model.region"
+                v-bind="{ ...fieldAttrs, ...attrs }">
             </field-location>
         </template>
 

@@ -1,6 +1,13 @@
 import { ref } from "vue";
 
-import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 // import { ref, } from 'vue'
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
@@ -12,16 +19,23 @@ export const useLocationsStore = defineStore("locations", () => {
   const locations = ref(null);
   const loading = ref(false);
 
-  async function getLocations() {
+  async function getLocations({ country, region }) {
     loading.value = true;
     locations.value = null;
+    const locationQuery = [];
+    if (country) {
+      locationQuery.push(where("country", "==", country));
+    }
+    if (region) {
+      locationQuery.push(where("region.id", "==", region));
+    }
 
     try {
-      const q = query(collection(firestore, "locations"));
+      const q = query(collection(firestore, "locations"), ...locationQuery);
       const querySnapshot = await getDocs(q);
-      
+
       //   querySnapshot.forEach((document) => {
-      //     
+      //
       //     events.value.push(document.data());
       //   });
       locations.value = querySnapshot.docs.map((d) => d.data());
@@ -30,7 +44,6 @@ export const useLocationsStore = defineStore("locations", () => {
         data: { locations: locations.value },
       };
     } catch (error) {
-      
       notifyError(error);
       return {
         ok: false,
@@ -48,7 +61,6 @@ export const useLocationsStore = defineStore("locations", () => {
         location.value = documentSnapshot.data();
       }
     } catch (error) {
-      
       notifyError(error);
       return {
         ok: false,
@@ -73,11 +85,11 @@ export const useLocationsStore = defineStore("locations", () => {
     });
   }
 
-  function init() {
-    getLocations();
-  }
+  // function init() {
+  //   getLocations();
+  // }
 
-  init();
+  // init();
 
   return {
     locations,

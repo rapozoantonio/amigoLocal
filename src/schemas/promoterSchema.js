@@ -25,6 +25,12 @@ export default {
           readOnly: true,
         },
         {
+          id: "image",
+          label: "Imagem",
+          type: "image",
+          size: "lg",
+        },
+        {
           id: "instagram",
           label: "Instagram",
           type: "text",

@@ -227,22 +227,22 @@ export const useEventsStore = defineStore("events", () => {
 
     // Location-based filters
     if (config.country) {
-      queries.push(where("location.country", "==", config.country));
+      queries.push(where("country", "==", config.country));
     }
     if (config.region) {
-      queries.push(where("location.region.id", "==", config.region));
+      queries.push(where("region.id", "==", config.region));
     }
     // Promoter filter
     if (config.promoterId) {
-      queries.push(where("promoterId", "==", config.promoterId));
+      queries.push(where("promoter.id", "==", config.promoterId));
     }
     // Producer filter
     if (config.producerId) {
-      queries.push(where("producerId", "==", config.producerId));
+      queries.push(where("producer.id", "==", config.producerId));
     }
     // Location ID filter
     if (config.locationId) {
-      queries.push(where("locationId", "==", config.locationId));
+      queries.push(where("location.id", "==", config.locationId));
     }
     // Categories filter (using array-contains-any)
     if (
@@ -329,10 +329,10 @@ export const useEventsStore = defineStore("events", () => {
   };
 
   const resetPagination = () => {
-    lastDocument.value = null
-    events.value = null
-    nextEvents.value = null
-  }
+    lastDocument.value = null;
+    events.value = null;
+    nextEvents.value = null;
+  };
 
   // =========================
   // Additional Computed Filters

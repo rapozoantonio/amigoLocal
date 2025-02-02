@@ -1,5 +1,7 @@
 <template>
     <div>
+        {{ region }}
+        {{ country }}
         <v-autocomplete v-if="locations" v-bind="{ ...fieldAttrs, ...$attrs }" v-model="location.name"
             :items="locations" item-value="id" item-title="name" @update:modelValue="changeLocation" clearable>
             <template #prepend-item>
@@ -58,15 +60,18 @@
 
 <script setup>
 import {
-  defineModel,
-  inject,
-  ref,
+    defineModel,
+    inject,
+    onMounted,
+    ref,
+    watch,
+    toRefs
 } from 'vue';
 
 import { storeToRefs } from 'pinia';
 
 import QuickCreateLocation
-  from '@/components/quickcreate/QuickCreateLocation.vue';
+    from '@/components/quickcreate/QuickCreateLocation.vue';
 import locationSchema from '@/schemas/locationSchema';
 import { useConfigStore } from '@/store/config';
 import { useLocationStore } from '@/store/location';
@@ -86,7 +91,8 @@ const { location: newLocation } = storeToRefs(locationStore);
 const location = defineModel();
 const locationToSearch = ref(null);
 const dialog = ref(false);
-
+const props = defineProps(["region", "country"]);
+const { region, country } = toRefs(props);
 function openDialog() {
     dialog.value = true;
 }
@@ -131,6 +137,22 @@ async function associateLocation(loc) {
     changeLocation(loc.id);
     closeDialog();
 }
+
+watch(region, (newValue) => {
+    console.log("region", newValue)
+    locationsStore.getLocations({ region: newValue.id, country: country.value });
+})
+
+watch(country, (newValue) => {
+    console.log("country", newValue)
+    locationsStore.getLocations({ region: region.value.id, country: newValue });
+})
+
+
+onMounted(() => {
+    console.log("onmounted")
+    locationsStore.getLocations({ country: country.value, region: region.value });
+})
 
 </script>
 
