@@ -1,14 +1,12 @@
 <template>
     <div>
-        {{ region }}
-        {{ country }}
         <v-autocomplete v-if="locations" v-bind="{ ...fieldAttrs, ...$attrs }" v-model="location.name"
             :items="locations" item-value="id" item-title="name" @update:modelValue="changeLocation" clearable>
             <template #prepend-item>
                 <v-list-item density="compact">
                     <v-list-item-subtitle>Locations</v-list-item-subtitle>
                     <template #append>
-                        <v-btn variant="text" @click="openDialog" size="sm" color="secondary">
+                        <v-btn variant="text" @click="openDialog" size="sm" color="primary">
                             Add Location
                             <v-icon class="ml-2" end>mdi-plus-circle</v-icon>
                         </v-btn>
