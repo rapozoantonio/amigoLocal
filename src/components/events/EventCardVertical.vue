@@ -17,7 +17,7 @@
       >
         <LazyImage
           :src="event.image?.url || event.flyerFront?.url"
-          fallbackSrc="/img/placeholder_event_280x280.jpg"
+          fallbackSrc="/img/placeholder_event_280x280.webp"
           :alt="`Event image for ${event.name}`"
           height="280"
           width="280"

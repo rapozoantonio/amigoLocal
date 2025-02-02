@@ -79,7 +79,7 @@ const imageRef = ref(null)
 
 const imageUrl = computed(() => {
   const url = props.src || props.fallbackSrc
-  //url.replace(/\.(jpg|jpeg|png)$/i, '.webp')
+  url.replace(/\.(jpg|jpeg|png)$/i, '.webp')
   return url
 })
 
