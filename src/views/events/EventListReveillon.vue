@@ -8,10 +8,7 @@
     </v-container>
 
     <!-- All Events List -->
-    <event-list-next-events
-      v-else
-      :events="filteredEvents"
-    ></event-list-next-events>
+    <event-list-next-events v-else :events="filteredEvents"></event-list-next-events>
   </div>
 </template>
 
@@ -58,9 +55,11 @@ onMounted(async () => {
     }
 
     // Fetch Reveillon events
-    await eventsStore.getEventsByCategories(country.toUpperCase(), region, [
-      "reveillon",
-    ]);
+    // await eventsStore.getEventsByCategories(country.toUpperCase(), region, [
+    //   "reveillon",
+    // ]);
+
+    await eventsStore.fetchEvents({ country: country.toUpperCase(), "region.id": region, "categories[contains]": "reveillon" })
   } catch (error) {
     console.error("Error fetching Reveillon events:", error);
   }
@@ -75,5 +74,4 @@ onMounted(async () => {
   min-height: 200px;
 }
 
-// Remove unnecessary img style
-</style>
+// Remove unnecessary img style</style>

@@ -14,7 +14,8 @@ import {
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
 import { firestore } from "@/plugins/firebase";
-
+import { useFirebaseStore } from "./firebase";
+const firebaseStore = useFirebaseStore();
 // Cache configuration
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const eventCache = new Map();
@@ -62,31 +63,32 @@ export const useEventsStore = defineStore("events", () => {
   const filteredEvents = computed(() => {
     if (!events.value || !events.value.length) return [];
     let filtered = events.value;
+    console.log({ filtered });
 
-    if (selectedGenres.value.length) {
-      filtered = filtered.filter(
-        (e) =>
-          e.genres && e.genres.some((g) => selectedGenres.value.includes(g))
-      );
-    }
+    // if (selectedGenres.value.length) {
+    //   filtered = filtered.filter(
+    //     (e) =>
+    //       e.genres && e.genres.some((g) => selectedGenres.value.includes(g))
+    //   );
+    // }
 
-    if (selectedCategories.value.length) {
-      filtered = filtered.filter(
-        (e) =>
-          e.categories &&
-          e.categories.some((c) => selectedCategories.value.includes(c))
-      );
-    }
+    // if (selectedCategories.value.length) {
+    //   filtered = filtered.filter(
+    //     (e) =>
+    //       e.categories &&
+    //       e.categories.some((c) => selectedCategories.value.includes(c))
+    //   );
+    // }
 
-    if (selectedDateRange.value.length === 2) {
-      const [startDate, endDate] = selectedDateRange.value.map(
-        (d) => new Date(d)
-      );
-      filtered = filtered.filter((e) => {
-        const eventDate = new Date(e.startDate);
-        return eventDate >= startDate && eventDate <= endDate;
-      });
-    }
+    // if (selectedDateRange.value.length === 2) {
+    //   const [startDate, endDate] = selectedDateRange.value.map(
+    //     (d) => new Date(d)
+    //   );
+    //   filtered = filtered.filter((e) => {
+    //     const eventDate = new Date(e.startDate);
+    //     return eventDate >= startDate && eventDate <= endDate;
+    //   });
+    // }
 
     return filtered;
   });
@@ -191,11 +193,11 @@ export const useEventsStore = defineStore("events", () => {
     const currentYear = new Date().getFullYear();
     const today = new Date().toISOString().split("T")[0];
 
-    const upcoming = filteredEvents.value.filter(
-      (event) => event.startDate >= today
-    );
+    // const upcoming = filteredEvents.value.filter(
+    //   (event) => event.startDate >= today
+    // );
 
-    return upcoming.reduce((acc, event) => {
+    return filteredEvents.value.reduce((acc, event) => {
       const dateKey = formatEventDate(event.startDate, currentYear);
       if (!acc[dateKey]) acc[dateKey] = [];
       acc[dateKey].push(event);
@@ -289,9 +291,63 @@ export const useEventsStore = defineStore("events", () => {
     };
   };
 
+  const lastEventDocument = ref(null);
+  const totalDocsCount = ref(null);
+  const nextPage = ref(null);
   // =========================
   // Main Query Methods
   // =========================
+  async function fetchEvents(filters) {
+    const operationId = "getEvents";
+    setLoading(operationId, true);
+    try {
+      const { data, ok, lastDoc, next, totalCount } =
+        await firebaseStore.getCollection({
+          collection: "events",
+          query: filters,
+          orderBy: "startDate",
+        });
+      console.log("fetch events after getCollection", data, ok, next);
+      if (ok) {
+        console.log("ok", data);
+        events.value = data;
+        lastEventDocument.value = lastDoc;
+        totalDocsCount.value = totalCount;
+        nextPage.value = next;
+        return { ok, data, next, lastDoc, totalCount };
+      }
+    } catch (error) {
+      console.log({ error });
+    } finally {
+      setLoading(operationId, false);
+    }
+  }
+
+  const hasNextPage = computed(() => {
+    if (nextPage.value) {
+      return true;
+    }
+    return false;
+  });
+
+  async function fetchNextPage() {
+    console.log("fetchNextPage");
+    try {
+      const { data, ok, lastDoc, next } = await nextPage.value();
+      console.log("fetch nextpage after getCollection", data, ok, next);
+
+      if (ok) {
+        console.log("fetchNextPage OK");
+        events.value.push(...data);
+        lastEventDocument.value = lastDoc;
+        console.log({ next });
+        nextPage.value = next;
+        return { ok, data, next, lastDoc };
+      }
+    } catch (error) {
+      console.log({ error });
+    }
+  }
 
   // Fetch events based on a query configuration
   const getEvents = async (queryConfig = {}) => {
@@ -444,8 +500,11 @@ export const useEventsStore = defineStore("events", () => {
 
   const getEventsByCategories = (country, region, categories) =>
     getEvents({ country, region, categories });
-  const getEventsByRegion = (country, region) => getEvents({ country, region });
-  const getEventsByPromoterId = (promoterId) => getEvents({ promoterId });
+  const getEventsByRegion = (country, region) =>
+    fetchEvents({ country, "region.id": region });
+  const getEventsByPromoterId = (promoterId) =>
+    fetchEvents({ "promoter.id": promoterId });
+  // const getEventsByPromoterId = (promoterId) => getEvents({ promoterId });
   const getEventsByProducerId = (producerId) => getEvents({ producerId });
   const getEventsByLocationId = (locationId) => getEvents({ locationId });
 
@@ -537,7 +596,7 @@ export const useEventsStore = defineStore("events", () => {
     getEventsByProducerId,
     getEventsByLocationId,
     countDocuments,
-
+    totalDocsCount,
     // Filters and state
     events: filteredEvents,
     event,
@@ -545,7 +604,9 @@ export const useEventsStore = defineStore("events", () => {
     selectedGenres,
     selectedCategories,
     selectedDateRange,
-
+    fetchEvents,
+    fetchNextPage,
+    hasNextPage,
     // Computed properties
     featuredEvents,
     nextEvents,

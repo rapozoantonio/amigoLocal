@@ -8,10 +8,8 @@
     </v-container>
 
     <!-- Events List -->
-    <event-list-next-events
-      v-else
-      :events="filteredEvents"
-    ></event-list-next-events>
+    <event-list-next-events v-else :events="events"></event-list-next-events>
+    <button-load-more-events></button-load-more-events>
   </div>
 </template>
 
@@ -19,10 +17,10 @@
 import { onMounted, watch, computed } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import EventListFeatured from "@/components/events/EventListFeatured.vue"; 
+import EventListFeatured from "@/components/events/EventListFeatured.vue";
 import EventListNextEvents from "@/components/events/EventListNextEvents.vue";
 import { useEventsStore } from "@/store/events";
-
+import ButtonLoadMoreEvents from "@/components/events/ButtonLoadMoreEvents.vue";
 const route = useRoute();
 const eventsStore = useEventsStore();
 const { events, nextEvents, loading, selectedGenres } =
@@ -33,13 +31,13 @@ const { country, region } = defineProps({
   region: { type: String, required: true },
 });
 
-// Add computed property for filtered events
-const filteredEvents = computed(() => {
-  return (
-    events.value?.filter((event) => event.categories?.includes("carnaval")) ||
-    []
-  );
-});
+// // Add computed property for filtered events
+// const filteredEvents = computed(() => {
+//   return (
+//     events.value?.filter((event) => event.categories?.includes("carnaval")) ||
+//     []
+//   );
+// });
 
 watch(
   () => route.query.genre,
@@ -58,9 +56,10 @@ onMounted(async () => {
     }
 
     // Fetch Carnaval events
-    await eventsStore.getEventsByCategories(country.toUpperCase(), region, [
-      "carnaval",
-    ]);
+    // await eventsStore.getEventsByCategories(country.toUpperCase(), region, [
+    //   "carnaval",
+    // ]);
+    await eventsStore.fetchEvents({ country: country.toUpperCase(), "region.id": region, "categories[contains]": "carnaval" })
   } catch (error) {
     console.error("Error fetching Carnaval events:", error);
   }

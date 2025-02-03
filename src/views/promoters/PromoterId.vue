@@ -1,10 +1,7 @@
 <template>
   <div style="padding-top: 5px">
-    <promoter-id-header
-      v-if="promoter"
-      :promoter="promoter"
-    ></promoter-id-header>
-    <promoter-event-list></promoter-event-list>
+    <promoter-id-header v-if="promoter" :promoter="promoter"></promoter-id-header>
+    <promoter-event-list :id="props.id"></promoter-event-list>
   </div>
 </template>
 
