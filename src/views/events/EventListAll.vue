@@ -1,34 +1,26 @@
 <template>
-  <EventListFeatured />
-  <section class="flex-grow-1" aria-label="Events Calendar" role="region">
-    <v-container class="pa-0 pa-sm-2">
-      <template v-if="nextEvents && Object.keys(nextEvents).length > 0">
-        <v-row v-for="(events, day) in nextEvents" :key="day" class="ma-0">
-          <v-col cols="12" class="pa-0 pa-sm-2">
-            <event-calendar-divider-toolbar
-              :day="day"
-              :aria-label="`Events for ${day}`"
-            ></event-calendar-divider-toolbar>
-            <div
-              class="events-list"
-              role="feed"
-              :aria-label="`List of events for ${day}`"
-            >
-              <card-horizontal
-                v-for="(event, index) in events"
-                :key="event.id"
-                :event="event"
-                :displayPromoterCode="true"
-                class="mb-2"
-                :aria-setsize="events.length"
-                :aria-posinset="index + 1"
-              />
-            </div>
-          </v-col>
-        </v-row>
-      </template>
-    </v-container>
-  </section>
+  <div>
+    <EventListFeatured />
+    <section class="flex-grow-1" aria-label="Events Calendar" role="region">
+      <v-container class="pa-0 pa-sm-2">
+        <template v-if="nextEvents && Object.keys(nextEvents).length > 0">
+          <v-row v-for="(events, day) in nextEvents" :key="day" class="ma-0">
+            <v-col cols="12" class="pa-0 pa-sm-2">
+              <event-calendar-divider-toolbar :day="day"
+                :aria-label="`Events for ${day}`"></event-calendar-divider-toolbar>
+              <div class="events-list" role="feed" :aria-label="`List of events for ${day}`">
+                <card-horizontal v-for="(event, index) in events" :key="event.id" :event="event"
+                  :displayPromoterCode="true" class="mb-2" :aria-setsize="events.length" :aria-posinset="index + 1" />
+              </div>
+            </v-col>
+          </v-row>
+        </template>
+        <button-load-more-events></button-load-more-events>
+
+      </v-container>
+    </section>
+
+  </div>
 </template>
 
 <script setup>
@@ -39,7 +31,7 @@ import EventListFeatured from "@/components/events/EventListFeatured.vue";
 import CardHorizontal from "@/components/events/CardHorizontal.vue";
 import EventCalendarDividerToolbar from "@/components/events/EventCalendarDividerToolbar.vue";
 import { useEventsStore } from "@/store/events";
-
+import ButtonLoadMoreEvents from "@/components/events/ButtonLoadMoreEvents.vue";
 // Props with validation
 const props = defineProps({
   country: {
@@ -61,6 +53,8 @@ const eventsStore = useEventsStore();
 const {
   nextEvents,
   events,
+  totalCount,
+  hasNextPage,
   selectedGenres,
   selectedCategories,
   selectedDateRange,
@@ -73,9 +67,13 @@ const isLoading = ref(false);
 watch(
   () => route.query.genre,
   (newValue) => {
-    selectedGenres.value = Array.isArray(newValue)
+    const genresFinal = Array.isArray(newValue)
       ? newValue
       : [newValue].filter(Boolean);
+    selectedGenres.value = genresFinal
+    if (genresFinal && genresFinal.length > 0) {
+      eventsStore.fetchEvents({ country: country, "region.id": region, "genres[any]": genresFinal })
+    }
   }
 );
 
@@ -97,33 +95,35 @@ watch(
   }
 );
 
+
 // Initialize component
 onMounted(async () => {
   isLoading.value = true;
-
+  const query = {};
   // Initialize filters from URL
   if (route.query.genre) {
-    selectedGenres.value = Array.isArray(route.query.genre)
+    const genresToSearch = Array.isArray(route.query.genre)
       ? route.query.genre
       : [route.query.genre];
+    selectedGenres.value = genresToSearch
+    query["genres[any]"] = genresToSearch;
   }
   if (route.query.categories) {
-    selectedCategories.value = Array.isArray(route.query.categories)
+    const categoriesToSearch = Array.isArray(route.query.categories)
       ? route.query.categories
       : [route.query.categories];
+    selectedCategories.value = categoriesToSearch;
+    query["categories[any]"] = categoriesToSearch;
   }
-  if (route.query.dateRange) {
-    selectedDateRange.value = Array.isArray(route.query.dateRange)
-      ? route.query.dateRange
-      : [route.query.dateRange];
-  }
+  // if (route.query.dateRange) {
+  //   selectedDateRange.value = Array.isArray(route.query.dateRange)
+  //     ? route.query.dateRange
+  //     : [route.query.dateRange];
+  // }
 
   try {
     // Fetch events from the store
-    await eventsStore.getEventsByRegion(
-      props.country.toUpperCase(),
-      props.region
-    );
+    await eventsStore.fetchEvents({ country: route.params.country || "BR", "region.id": route.params.region || "riodejaneiro", ...query });
   } catch (error) {
     console.error("Failed to fetch events:", error);
   } finally {
@@ -149,7 +149,7 @@ onMounted(async () => {
   outline: none;
 }
 
-.events-list > *:focus-visible {
+.events-list>*:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }

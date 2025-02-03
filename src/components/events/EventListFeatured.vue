@@ -14,13 +14,9 @@
         <v-col cols="12">
           <div class="d-flex align-center justify-space-between mb-2 mb-sm-4">
             <p class="text-caption text-grey-darken-1">
-              {{ totalUpcomingEvents }} próximos eventos
+              {{ totalDocsCount }} próximos eventos
             </p>
-            <p
-              @click="removeFilters"
-              v-if="selectedGenres?.length"
-              class="text-caption"
-            >
+            <p @click="removeFilters" v-if="selectedGenres?.length" class="text-caption">
               <span class="mr-1">X</span> Remover filtros
             </p>
           </div>
@@ -34,15 +30,8 @@
       <v-row>
         <v-col cols="12">
           <v-slide-group :center-active="true">
-            <v-slide-group-item
-              v-for="event in responsiveEvents"
-              :key="event.id"
-              v-slot="{ isSelected, toggle }"
-            >
-              <event-card-vertical
-                class="mr-1"
-                :event="event"
-              ></event-card-vertical>
+            <v-slide-group-item v-for="event in responsiveEvents" :key="event.id" v-slot="{ isSelected, toggle }">
+              <event-card-vertical class="mr-1" :event="event"></event-card-vertical>
             </v-slide-group-item>
           </v-slide-group>
         </v-col>
@@ -73,6 +62,7 @@ const {
   featuredEvents,
   selectedGenres,
   filteredEvents,
+  totalDocsCount,
   getTotalUpcomingEvents,
 } = storeToRefs(eventsStore);
 

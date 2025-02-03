@@ -2,11 +2,7 @@
   <!-- Tabs for event categories -->
   <section class="bg-black" v-if="true" aria-label="Event Categories">
     <v-container>
-      <event-category-tabs
-        v-model="selectedCategory"
-        role="tablist"
-        aria-label="Event Categories"
-      />
+      <event-category-tabs v-model="selectedCategory" role="tablist" aria-label="Event Categories" />
     </v-container>
     <v-divider aria-hidden="true"></v-divider>
   </section>
@@ -16,13 +12,8 @@
     <v-container>
       <v-row no-gutters class="flex-column gap-2">
         <v-col cols="12">
-          <v-btn
-            @click="openWhatsappGroups"
-            block
-            variant="outlined"
-            class="grey--text"
-            aria-label="Open WhatsApp Groups"
-          >
+          <v-btn @click="openWhatsappGroups" block variant="outlined" class="grey--text"
+            aria-label="Open WhatsApp Groups">
             <v-icon start class="mr-2 grey--text" aria-hidden="true">
               mdi-account-group
             </v-icon>
@@ -31,13 +22,8 @@
         </v-col>
 
         <v-col cols="12">
-          <v-btn
-            @click="openDirectContact"
-            block
-            variant="outlined"
-            class="grey--text"
-            aria-label="Contact for Events, Birthdays, Pix, or Questions"
-          >
+          <v-btn @click="openDirectContact" block variant="outlined" class="grey--text"
+            aria-label="Contact for Events, Birthdays, Pix, or Questions">
             <v-icon start class="mr-2 grey--text" aria-hidden="true">
               mdi-message-text
             </v-icon>
@@ -46,14 +32,8 @@
         </v-col>
 
         <v-col cols="12">
-          <v-btn
-            v-if="Object.keys(filteredEvents || {}).length !== 0"
-            @click="shareList"
-            block
-            variant="outlined"
-            class="grey--text"
-            aria-label="Share Event List via WhatsApp"
-          >
+          <v-btn v-if="Object.keys(filteredEvents || {}).length !== 0" @click="shareList" block variant="outlined"
+            class="grey--text" aria-label="Share Event List via WhatsApp">
             <v-icon start class="mr-2 grey--text" aria-hidden="true">
               mdi-whatsapp
             </v-icon>
@@ -78,31 +58,17 @@
         </v-row>
       </template>
       <template v-else>
-        <v-row
-          v-for="(events, day) in filteredEvents"
-          :key="day"
-          :aria-label="`Events for ${day}`"
-        >
+        <v-row v-for="(events, day) in filteredEvents" :key="day" :aria-label="`Events for ${day}`">
           <v-col cols="12" class="py-0">
             <event-calendar-divider-toolbar :day="day" />
-            <card-horizontal
-              v-for="(event, index) in events.slice(0, eventDisplayLimits[selectedCategory])"
-              :key="event.id"
-              :event="event"
-              :aria-label="`Event ${index + 1} of ${events.length}`"
-            />
+            <card-horizontal v-for="(event, index) in events.slice(0, eventDisplayLimits[selectedCategory])"
+              :key="event.id" :event="event" :aria-label="`Event ${index + 1} of ${events.length}`" />
           </v-col>
         </v-row>
-        <v-row v-if="hasMoreEventsInCurrentTab" class="text-center">
+        <v-row v-if="hasNextPage" class="text-center">
           <v-col cols="12">
-            <v-btn
-              @click="loadMoreEvents"
-              rounded="pill"
-              variant="outlined"
-              color="primary"
-              class="px-6"
-              aria-label="Load More Events"
-            >
+            <v-btn @click="loadMoreEvents" rounded="pill" variant="outlined" color="primary" class="px-6"
+              aria-label="Load More Events">
               <span>mais eventos</span>
             </v-btn>
           </v-col>
@@ -112,22 +78,12 @@
   </section>
 
   <!-- Bottom Navigation for Mobile -->
-  <v-bottom-navigation
-    v-model="activeNav"
-    grow
-    class="d-md-none"
-    color="primary"
-    fixed
-    role="navigation"
-    aria-label="Mobile Navigation"
-  >
+  <v-bottom-navigation v-model="activeNav" grow class="d-md-none" color="primary" fixed role="navigation"
+    aria-label="Mobile Navigation">
     <!-- Events Tab - Primary Focus -->
-    <v-btn
-      @click="toggleEventView"
-      :class="{ 'v-btn--active': activeNav === (showingTodayEvents ? 'today' : 'all') }"
+    <v-btn @click="toggleEventView" :class="{ 'v-btn--active': activeNav === (showingTodayEvents ? 'today' : 'all') }"
       :aria-pressed="activeNav === (showingTodayEvents ? 'today' : 'all')"
-      :aria-label="showingTodayEvents ? 'View Today\'s Events' : 'View All Events'"
-    >
+      :aria-label="showingTodayEvents ? 'View Today\'s Events' : 'View All Events'">
       <v-icon aria-hidden="true">
         {{ showingTodayEvents ? "mdi-calendar" : "mdi-calendar-today" }}
       </v-icon>
@@ -153,12 +109,7 @@
     </v-btn>
   </v-bottom-navigation>
 
-  <WhatsappGroupsModal
-    ref="whatsappGroupsModal"
-    :groups="whatsappGroups"
-    role="dialog"
-    aria-label="WhatsApp Groups"
-  />
+  <WhatsappGroupsModal ref="whatsappGroupsModal" :groups="whatsappGroups" role="dialog" aria-label="WhatsApp Groups" />
 </template>
 
 <script setup>
@@ -172,11 +123,11 @@ import EventCategoryTabs from "@/components/events/EventCategoryTabs.vue";
 import { useEventsStore } from "@/store/events";
 
 // Props (if any)
-const { events } = defineProps(["events"]);
+const { id } = defineProps(["id"]);
 
 // Store setup
 const eventsStore = useEventsStore();
-const { nextEvents } = storeToRefs(eventsStore);
+const { nextEvents, events, hasNextPage } = storeToRefs(eventsStore);
 
 // Get promoter data from the store (loaded in the parent component)
 const promotersStore = usePromotersStore();
@@ -252,7 +203,8 @@ const sortedEvents = computed(() => sortEventsByDateTime(filteredEvents.value));
 // Lifecycle hooks
 onMounted(async () => {
   try {
-    await fetchEventsByPromoterId(promoter.id);
+    console.log({ id })
+    await fetchEventsByPromoterId(id);
   } catch (error) {
     console.error("Failed to fetch events:", error);
   }
@@ -276,12 +228,15 @@ watch(selectedCategory, (newCategory) => {
 // Actions
 
 async function fetchEventsByPromoterId(promoterId) {
+  console.log({ promoterId })
   await eventsStore.getEventsByPromoterId(promoterId);
 }
 
-function loadMoreEvents() {
+async function loadMoreEvents() {
+  console.log("loadingMoreEvents")
+  await eventsStore.fetchNextPage();
   // Increase the visible count for the current category by 5.
-  eventDisplayLimits.value[selectedCategory.value] += 5;
+  // eventDisplayLimits.value[selectedCategory.value] += 5;
 }
 
 function openWhatsappGroups() {
@@ -372,9 +327,9 @@ function formatSingleEvent(date, event) {
 function formatDate(date) {
   return date
     ? new Date(date).toLocaleDateString("pt-BR", {
-        day: "2-digit",
-        month: "2-digit",
-      })
+      day: "2-digit",
+      month: "2-digit",
+    })
     : "";
 }
 
@@ -390,8 +345,8 @@ function formatLocation(location) {
   return region === "Rio de Janeiro"
     ? "RJ"
     : region?.includes("São Paulo")
-    ? "SP"
-    : region;
+      ? "SP"
+      : region;
 }
 
 function formatLink(links) {

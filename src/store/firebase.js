@@ -9,9 +9,12 @@ import {
   getDoc,
   getDocs,
   increment,
+  limit,
+  orderBy,
   query,
   serverTimestamp,
   setDoc,
+  startAfter,
   updateDoc,
   where,
 } from "firebase/firestore";
@@ -469,11 +472,20 @@ export const useFirebaseStore = defineStore("firebase", () => {
 
   // GET COLLECTION
   async function getCollection(data) {
-    const items = [];
+    console.log("getCollection", data);
     const queries = Object.entries(data.query);
+    const pageSize = data.limit || 2;
+    const order = data.orderBy || "created_at";
+    const direction = data.direction || "desc";
 
     const queryItems = queries.map((q) => {
-      const operator = /\[gt\]/.test(q[0])
+      const operator = /\[contains\]/.test(q[0])
+        ? "array-contains"
+        : /\[in\]/.test(q[0])
+        ? "in"
+        : /\[any\]/.test(q[0])
+        ? "array-contains-any"
+        : /\[gt\]/.test(q[0])
         ? ">"
         : /\[gte\]/.test(q[0])
         ? ">="
@@ -486,7 +498,10 @@ export const useFirebaseStore = defineStore("firebase", () => {
         .replace(/\[gte\]/, "")
         .replace(/\[lte\]/, "")
         .replace(/\[gt\]/, "")
-        .replace(/\[lt\]/, "");
+        .replace(/\[lt\]/, "")
+        .replace(/\[any\]/, "")
+        .replace(/\[in\]/, "")
+        .replace(/\[contains\]/, "");
       const value = Number(q[1]) ? Number(q[1]) : q[1];
 
       return where(key, operator, value);
@@ -495,32 +510,62 @@ export const useFirebaseStore = defineStore("firebase", () => {
     try {
       if (data.collection) {
         // const timestamp = Timestamp.fromDate(new Date('2023-11-25'));
-
-        //
         // const q = query(collection(firestore, "products"), where("created_at", ">", timestamp));
-        let q;
-        if (queryItems.length > 0) {
-          q = query(collection(firestore, data.collection), ...queryItems);
-        } else {
-          q = query(collection(firestore, data.collection));
-        }
-        const querySnapshot = await getDocs(q);
+        let q = query(
+          collection(firestore, data.collection),
+          ...queryItems,
+          limit(pageSize),
+          orderBy(order, direction)
+        );
 
-        querySnapshot.forEach((document) => {
-          items.push(document.data());
-        });
-        // Swal.fire({
-        //     title: "Documents fetched",
-        //     text: "number of documents: " + items.length,
-        //     icon: "success"
-        // });
+        const querySnapshot = await getDocs(q);
+        const countSnapshot = await getCountFromServer(
+          query(collection(firestore, data.collection), ...queryItems)
+        );
+        const totalCount = countSnapshot.data().count;
+
+        const items = querySnapshot.docs.map((document) => document.data());
+        let lastDoc = querySnapshot.docs[pageSize - 1];
+        let next = null;
+        if (items.length === pageSize) {
+          next = async () => {
+            console.log({ lastDoc });
+            q = query(
+              collection(firestore, data.collection),
+              ...queryItems,
+              limit(pageSize),
+              orderBy(order, direction),
+              startAfter(lastDoc)
+            );
+
+            const querySnapshot = await getDocs(q);
+            const items = querySnapshot.docs.map((document) => document.data());
+            lastDoc = querySnapshot.docs[pageSize - 1];
+            if (items.length < pageSize || items.length === 0) {
+              next = null;
+            }
+            return {
+              ok: true,
+              data: items,
+              next: next,
+              last: lastDoc,
+              totalCount: totalCount,
+            };
+          };
+        } else {
+          next = null;
+        }
+
         return {
           ok: true,
           data: items,
+          next: next,
+          last: lastDoc,
+          totalCount: totalCount,
         };
       }
     } catch (error) {
-      notifyError();
+      notifyError(error);
 
       return {
         ok: false,
