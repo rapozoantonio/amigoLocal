@@ -10,7 +10,7 @@
       v-for="tab in tabs"
       :key="tab.value"
       :value="tab.value"
-      :to="useRouting ? tab.to : undefined"
+      :to="tab.to"
       class="text-subtitle-2 px-0 mr-4 w-min-0"
       exact
       variant="plain"
@@ -31,6 +31,10 @@ const props = defineProps({
     default: undefined,
   },
   useRouting: {
+    type: Boolean,
+    default: false,
+  },
+  showJustCountry: {
     type: Boolean,
     default: false,
   },
@@ -76,25 +80,23 @@ const defaultTabs = computed(() => [
   },
 ]);
 
-const localTabs = computed(() => [
-  {
-    value: "proximos",
-    label: "Todos",
-  },
+const localTabs = [
+  { value: "nextevents", label: "Todos", to: "/eventsAll/BR" },
+  { value: "foryou", label: "Pra Você", to: "/eventsAll/BR/foryou" },
   {
     value: "carnaval",
     label: "Carnaval",
+    to: "/eventsAll/BR/carnaval",
   },
-  {
-    value: "reveillon",
-    label: "Reveillon",
-  },
-]);
+  { value: "reveillon", label: "Reveillon", to: "/eventsAll/BR/reveillon" },
+];
 
 const tabs = computed(() => {
-  if (props.customTabs.length > 0) {
-    return props.customTabs;
+  console.log({ showJustCountry: props.showJustCountry });
+  if (!props.showJustCountry) {
+    return props.useRouting ? defaultTabs.value : localTabs;
+  } else {
+    return localTabs;
   }
-  return props.useRouting ? defaultTabs.value : localTabs.value;
 });
 </script>

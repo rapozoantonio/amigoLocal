@@ -1,15 +1,12 @@
-import {
-  computed,
-  ref,
-} from 'vue';
+import { computed, ref } from "vue";
 
-import { defineStore } from 'pinia';
+import { defineStore } from "pinia";
 
-import $countries from '@/assets/countries';
-import $genres from '@/assets/genres';
-import $regions from '@/assets/regions';
+import $countries from "@/assets/countries";
+import $genres from "@/assets/genres";
+import $regions from "@/assets/regions";
 
-import { useFirebaseStore } from './firebase';
+import { useFirebaseStore } from "./firebase";
 
 export const useConfigStore = defineStore("config", () => {
   const eventConfig = ref(null);
@@ -24,11 +21,8 @@ export const useConfigStore = defineStore("config", () => {
       const response = await firebaseStore.getDocumentById("config", "event");
       if (response.ok) {
         eventConfig.value = response.data;
-        
       }
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 
   async function saveEventConfig() {
@@ -39,11 +33,8 @@ export const useConfigStore = defineStore("config", () => {
         eventConfig.value
       );
       if (response.ok) {
-        
       }
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   }
 
   async function init() {
@@ -63,6 +54,7 @@ export const useConfigStore = defineStore("config", () => {
   init();
 
   return {
+    allCountries,
     regionById,
     getEventConfig,
     eventConfig,

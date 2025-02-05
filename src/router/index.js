@@ -28,6 +28,37 @@ const routes = [
         component: () => import("@/views/events/RegionSelector.vue"),
       },
       {
+        path: "eventsAll/:country",
+        props: true,
+        component: () => import("@/views/events/EventsPageAll.vue"),
+        children: [
+          {
+            path: "",
+            name: "eventsAll",
+            props: true,
+            component: () => import("@/views/events/EventListAll.vue"),
+          },
+          {
+            path: "carnaval",
+            name: "eventsAll-carnaval",
+            props: true,
+            component: () => import("@/views/events/EventListAllCarnaval.vue"),
+          },
+          {
+            path: "reveillon",
+            name: "eventsAll-reveillon",
+            props: true,
+            component: () => import("@/views/events/EventListAllReveillon.vue"),
+          },
+          {
+            path: "foryou",
+            name: "eventsAll-foryou",
+            props: true,
+            component: () => import("@/views/events/EventListAllForyou.vue"),
+          },
+        ],
+      },
+      {
         path: "events/:country/:region",
         props: true,
         component: () => import("@/views/events/EventsPage.vue"),
