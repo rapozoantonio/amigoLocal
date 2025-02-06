@@ -15,7 +15,8 @@ import { defineStore } from "pinia";
 import Swal from "sweetalert2";
 import { firestore } from "@/plugins/firebase";
 import { useFirebaseStore } from "./firebase";
-const firebaseStore = useFirebaseStore();
+import { useRoute, useRouter } from "vue-router";
+
 // Cache configuration
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 const eventCache = new Map();
@@ -43,7 +44,9 @@ export const useEventsStore = defineStore("events", () => {
   const selectedGenres = ref([]);
   const selectedCategories = ref([]);
   const selectedDateRange = ref([]); // Expecting an array with two date strings [start, end]
-
+  const firebaseStore = useFirebaseStore();
+  const route = useRoute();
+  const router = useRouter();
   // =========================
   // Loading State Management
   // =========================
@@ -297,17 +300,56 @@ export const useEventsStore = defineStore("events", () => {
   // =========================
   // Main Query Methods
   // =========================
+
+  function getRouteQueryParams() {
+    const q = {};
+    console.log("routeparmas", route);
+    // Initialize filters from URL
+    if (route.query.genre) {
+      const genresToSearch = Array.isArray(route.query.genre)
+        ? route.query.genre
+        : [route.query.genre];
+      selectedGenres.value = genresToSearch;
+      if (genresToSearch.length > 0) {
+        console.log({ genresToSearch });
+        q["genres[any]"] = genresToSearch;
+      }
+    }
+    if (route.query.categories) {
+      const categoriesToSearch = Array.isArray(route.query.categories)
+        ? route.query.categories
+        : [route.query.categories];
+      selectedCategories.value = categoriesToSearch;
+      if (categoriesToSearch.length > 0) {
+        q["categories[any]"] = categoriesToSearch;
+      }
+    }
+    if (route.query.startDate) {
+      q["startDate[gte]"] = route.query.startDate;
+    }
+    if (route.query.endDate) {
+      q["startDate[lte]"] = route.query.endDate;
+    }
+
+    console.log({ q });
+    return q;
+  }
+
   async function fetchEvents(filters) {
     const operationId = "getEvents";
     setLoading(operationId, true);
     try {
+      const today = new Date().toISOString().split("T")[0];
+      if (!filters.startDate) {
+        filters["startDate[gte]"] = today;
+      }
       const { data, ok, lastDoc, next, totalCount } =
         await firebaseStore.getCollection({
           collection: "events",
           query: filters,
           orderBy: "startDate",
         });
-      console.log("fetch events after getCollection", data, ok, next);
+      // console.log("fetch events after getCollection", data, ok, next);
       if (ok) {
         console.log("ok", data);
         events.value = data;
@@ -607,6 +649,7 @@ export const useEventsStore = defineStore("events", () => {
     fetchEvents,
     fetchNextPage,
     hasNextPage,
+    getRouteQueryParams,
     // Computed properties
     featuredEvents,
     nextEvents,

@@ -1,40 +1,18 @@
 <template>
   <div class="d-inline-flex">
-    <v-btn
-      :color="selectedCategories?.length > 0 ? '' : ''"
-      :variant="selectedCategories?.length > 0 ? 'flat' : 'outlined'"
-      rounded="pill"
-      class="text-caption px-6"
-      @click="openSelector"
-      >Tipos de Evento
-      <span class="ml-1" v-if="selectedCategories?.length > 0"
-        >({{ selectedCategories.length }})</span
-      ></v-btn
-    >
-    <v-navigation-drawer
-      class="navigation"
-      floating
-      temporary
-      width="350"
-      location="right"
-      v-model="typesSelectionOpened"
-    >
+    <v-btn :color="selectedCategories?.length > 0 ? '' : ''"
+      :variant="selectedCategories?.length > 0 ? 'flat' : 'outlined'" rounded="pill" class="text-caption px-6"
+      @click="openSelector">Tipos de Evento
+      <span class="ml-1" v-if="selectedCategories?.length > 0">({{ selectedCategories.length }})</span></v-btn>
+    <v-navigation-drawer class="navigation" floating temporary width="350" location="right"
+      v-model="typesSelectionOpened">
       <v-item-group multiple v-model="selectedeventTypesLocal">
         <p class="text-caption my-4 pl-4">
           Tipos de Eventos <span class="ml-2">({{ eventTypes.length }})</span>
         </p>
 
-        <v-item
-          v-for="type in eventTypes"
-          :key="type"
-          :value="type"
-          v-slot="{ isSelected, toggle }"
-        >
-          <v-list-item
-            class="py-1"
-            :class="[isSelected ? 'text-primary' : '']"
-            @click="toggle"
-          >
+        <v-item v-for="type in eventTypes" :key="type" :value="type" v-slot="{ isSelected, toggle }">
+          <v-list-item class="py-1" :class="[isSelected ? 'text-primary' : '']" @click="toggle">
             <v-list-item-title class="text-h6 font-weight-semibold">
               {{ type }}
             </v-list-item-title>
@@ -48,19 +26,11 @@
       </v-item-group>
 
       <template v-slot:append>
-        <div
-          class="d-flex align-center justify-space-between mb-4 mt-4 pt-4 pb-1 px-4"
-        >
-          <v-btn
-            variant="outlined"
-            rounded="pill"
-            @click="restabelecer"
-            :disabled="!selectedeventTypesLocal.length"
-            >Resetar</v-btn
-          >
-          <v-btn color="primary" variant="flat" rounded="pill" @click="buscar"
-            >Mostrar {{ filterAmount }} resultados</v-btn
-          >
+        <div class="d-flex align-center justify-space-between mb-4 mt-4 pt-4 pb-1 px-4">
+          <v-btn variant="outlined" rounded="pill" @click="restabelecer"
+            :disabled="!selectedeventTypesLocal || !selectedeventTypesLocal.length">Resetar</v-btn>
+          <v-btn color="primary" variant="flat" rounded="pill" @click="buscar">Mostrar {{ filterAmount }}
+            resultados</v-btn>
         </div>
       </template>
     </v-navigation-drawer>
@@ -105,7 +75,7 @@ function openSelector() {
 function buscar() {
   typesSelectionOpened.value = false;
   router.push({
-    query: { ...route.query, categories: selectedeventTypesLocal.value },
+    query: { categories: selectedeventTypesLocal.value },
   });
 }
 
