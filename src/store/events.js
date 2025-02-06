@@ -340,7 +340,7 @@ export const useEventsStore = defineStore("events", () => {
     setLoading(operationId, true);
     try {
       const today = new Date().toISOString().split("T")[0];
-      if (!filters.startDate) {
+      if (!filters["startDate[gte]"]) {
         filters["startDate[gte]"] = today;
       }
       const { data, ok, lastDoc, next, totalCount } =
