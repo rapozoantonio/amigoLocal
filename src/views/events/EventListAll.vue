@@ -44,7 +44,7 @@ import EventCalendarDividerToolbar from "@/components/events/EventCalendarDivide
 import { useEventsStore } from "@/store/events";
 import ButtonLoadMoreEvents from "@/components/events/ButtonLoadMoreEvents.vue";
 // Props with validation
-const props = defineProps({
+const { country, region } = defineProps({
   country: {
     type: String,
     required: true,
@@ -75,90 +75,57 @@ const {
 const isLoading = ref(false);
 
 // Watch for query parameter changes
-watch(
-  () => route.query.genre,
-  (newValue) => {
-    const genresFinal = Array.isArray(newValue)
-      ? newValue
-      : [newValue].filter(Boolean);
-    selectedGenres.value = genresFinal;
-    if (genresFinal && genresFinal.length > 0) {
-      eventsStore.fetchEvents({
-        country: country,
-        "region.id": region,
-        "genres[any]": genresFinal,
-      });
-    }
-  }
-);
 
-watch(
-  () => route.query.categories,
-  (newValue) => {
-    selectedCategories.value = Array.isArray(newValue)
-      ? newValue
-      : [newValue].filter(Boolean);
-  }
-);
+// watch(
+//   () => route.query.genre,
+//   (newValue) => {
+//     console.log("watch genre", newValue)
+//     const genresFinal = Array.isArray(newValue)
+//       ? newValue
+//       : [newValue].filter(Boolean);
+//     selectedGenres.value = genresFinal
+//     if (genresFinal && genresFinal.length > 0) {
+//       eventsStore.fetchEvents({ country: country, "region.id": region, "genres[any]": genresFinal })
+//     }
+//   }
+// );
 
-watch(
-  () => route.query.dateRange,
-  (newValue) => {
-    selectedDateRange.value = Array.isArray(newValue)
-      ? newValue
-      : [newValue].filter(Boolean);
-  }
-);
+// watch(
+//   () => route.query.categories,
+//   (newValue) => {
+//     selectedCategories.value = Array.isArray(newValue)
+//       ? newValue
+//       : [newValue].filter(Boolean);
+//   }
+// );
+
+// watch(
+//   () => route.query.dateRange,
+//   (newValue) => {
+//     selectedDateRange.value = Array.isArray(newValue)
+//       ? newValue
+//       : [newValue].filter(Boolean);
+//   }
+// );
+
 
 // Initialize component
 onMounted(async () => {
   isLoading.value = true;
-  const query = {};
-  // Initialize filters from URL
-  if (route.query.genre) {
-    const genresToSearch = Array.isArray(route.query.genre)
-      ? route.query.genre
-      : [route.query.genre];
-    selectedGenres.value = genresToSearch;
-    query["genres[any]"] = genresToSearch;
-  }
-  if (route.query.categories) {
-    const categoriesToSearch = Array.isArray(route.query.categories)
-      ? route.query.categories
-      : [route.query.categories];
-    selectedCategories.value = categoriesToSearch;
-    query["categories[any]"] = categoriesToSearch;
-  }
-  // if (route.query.dateRange) {
-  //   selectedDateRange.value = Array.isArray(route.query.dateRange)
-  //     ? route.query.dateRange
-  //     : [route.query.dateRange];
-  // }
+  try {
+    // Fetch events from the store
+    const query = eventsStore.getRouteQueryParams();
+    if(region) {
+        await eventsStore.fetchEvents({ country: country || "BR", "region.id": region || "riodejaneiro", ...query });
+    }
+    else {
+      await eventsStore.fetchEvents({ country: country || "BR",  ...query });
+    }
+  } catch (error) {
+    console.error("Failed to fetch events:", error);
+  } finally {
+    isLoading.value = false;
 
-  // Fetch events from the store
-  if (props.region) {
-    try {
-      await eventsStore.fetchEvents({
-        country: route.params.country || "BR",
-        "region.id": route.params.region || "riodejaneiro",
-        ...query,
-      });
-    } catch (error) {
-      console.error("Failed to fetch events:", error);
-    } finally {
-      isLoading.value = false;
-    }
-  } else {
-    try {
-      await eventsStore.fetchEvents({
-        country: route.params.country || "BR",
-        ...query,
-      });
-    } catch (error) {
-      console.error("Failed to fetch events:", error);
-    } finally {
-      isLoading.value = false;
-    }
   }
 });
 </script>

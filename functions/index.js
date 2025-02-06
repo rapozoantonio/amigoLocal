@@ -103,8 +103,6 @@ exports.updateRole = functions.https.onCall(async ({ uid, customClaims }) => {
   try {
     
     await auth.setCustomUserClaims(uid, customClaims);
-    
-
     await admin
       .firestore()
       .collection("users")
@@ -126,3 +124,27 @@ exports.updateRole = functions.https.onCall(async ({ uid, customClaims }) => {
     
 //   }
 // })
+
+
+exports.updateGenresCount = functions.firestore
+  .document('events/{eventId}')
+  .onWrite(async (change, context) => {
+    const isDeleted = !change.after.exists;
+    const document = change.after.exists ? change.after.data() : change.before.data();
+    const genres = document.genres;
+    const region = document.region.id;
+    const payload = {
+      genresCount: {}
+    };
+    payload.genresCount[region] = {};
+    const newCount = isDeleted ? -1 : 1
+
+    genres.forEach(genre => {
+      payload.genresCount[region][genre] = admin.firestore.FieldValue.increment(newCount);
+    })
+    await admin
+    .firestore()
+    .collection("meta")
+    .doc("events")
+    .update(payload, { merge: true });
+  });
