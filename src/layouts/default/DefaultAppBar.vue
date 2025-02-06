@@ -4,11 +4,7 @@
     <v-navigation-drawer v-if="xs" temporary v-model="opened">
       <v-list>
         <template v-for="item in navigationItems" :key="item.title">
-          <v-list-item
-            :to="item.to"
-            @click="handleNavigation(item)"
-            link
-          >
+          <v-list-item :to="item.to" @click="handleNavigation(item)" link>
             <v-list-item-title>{{ item.title }}</v-list-item-title>
           </v-list-item>
         </template>
@@ -47,9 +43,7 @@
 
                 <v-list>
                   <template v-for="item in navigationItems" :key="item.title">
-                    <v-list-item
-                      @click="handleNavigation(item)"
-                    >
+                    <v-list-item @click="handleNavigation(item)">
                       <v-list-item-title>{{ item.title }}</v-list-item-title>
                     </v-list-item>
                   </template>
@@ -83,41 +77,41 @@ const { xs } = useDisplay();
 const opened = ref(false);
 
 const navigationItems = ref([
-  { 
-    title: "Todos os Eventos", 
+  {
+    title: "Todos os Eventos",
     to: "/select-region",
-    type: "select-region"
+    type: "select-region",
   },
   {
     title: "Eventos Rio de Janeiro",
     to: "/events/BR/riodejaneiro",
-    type: "events"
+    type: "events",
   },
-  { 
-    title: "Eventos São Paulo", 
+  {
+    title: "Eventos São Paulo",
     to: "/events/BR/saopaulo",
-    type: "events"
+    type: "events",
   },
-  { 
-    title: "Carnaval", 
-    name: "events-carnaval",
-    type: "named"
+  {
+    title: "Carnaval",
+    to: "/eventsAll/BR/carnaval",
+    type: "eventsAll",
   },
-  { 
-    title: "Reveillon", 
-    name: "events-reveillon",
-    type: "named"
+  {
+    title: "Reveillon",
+    to: "/eventsAll/BR/reveillon",
+    type: "eventsAll",
   },
 ]);
 
 const handleNavigation = (item) => {
   opened.value = false;
-  
-  if (item.type === 'select-region') {
-    router.push('/select-region');
-  } else if (item.type === 'events') {
+
+  if (item.type === "select-region") {
+    router.push("/select-region");
+  } else if (item.type === "events") {
     router.push(item.to);
-  } else if (item.type === 'named') {
+  } else if (item.type === "named") {
     router.push({ name: item.name });
   }
 };

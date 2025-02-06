@@ -6,20 +6,31 @@
         <template v-if="nextEvents && Object.keys(nextEvents).length > 0">
           <v-row v-for="(events, day) in nextEvents" :key="day" class="ma-0">
             <v-col cols="12" class="pa-0 pa-sm-2">
-              <event-calendar-divider-toolbar :day="day"
-                :aria-label="`Events for ${day}`"></event-calendar-divider-toolbar>
-              <div class="events-list" role="feed" :aria-label="`List of events for ${day}`">
-                <card-horizontal v-for="(event, index) in events" :key="event.id" :event="event"
-                  :displayPromoterCode="true" class="mb-2" :aria-setsize="events.length" :aria-posinset="index + 1" />
+              <event-calendar-divider-toolbar
+                :day="day"
+                :aria-label="`Events for ${day}`"
+              ></event-calendar-divider-toolbar>
+              <div
+                class="events-list"
+                role="feed"
+                :aria-label="`List of events for ${day}`"
+              >
+                <card-horizontal
+                  v-for="(event, index) in events"
+                  :key="event.id"
+                  :event="event"
+                  :displayPromoterCode="true"
+                  class="mb-2"
+                  :aria-setsize="events.length"
+                  :aria-posinset="index + 1"
+                />
               </div>
             </v-col>
           </v-row>
         </template>
         <button-load-more-events></button-load-more-events>
-
       </v-container>
     </section>
-
   </div>
 </template>
 
@@ -40,7 +51,7 @@ const { country, region } = defineProps({
   },
   region: {
     type: String,
-    required: true,
+    required: false,
   },
 });
 
@@ -64,6 +75,7 @@ const {
 const isLoading = ref(false);
 
 // Watch for query parameter changes
+
 // watch(
 //   () => route.query.genre,
 //   (newValue) => {
@@ -103,11 +115,17 @@ onMounted(async () => {
   try {
     // Fetch events from the store
     const query = eventsStore.getRouteQueryParams();
-    await eventsStore.fetchEvents({ country: country || "BR", "region.id": region || "riodejaneiro", ...query });
+    if(region) {
+        await eventsStore.fetchEvents({ country: country || "BR", "region.id": region || "riodejaneiro", ...query });
+    }
+    else {
+      await eventsStore.fetchEvents({ country: country || "BR",  ...query });
+    }
   } catch (error) {
     console.error("Failed to fetch events:", error);
   } finally {
     isLoading.value = false;
+
   }
 });
 </script>
@@ -129,7 +147,7 @@ onMounted(async () => {
   outline: none;
 }
 
-.events-list>*:focus-visible {
+.events-list > *:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }

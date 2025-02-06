@@ -3,8 +3,8 @@
     <v-container>
       <v-row>
         <v-col cols="auto">
-          <event-category-tabs use-routing />
-
+          <event-category-tabs v-if="!showJustCountry" use-routing />
+          <event-category-tabs v-else showJustCountry />
         </v-col>
         <v-spacer></v-spacer>
         <v-col>
@@ -26,6 +26,11 @@ import EventListTypeOfEventSelector from "./EventListTypeOfEventSelector.vue";
 
 import { useDisplay } from "vuetify/lib/framework.mjs";
 
+const props = defineProps({
+  showJustCountry: {
+    type: Boolean,
+    default: false,
+  },
+});
 const { name, mdAndDown, lgAndDown } = useDisplay();
-
 </script>
