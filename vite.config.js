@@ -8,16 +8,21 @@ import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
   plugins: [
-    vue({ template: { transformAssetUrls } }),
+    vue({ 
+      template: { transformAssetUrls }
+    }),
     vuetify({
       autoImport: true,
       styles: { configFile: "src/styles/settings.scss" },
     }),
     ViteFonts({
       google: {
-        families: [
-          { name: "Inter", styles: "wght@100;300;400;500;700;900" },
-        ],
+        families: [{ 
+          name: "Inter", 
+          styles: "wght@100;300;400;500;700;900",
+          preconnect: true,
+          display: 'swap'
+        }],
       },
     }),
     VitePWA({
@@ -45,54 +50,78 @@ export default defineConfig({
           },
         ],
       },
-      screenshots: [
-        {
-          src: "/img/screenshots/desktop.png",
-          sizes: "1280x800",
-          type: "image/png",
-          form_factor: "wide",
-        },
-        {
-          src: "/img/screenshots/mobile.png",
-          sizes: "375x812",
-          type: "image/png",
-          form_factor: "narrow",
-        },
-      ],
       workbox: {
         globPatterns: ["**/*.{js,css,html,woff2,ttf,svg,png}"],
-      },
+        runtimeCaching: [{
+          urlPattern: /^https:\/\/api\./,
+          handler: 'NetworkFirst',
+          options: {
+            cacheName: 'api-cache',
+            expiration: {
+              maxEntries: 100,
+              maxAgeSeconds: 86400 // 24 hours
+            }
+          }
+        }]
+      }
     }),
   ],
-  define: { "process.env": {} },
-  resolve: {
-    alias: { "@": fileURLToPath(new URL("./src", import.meta.url)) },
-    extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
+
+  // Define process.env
+  define: {
+    'process.env': {
+      NODE_ENV: JSON.stringify(process.env.NODE_ENV)
+    }
   },
-  server: {
-    port: 3001,
-  },
+
   build: {
+    target: 'es2015',
+    cssCodeSplit: true,
+    reportCompressedSize: true,
+    chunkSizeWarningLimit: 1000,
+    
     rollupOptions: {
       output: {
-        // Create separate chunks for vendor modules to reduce initial payload
-        manualChunks(id) {
-          if (id.includes("node_modules")) {
-            return id
-              .toString()
-              .split("node_modules/")[1]
-              .split("/")[0]
-              .toString();
+        manualChunks: {
+          'vue-vendor': ['vue', 'vue-router', 'vuex'],
+          'ui-vendor': ['vuetify'],
+        },
+        chunkFileNames: 'assets/js/[name]-[hash].js',
+        entryFileNames: 'assets/js/[name]-[hash].js',
+        assetFileNames: ({name}) => {
+          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
+            return 'assets/images/[name]-[hash][extname]';
           }
+          if (/\.css$/.test(name ?? '')) {
+            return 'assets/css/[name]-[hash][extname]';
+          }
+          return 'assets/[name]-[hash][extname]';
         },
       },
     },
-    minify: "terser",
+
+    minify: 'terser',
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
+        pure_funcs: ['console.log', 'console.info', 'console.debug'],
       },
     },
+  },
+
+  optimizeDeps: {
+    include: ['vue', 'vue-router', 'vuex', 'vuetify'],
+  },
+
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL("./src", import.meta.url))
+    },
+    extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
+  },
+
+  server: {
+    port: 3001,
   },
 });

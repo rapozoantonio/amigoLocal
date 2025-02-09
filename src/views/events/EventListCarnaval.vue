@@ -1,6 +1,5 @@
 <template>
   <EventListFeatured />
-
   <div class="d-flex flex-column">
     <!-- Loading State -->
     <v-container v-if="loading?.value">
@@ -31,14 +30,6 @@ const { country, region } = defineProps({
   region: { type: String, required: true },
 });
 
-// // Add computed property for filtered events
-// const filteredEvents = computed(() => {
-//   return (
-//     events.value?.filter((event) => event.categories?.includes("carnaval")) ||
-//     []
-//   );
-// });
-
 watch(
   () => route.query.genre,
   (newValue) => {
@@ -55,10 +46,6 @@ onMounted(async () => {
         : [route.query.genre];
     }
 
-    // Fetch Carnaval events
-    // await eventsStore.getEventsByCategories(country.toUpperCase(), region, [
-    //   "carnaval",
-    // ]);
     await eventsStore.fetchEvents({ country: country.toUpperCase(), "region.id": region, "categories[contains]": "carnaval" })
   } catch (error) {
     console.error("Error fetching Carnaval events:", error);

@@ -1,7 +1,7 @@
 <template>
   <div class="d-flex flex-column" style="height: 100%">
     <event-list-country-select></event-list-country-select>
-    <event-list-toolbar showJustCountry></event-list-toolbar>
+    <event-list-toolbar showJustCountry :routePath="route.fullPath"></event-list-toolbar>
     <div class="w-100" style="height: 0.6px; background-color: gray"></div>
     <router-view :key="route.fullPath"></router-view>
     <event-list-popular-news></event-list-popular-news>

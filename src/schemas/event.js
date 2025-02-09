@@ -15,13 +15,6 @@ export const event = {
         region: "Rio de Janeiro",
         country: "BR",
     },
-    // LOCATION NO DEFINIDA (TO BE ANNOUNCED - TBA)
-    // location: {
-    //     name: "TBA - Bosque da marina",
-    //     region: "Rio de Janeiro",
-    //     country: "BR",
-    // },
-
     description: "Confira os detalhes dessa festa incrivel",
     lineup: "DJ Aventur\nSambinha no quintal\nDJ olex",
 
