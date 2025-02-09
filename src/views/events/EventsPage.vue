@@ -1,6 +1,5 @@
 <template>
   <div class="d-flex flex-column" style="height: 100%">
-    {{ route.fullPath }}
     <event-list-region-select></event-list-region-select>
     <event-list-toolbar :routePath="route.fullPath"></event-list-toolbar>
     <div class="w-100" style="height: 0.6px; background-color: gray"></div>

@@ -9,7 +9,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
 import EventListRegionSelect from "@/components/events/EventListRegionSelect.vue";
 import EventListToolbar from "@/components/events/EventListToolbar.vue";
 import EventListNextEvents from "@/components/events/EventListNextEvents.vue";
@@ -19,13 +18,7 @@ import { useEventsStore } from "@/store/events";
 import { onMounted } from "vue";
 import { useRoute } from "vue-router";
 import { storeToRefs } from "pinia";
-import store from "@/store";
 
-const places = [
-  { name: "Barcelona", flag: "es" },
-  { name: "Madrid", icon: "es" },
-  { name: "Sevilla", icon: "es" },
-];
 
 const eventsStore = useEventsStore();
 const { events } = storeToRefs(eventsStore);

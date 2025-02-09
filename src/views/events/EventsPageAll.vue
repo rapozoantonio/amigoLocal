@@ -12,15 +12,11 @@
 <script setup>
 import EventListCountrySelect from "@/components/events/EventListCountrySelect.vue";
 import EventListLinksFooter from "@/components/events/EventListLinksFooter.vue";
-import EventListNextEvents from "@/components/events/EventListNextEvents.vue";
 import EventListPopularNews from "@/components/events/EventListPopularNews.vue";
 
 // COMPONENTS
-import EventListRegionSelect from "@/components/events/EventListRegionSelect.vue";
 import EventListToolbar from "@/components/events/EventListToolbar.vue";
-import { onMounted, computed } from "vue";
 import { useRoute } from "vue-router";
-import { ref } from "vue";
 
 const route = useRoute();
 </script>
