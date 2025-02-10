@@ -32,7 +32,7 @@
         </v-col>
 
         <v-col cols="12">
-          <v-btn v-if="Object.keys(filteredEvents || {}).length !== 0" @click="shareList" block variant="outlined"
+          <v-btn v-if="Object.keys(nextEvents || {}).length !== 0" @click="shareList" block variant="outlined"
             class="grey--text" aria-label="Share Event List via WhatsApp">
             <v-icon start class="mr-2 grey--text" aria-hidden="true">
               mdi-whatsapp
@@ -48,7 +48,7 @@
   <!-- Content section -->
   <section class="content-section" aria-label="Event Listings">
     <v-container>
-      <template v-if="Object.keys(filteredEvents || {}).length === 0">
+      <template v-if="Object.keys(nextEvents || {}).length === 0">
         <v-row>
           <v-col cols="12" class="text-center py-4">
             <p class="text-h6 grey--text" role="status">
@@ -58,7 +58,7 @@
         </v-row>
       </template>
       <template v-else>
-        <v-row v-for="(events, day) in filteredEvents" :key="day" :aria-label="`Events for ${day}`">
+        <v-row v-for="(events, day) in nextEvents" :key="day" :aria-label="`Events for ${day}`">
           <v-col cols="12" class="py-0">
             <event-calendar-divider-toolbar :day="day" />
             <card-horizontal v-for="(event, index) in events.slice(0, eventDisplayLimits[selectedCategory])"

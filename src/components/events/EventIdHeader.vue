@@ -71,14 +71,14 @@
             </div>
           </v-col>
           <!-- Promoter - only show if exists -->
-          <v-col v-if="event.promoter?.name">
+          <v-col v-if="event.promoter?.code">
             <div class="d-flex align-center text-caption text-grey-lighten-1 mt-1">
               <router-link :to="{
                 name: 'promoter-id',
                 params: { id: event.promoter?.id },
               }">
                 <v-icon size="14" class="mr-1">mdi-ticket</v-icon>
-                {{ event.promoter.name }}
+                {{ event.promoter.code }}
               </router-link>
             </div>
           </v-col>

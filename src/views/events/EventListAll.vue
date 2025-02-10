@@ -116,10 +116,10 @@ onMounted(async () => {
     // Fetch events from the store
     const query = eventsStore.getRouteQueryParams();
     if(region) {
-        await eventsStore.fetchEvents({ country: country || "BR", "region.id": region || "riodejaneiro", ...query });
+        await eventsStore.fetchEvents({ country: country.toUpperCase() || "BR", "region.id": region || "riodejaneiro", ...query });
     }
     else {
-      await eventsStore.fetchEvents({ country: country || "BR",  ...query });
+      await eventsStore.fetchEvents({ country: country.toUpperCase() || "BR",  ...query });
     }
   } catch (error) {
     console.error("Failed to fetch events:", error);

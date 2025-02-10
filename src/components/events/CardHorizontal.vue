@@ -35,7 +35,7 @@
                 </template>
                 <v-icon size="small" color="primaryIcon" aria-hidden="true" class="ml-2">mdi-ticket</v-icon>
                 <span class="text-caption ml-1 text-grey-darken-1">{{
-                  event.promoter?.name
+                  event.promoter?.code
                   }}</span>
               </div>
             </template>
