@@ -18,7 +18,8 @@ import { useFirebaseStore } from "./firebase";
 import { useRoute, useRouter } from "vue-router";
 
 // Cache configuration
-const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+//const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+const CACHE_DURATION = 60 * 1000; // 1 minutes
 const eventCache = new Map();
 
 // Date formatters

@@ -27,6 +27,7 @@ export default {
         {
           id: "image",
           label: "Imagem",
+          imageSize: { width: 90, height: 90 },
           type: "image",
           size: "lg",
         },

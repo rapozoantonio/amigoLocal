@@ -3,7 +3,6 @@
     <template #image>
       <div class="pattern-black-red-bg" aria-hidden="true"></div>
     </template>
-
     <!-- Mobile Layout -->
     <div class="d-md-none">
       <v-container class="pa-2">

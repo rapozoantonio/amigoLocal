@@ -96,4 +96,13 @@ async function savePromoter() {
 .label {
   width: 75px;
 }
+
+:deep(.v-img) {
+  width: 90px !important;
+  height: 90px !important;
+  
+  .v-responsive__sizer {
+    padding-bottom: 90px !important;
+  }
+}
 </style>
