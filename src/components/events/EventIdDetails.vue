@@ -4,16 +4,9 @@
     <div v-if="event.links && event.links.length" class="mb-6">
       <v-card color="surface" variant="outlined" class="pa-4">
         <div class="d-flex flex-column">
-          <v-btn
-            v-for="link in event.links"
-            :key="link.name"
-            :href="!link.url.includes('http') ? 'http://' + link.url : link.url"
-            target="_blank"
-            color="error"
-            block
-            class="link-button mb-3"
-            variant="flat"
-          >
+          <v-btn v-for="link in event.links" :key="link.name"
+            :href="!link.url.includes('http') ? 'http://' + link.url : link.url" target="_blank" color="error" block
+            class="link-button mb-3" variant="flat">
             <v-icon start size="20" class="mr-2">
               {{ getLinkIcon(link.name) }}
             </v-icon>
@@ -40,10 +33,7 @@
     <v-row v-if="hasAdditionalInfo">
       <v-col cols="12" md="6">
         <!-- Detalhes Section: Only if description exists -->
-        <p
-          v-if="event.description"
-          class="text-primary lineup-title font-weight-bold mb-3"
-        >
+        <p v-if="event.description" class="text-primary lineup-title font-weight-bold mb-3">
           Detalhes
         </p>
         <div v-if="event.description" class="event-details mb-6">
@@ -55,12 +45,8 @@
           <!-- Preços: Only if price info exists -->
           <v-col cols="12" v-if="hasPriceInfo">
             <p class="text-caption text-grey mb-2">Preços</p>
-            <p
-              v-for="(value, name) in event.price"
-              :key="name"
-              class="text-subtitle-2 mb-1"
-            >
-              {{ name }}: R$ {{ value }}
+            <p v-for="price in event.price" :key="price.name" class="text-subtitle-2 mb-1">
+              {{ price.name }}: {{ Number(price.value) ? "R$ " + Number(price.value).toFixed(2) : price.value }}
             </p>
           </v-col>
 
@@ -80,14 +66,8 @@
 
       <!-- Event Image -->
       <v-col cols="12" md="6">
-        <LazyImage
-          :src="event.image?.url || event.flyerFront?.url"
-          fallbackSrc="/img/placeholder_event_2.webp"
-          class="rounded"
-          :aspect-ratio="1"
-          rounded
-          :alt="`Event image for ${event.name}`"
-        />
+        <LazyImage :src="event.image?.url || event.flyerFront?.url" fallbackSrc="/img/placeholder_event_2.webp"
+          class="rounded" :aspect-ratio="1" rounded :alt="`Event image for ${event.name}`" />
       </v-col>
     </v-row>
   </v-container>
