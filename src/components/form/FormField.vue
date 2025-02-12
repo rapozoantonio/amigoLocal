@@ -249,7 +249,7 @@ const changed = computed(() => {
 })
 
 
-const { id, size, type, rules, label, labelType, field, items, initial, icon, multiple, text, prepend, readOnly, placeholder, hint, rows } = defineProps({
+const { id, size, type, rules, label, labelType, messages, action, field, items, initial, icon, multiple, text, prepend, readOnly, placeholder, hint, rows } = defineProps({
     // name: {
     //     type: String, required: true,
     // },
@@ -287,6 +287,12 @@ const { id, size, type, rules, label, labelType, field, items, initial, icon, mu
         type: [Boolean, null]
     },
     text: {
+        type: [String, null]
+    },
+    messages: {
+        type: [String, null]
+    },
+    action: {
         type: [String, null]
     },
     prepend: {
@@ -415,6 +421,8 @@ const attrs = computed(() => {
         color: stateColor.value.base || "white",
         placeholder: placeholder,
         hint: hint,
+        messages: messages,
+        action: action
     }
 })
 
