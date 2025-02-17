@@ -330,6 +330,15 @@ const routes = [
         ],
       },
       {
+        path: "events/list",
+        name: "pro-events-list",
+
+        component: () =>
+          import(
+            /* webpackChunkName: "pro-event-create" */ "@/views/pro/event/EventListCRUD.vue"
+          ),
+      },
+      {
         path: "events/create",
         name: "pro-events-create",
 

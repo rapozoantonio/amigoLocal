@@ -1,72 +1,111 @@
 <template>
   <div :aria-label="$props['aria-label']">
-    <!-- Optional top divider -->
-    <v-divider class="mb-2" aria-hidden="true" v-if="showDividerTop"></v-divider>
-
-    <v-card v-if="event" flat color="transparent" tile class="event-card"
-      :to="{ name: 'event-id', params: { id: event.id } }" role="article" :aria-label="`Event: ${event.name}`">
+    <v-card
+      v-if="event"
+      flat
+      tile
+      color="transparent"
+      :class="cardClasses"
+      class="mt-1"
+      :to="{ name: 'event-id', params: { id: event.id } }"
+      role="article"
+      :aria-label="`Event: ${event.name}`"
+    >
       <v-row no-gutters class="align-center">
-        <!-- Event Image -->
-        <v-col :cols="leftCol.cols" :sm="leftCol.sm" class="d-flex justify-center">
-          <LazyImage :src="event.image?.url || event.flyerFront?.url" fallbackSrc="/img/placeholder_event_1.webp"
-            :alt="`Event image for ${event.name}`" height="60" width="96" rounded />
+        <!-- Left Column: Event Image (always left-aligned) -->
+        <v-col :cols="leftCol.cols" :sm="leftCol.sm" class="d-flex align-center justify-start">
+          <LazyImage
+            :src="event.image?.url || event.flyerFront?.url"
+            fallbackSrc="/img/placeholder_event_1.webp"
+            :alt="`Event image for ${event.name}`"
+            height="60"
+            width="96"
+            rounded
+          />
         </v-col>
-        <!-- Event Info -->
-        <v-col :cols="middleCol.cols" :sm="middleCol.sm" :class="middleCol.class">
+
+        <!-- Right Column: Event Details -->
+        <v-col :cols="detailsCol.cols" :sm="detailsCol.sm" class="px-4">
           <!-- Event Name -->
           <h2 :class="eventNameClass">
-            <router-link :to="{ name: 'event-id', params: { id: event.id } }"
-              :aria-label="`View details for ${event.name}`" class="text-decoration-none">
-              {{ event.name }}
+            <router-link
+              :to="{ name: 'event-id', params: { id: event.id } }"
+              :aria-label="`View details for ${event.name}`"
+              class="text-decoration-none"
+            >
+              {{ truncateText(event.name, 27) }}
             </router-link>
           </h2>
 
-          <!-- Conditional Section: Either display promoter code line or event categories -->
-          <div v-if="mode === 'promoter'" class="d-flex flex-wrap gap-1 mt-1" role="group"
-            :aria-label="displayPromoterCode ? 'Promoter' : 'Event categories'">
-            <!-- If displayPromoterCode is true, display a combined line with location and promoter name -->
-            <template v-if="displayPromoterCode">
-              <div class="d-flex align-center">
-                <template v-if="event.location?.name">
-                  <v-icon size="small" color="primaryIcon" aria-hidden="true">mdi-map-marker</v-icon>
-                  <span class="text-caption ml-1 text-grey-darken-1">{{
-                    event.location.name
-                    }}</span>
-                </template>
-                <v-icon size="small" color="primaryIcon" aria-hidden="true" class="ml-2">mdi-ticket</v-icon>
-                <span class="text-caption ml-1 text-grey-darken-1">{{
-                  event.promoter?.code
-                  }}</span>
-              </div>
-            </template>
-            <!-- Otherwise, display event categories -->
-            <template v-else>
-              <v-chip v-for="category in displayedCategories" :key="'cat-' + category" size="x-small" label
-                variant="outlined" color="primaryIcon" class="mr-1 mb-1" role="listitem">
-                {{ category }}
-              </v-chip>
-              <v-chip v-if="hasMoreCategories" size="x-small" label variant="outlined" color="primaryIcon"
-                class="mr-1 mb-1" role="listitem" :aria-label="`Plus ${event.categories.length - 3
-                  } more categories`">
-                +{{ event.categories.length - 3 }}
-              </v-chip>
-            </template>
-          </div>
-        </v-col>
+          <!-- Details Row: Promoter/Category Details & Followers Count -->
+          <v-row class="align-center mt-2" no-gutters>
+            <!-- Promoter or Categories Section -->
+            <v-col class="d-flex align-center">
+              <template v-if="mode === 'promoter' && displayPromoterCode">
+                <div class="d-flex align-center">
+                  <template v-if="event.location?.name">
+                    <v-icon size="small" color="primaryIcon" aria-hidden="true">mdi-map-marker</v-icon>
+                    <span class="text-caption ml-1 text-grey-darken-1">
+                      {{ truncateText(event.location.name) }}
+                    </span>
+                    <v-icon size="small" color="primaryIcon" aria-hidden="true" class="ml-2">
+                      mdi-ticket
+                    </v-icon>
+                    <span class="text-caption ml-1 text-grey-darken-1">{{ event.promoter?.code }}</span>
+                  </template>
+                  <template v-else>
+                    <v-icon size="small" color="primaryIcon" aria-hidden="true">mdi-ticket</v-icon>
+                    <span class="text-caption ml-1 text-grey-darken-1">{{ event.promoter?.code }}</span>
+                  </template>
+                </div>
+              </template>
+              <template v-else>
+                <div class="d-flex flex-wrap gap-1">
+                  <v-chip
+                    v-for="category in displayedCategories"
+                    :key="'cat-' + category"
+                    size="x-small"
+                    label
+                    variant="outlined"
+                    color="primaryIcon"
+                    class="mr-1 mb-1"
+                    role="listitem"
+                  >
+                    {{ category }}
+                  </v-chip>
+                  <v-chip
+                    v-if="hasMoreCategories"
+                    size="x-small"
+                    label
+                    variant="outlined"
+                    color="primaryIcon"
+                    class="mr-1 mb-1"
+                    role="listitem"
+                    :aria-label="`Plus ${event.categories.length - 3} more categories`"
+                  >
+                    +{{ event.categories.length - 3 }}
+                  </v-chip>
+                </div>
+              </template>
+            </v-col>
 
-        <!-- Stats: Only Followers Count -->
-        <v-col :cols="rightCol.cols" :sm="rightCol.sm" :class="rightCol.class" role="group" aria-label="Event details">
-          <div class="d-flex align-center text-caption text-grey-darken-1" role="status"
-            :aria-label="`${event.followers} followers`">
-            <v-icon size="small" color="primaryIcon" class="mr-1" aria-hidden="true">mdi-account-group</v-icon>
-            <span>{{ event.followers }}</span>
-          </div>
+            <!-- Followers Count -->
+            <v-col cols="auto" class="d-flex align-center justify-end">
+              <div
+                class="d-flex align-center text-caption text-grey-darken-1"
+                role="status"
+                :aria-label="`${event.followers} followers`"
+              >
+                <v-icon size="small" color="primaryIcon" class="mr-1" aria-hidden="true">
+                  mdi-account-group
+                </v-icon>
+                <span>{{ event.followers }}</span>
+              </div>
+            </v-col>
+          </v-row>
         </v-col>
       </v-row>
     </v-card>
-
-    <!-- Optional bottom divider -->
-    <v-divider aria-hidden="true" v-if="showDividerBottom"></v-divider>
   </div>
 </template>
 
@@ -75,53 +114,45 @@ import { computed } from "vue";
 import { useDisplay } from "vuetify";
 import LazyImage from "@/components/common/LazyImage.vue";
 
+// Define props and configuration flags.
 const props = defineProps({
   event: { type: Object, required: true },
-  'aria-label': {  // Add this prop
-    type: String,
-    default: ''
-  },
-  // Mode prop is kept for potential flexibility; currently, it should be "promoter"
+  "aria-label": { type: String, default: "" },
   mode: {
     type: String,
     default: "promoter",
     validator: (value) => ["promoter", "event"].includes(value),
   },
-  showDividerTop: { type: Boolean, default: true },
-  showDividerBottom: { type: Boolean, default: false },
-  // When true, display the location and promoter;
-  // when false, display event categories instead.
+  // When true, display location and promoter code; when false, display event categories.
   displayPromoterCode: { type: Boolean, default: false },
 });
 
 const { mobile } = useDisplay();
 
-// Left column is fixed.
+// Layout configuration for a two-column design.
 const leftCol = { cols: 3, sm: 2 };
-
-// Middle column always uses the same spacing.
-const middleCol = computed(() => ({ cols: 9, sm: 7, class: "px-4" }));
-
-// Right column: display followers count.
-const rightCol = computed(() => ({
-  cols: 12,
-  sm: 3,
-  class: "d-flex flex-column align-end mt-1",
-}));
+const detailsCol = { cols: 9, sm: 10 };
 
 const eventNameClass = computed(() => "event-title");
 
-// Computed properties for categories (if needed)
 const displayedCategories = computed(() => {
   if (!props.event?.categories) return [];
-  return mobile.value
-    ? props.event.categories.slice(0, 3)
-    : props.event.categories;
+  return mobile.value ? props.event.categories.slice(0, 3) : props.event.categories;
 });
 
 const hasMoreCategories = computed(() => {
   return mobile.value && props.event?.categories?.length > 3;
 });
+
+function truncateText(text, limit = 15) {
+  return mobile.value && text.length > limit ? text.slice(0, limit) + "..." : text;
+}
+
+// Define a computed property for card classes
+const cardClasses = computed(() => ({
+  "event-card": true,
+  "mobile-bright": mobile.value,
+}));
 </script>
 
 <style lang="scss" scoped>
@@ -131,7 +162,6 @@ a {
   color: inherit;
   transition: color 0.2s;
 }
-
 a:hover {
   color: rgba(var(--v-theme-secondary), 1);
 }
@@ -140,18 +170,17 @@ a:hover {
 .event-card {
   padding: 8px;
   border-radius: 8px;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, border-color 0.2s;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
-
 .event-card:hover {
   background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.25);
 }
 
-/* Event Image Styling */
-.event-image {
-  border-radius: 4px;
-  width: 100%;
-  aspect-ratio: 1;
+/* Mobile Bright: Always brighter on mobile */
+.mobile-bright {
+  background-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* Event Title Styling */
@@ -165,7 +194,6 @@ a:hover {
 .text-caption {
   font-size: 0.85rem;
 }
-
 .text-grey-darken-1 {
   color: #757575;
 }
@@ -175,7 +203,6 @@ a:hover {
   outline: 2px solid currentColor;
   outline-offset: 2px;
 }
-
 .v-btn:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;

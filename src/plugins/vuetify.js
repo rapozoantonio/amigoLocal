@@ -81,8 +81,8 @@ export default createVuetify({
           "rating-active": "#FFC107",
           onSurface: "#FFFFFF",
           "link-text": "#FFFFFF",
-          background: "#121212",
-          surface: "#121212",
+          background: "#000",
+          surface: "#000",
         },
       },
       light: {

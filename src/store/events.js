@@ -224,7 +224,7 @@ export const useEventsStore = defineStore("events", () => {
   // =========================
   // Firestore Query Helpers & Pagination
   // =========================
-  const pageSize = ref(10);
+  const pageSize = ref(30);
   const lastDocument = ref(null);
 
   const buildQueries = (config = {}) => {
@@ -432,6 +432,10 @@ export const useEventsStore = defineStore("events", () => {
     events.value = null;
     nextEvents.value = null;
   };
+
+  function removeEventFromList(eventId) {
+    events.value = events.value.filter(event => event.id !== eventId);
+  }
 
   // =========================
   // Additional Computed Filters
@@ -664,5 +668,6 @@ export const useEventsStore = defineStore("events", () => {
     getFilteredByGenreUpcomingEvents,
     getFilteredByCategoriesUpcomingEvents,
     getFilteredByDatesUpcomingEvents,
+    removeEventFromList,
   };
 });

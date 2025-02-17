@@ -37,6 +37,10 @@
             <template #prepend> <v-icon>mdi-calendar-star</v-icon></template>
             <v-list-item-title> Criar Evento </v-list-item-title>
           </v-list-item>
+          <v-list-item :to="{ name: 'pro-events-list' }" link>
+            <template #prepend> <v-icon>mdi-calendar-multiple-check</v-icon></template>
+            <v-list-item-title> Lista de Eventos </v-list-item-title>
+          </v-list-item>
 
           <!-- Add theme toggle -->
           <v-list-item @click="toggleTheme" link>

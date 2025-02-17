@@ -10,7 +10,7 @@
       v-for="tab in tabs"
       :key="tab.value"
       :value="tab.value"
-      :to="tab.to"
+      :to="useRouting ? tab.to : undefined"
       class="text-subtitle-2 px-0 mr-4 w-min-0"
       exact
       variant="plain"
@@ -83,20 +83,16 @@ const defaultTabs = computed(() => [
 const localTabs = [
   { value: "nextevents", label: "Todos", to: "/eventsAll/BR" },
   { value: "foryou", label: "Pra Você", to: "/eventsAll/BR/foryou" },
-  {
-    value: "carnaval",
-    label: "Carnaval",
-    to: "/eventsAll/BR/carnaval",
-  },
+  { value: "carnaval", label: "Carnaval", to: "/eventsAll/BR/carnaval" },
   { value: "reveillon", label: "Reveillon", to: "/eventsAll/BR/reveillon" },
 ];
 
 const tabs = computed(() => {
-  console.log({ showJustCountry: props.showJustCountry });
-  if (!props.showJustCountry) {
-    return props.useRouting ? defaultTabs.value : localTabs;
+  if (props.useRouting) {
+    return defaultTabs.value;
   } else {
-    return localTabs;
+    // Filter out the "Pra Você" tab when not using routing
+    return localTabs.filter(tab => tab.value !== "foryou");
   }
 });
 </script>

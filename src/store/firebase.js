@@ -474,7 +474,7 @@ export const useFirebaseStore = defineStore("firebase", () => {
   async function getCollection(data) {
     console.log("getCollection", data);
     const queries = Object.entries(data.query);
-    const pageSize = data.limit || 2;
+    const pageSize = data.limit || 15;
     const order = data.orderBy || "created_at";
     const direction = data.direction || "desc";
 
