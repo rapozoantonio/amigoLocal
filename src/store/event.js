@@ -1,210 +1,288 @@
-<template>
-  <div :aria-label="$props['aria-label']">
-    <v-divider class="mb-2" aria-hidden="true" v-if="showDividerTop" />
-    <v-card
-      v-if="event"
-      flat
-      tile
-      :class="['event-card', { 'mobile-bright': mobile.value }]"
-      :to="{ name: 'event-id', params: { id: event.id } }"
-      role="article"
-      :aria-label="`Event: ${event.name}`"
-    >
-      <v-row no-gutters class="align-center">
-        <!-- Left Column: Event Image (always left-aligned) -->
-        <v-col :cols="leftCol.cols" :sm="leftCol.sm" class="d-flex align-center justify-start">
-          <LazyImage
-            :src="event.image?.url || event.flyerFront?.url"
-            fallbackSrc="/img/placeholder_event_1.webp"
-            :alt="`Event image for ${event.name}`"
-            height="60"
-            width="96"
-            rounded
-          />
-        </v-col>
+import { computed, ref, watch } from "vue";
 
-        <!-- Right Column: Event Details -->
-        <v-col :cols="detailsCol.cols" :sm="detailsCol.sm" class="px-4">
-          <!-- Event Name: Truncated on mobile -->
-          <h2 :class="eventNameClass">
-            <router-link
-              :to="{ name: 'event-id', params: { id: event.id } }"
-              :aria-label="`View details for ${event.name}`"
-              class="text-decoration-none"
-            >
-              {{ displayedEventName }}
-            </router-link>
-          </h2>
+import { defineStore } from "pinia";
 
-          <!-- Details Row: Promoter/Category Details & Followers Count -->
-          <v-row class="align-center mt-2" no-gutters>
-            <!-- Promoter or Categories Section -->
-            <v-col class="d-flex align-center">
-              <template v-if="mode === 'promoter' && displayPromoterCode">
-                <div class="d-flex align-center">
-                  <template v-if="event.location?.name">
-                    <v-icon size="small" color="primaryIcon" aria-hidden="true">mdi-map-marker</v-icon>
-                    <span class="text-caption ml-1 text-grey-darken-1">{{ event.location.name }}</span>
-                    <v-icon size="small" color="primaryIcon" aria-hidden="true" class="ml-2">mdi-ticket</v-icon>
-                    <span class="text-caption ml-1 text-grey-darken-1">{{ event.promoter?.code }}</span>
-                  </template>
-                  <template v-else>
-                    <v-icon size="small" color="primaryIcon" aria-hidden="true">mdi-ticket</v-icon>
-                    <span class="text-caption ml-1 text-grey-darken-1">{{ event.promoter?.code }}</span>
-                  </template>
-                </div>
-              </template>
-              <template v-else>
-                <div class="d-flex flex-wrap gap-1">
-                  <v-chip
-                    v-for="category in displayedCategories"
-                    :key="'cat-' + category"
-                    size="x-small"
-                    label
-                    variant="outlined"
-                    color="primaryIcon"
-                    class="mr-1 mb-1"
-                    role="listitem"
-                  >
-                    {{ category }}
-                  </v-chip>
-                  <v-chip
-                    v-if="hasMoreCategories"
-                    size="x-small"
-                    label
-                    variant="outlined"
-                    color="primaryIcon"
-                    class="mr-1 mb-1"
-                    role="listitem"
-                    :aria-label="`Plus ${event.categories.length - 3} more categories`"
-                  >
-                    +{{ event.categories.length - 3 }}
-                  </v-chip>
-                </div>
-              </template>
-            </v-col>
+import $genres from "@/assets/genres";
+import $eventCategories from "@/assets/eventCategories";
+import { useVuelidate } from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
 
-            <!-- Followers Count -->
-            <v-col cols="auto" class="d-flex align-center justify-end">
-              <div
-                class="d-flex align-center text-caption text-grey-darken-1"
-                role="status"
-                :aria-label="`${event.followers} followers`"
-              >
-                <v-icon size="small" color="primaryIcon" class="mr-1" aria-hidden="true">mdi-account-group</v-icon>
-                <span>{{ event.followers }}</span>
-              </div>
-            </v-col>
-          </v-row>
-        </v-col>
-      </v-row>
-    </v-card>
-    <v-divider aria-hidden="true" v-if="showDividerBottom" />
-  </div>
-</template>
+import { useAppStore } from "./app";
+import { useFirebaseStore } from "./firebase";
 
-<script setup>
-import { computed } from "vue";
-import { useDisplay } from "vuetify";
-import LazyImage from "@/components/common/LazyImage.vue";
+export const useEventStore = defineStore("event", () => {
+  const firebaseStore = useFirebaseStore();
+  const appStore = useAppStore();
 
-// Define props and configuration flags.
-const props = defineProps({
-  event: { type: Object, required: true },
-  "aria-label": { type: String, default: "" },
-  mode: {
-    type: String,
-    default: "promoter",
-    validator: (value) => ["promoter", "event"].includes(value),
-  },
-  showDividerTop: { type: Boolean, default: true },
-  showDividerBottom: { type: Boolean, default: false },
-  // When true, display location and promoter code; when false, display event categories.
-  displayPromoterCode: { type: Boolean, default: false },
+  const event = ref(printEventInit());
+  const files = ref({
+    flyerFront: null,
+    flyerBack: null,
+    image: null,
+  });
+
+  function printEventInit() {
+    return {
+      name: null,
+      startDate: null,
+      startTime: null,
+      endDate: null,
+      endTime: null,
+      // location: null,
+      location: {
+        name: null,
+        id: null,
+        country: "BR",
+        region: null,
+        address: null,
+        city: null,
+      },
+      genres: null,
+      categories: null,
+      lineup: null,
+      price: null,
+      description: null,
+      age: "+18",
+      links: null,
+      medias: null,
+      image: null,
+      promoter: firebaseStore.getCurrentUser(),
+      producer: null,
+    };
+  }
+
+  const genres = ref($genres);
+  const eventCategories = ref($eventCategories);
+
+  const ages = ref([
+    { name: "+18", value: "+18" },
+    { name: "+19", value: "+19" },
+    { name: "+20", value: "+20" },
+    { name: "+21", value: "+21" },
+    { name: "+24", value: "+24" },
+    { name: "+30", value: "+30" },
+  ]);
+
+  const sections = ref({
+    1: null,
+    2: null,
+    3: null,
+    4: null,
+  });
+
+  const sectionBasicComplete = computed(() => {
+    return !!(event.value["name"] && event.value["name"] !== "");
+  });
+
+  const rules = {
+    name: { required },
+    startDate: { required },
+  };
+
+  const $v = useVuelidate(rules, event);
+
+  async function createEvent(event, files) {
+    try {
+      const id = firebaseStore.getPostDocRef("events").id;
+
+      const entries = Object.entries(files);
+
+      const filesToUpload = entries.reduce((total, [name, value]) => {
+        if (!value) return total;
+        if (Array.isArray(value)) {
+          if (value[0]) {
+            total.push({
+              name: name,
+              path: `events/${id}/${name}.${value[0].type.split("/").pop()}`,
+              file: value[0],
+            });
+          }
+        } else {
+          total.push({
+            name: name,
+            path: `events/${id}/${name}.${value.type.split("/").pop()}`,
+            file: value,
+          });
+        }
+
+        return total;
+      }, []);
+
+      const pictures = await firebaseStore.uploadPictures(filesToUpload);
+
+      pictures.forEach((p) => {
+        event[p.name] = {
+          path: p.path,
+          url: p.url,
+        };
+      });
+      event.id = id;
+
+      event.promoter = firebaseStore.getCurrentUser();
+
+      const response = await firebaseStore.postDocument(
+        "events",
+        event,
+        "events"
+      );
+      const notify = () => {
+        return response.notify(
+          "Evento criado!",
+          `<p><strong class="text-green">${
+            event.name ? event.name : ""
+          }</strong>`,
+          "Minha página 🎉"
+        );
+      };
+
+      return { ok: true, notify, data: response.data };
+    } catch (error) {
+      return { ok: false, error };
+    }
+  }
+
+  async function updateEvent() {
+    appStore.loading = true;
+    appStore.loadingText = "Atualizando evento...";
+    try {
+      const id = event.value.id;
+      const entries = Object.entries(files.value);
+
+      const filesToUpload = entries.reduce((total, [name, value]) => {
+        if (!value) return total;
+        if (Array.isArray(value)) {
+          if (value[0]) {
+            total.push({
+              name: name,
+              path: `events/${id}/${name}.${value[0].type.split("/").pop()}`,
+              file: value[0],
+            });
+          }
+        } else {
+          total.push({
+            name: name,
+            path: `events/${id}/${name}.${value.type.split("/").pop()}`,
+            file: value,
+          });
+        }
+
+        return total;
+      }, []);
+
+      const pictures = await firebaseStore.uploadPictures(filesToUpload);
+
+      pictures.forEach((p) => {
+        event.value[p.name] = {
+          path: p.path,
+          url: p.url,
+        };
+      });
+
+      const response = await firebaseStore.putDocument(
+        "events",
+        id,
+        event.value
+      );
+      if (response.ok) {
+        response.notify();
+        return { ok: true };
+      }
+      return { ok: false };
+    } catch (error) {
+      return { ok: false, error };
+    } finally {
+      appStore.loading = false;
+      appStore.loadingText = null;
+    }
+  }
+
+  async function deleteEvent(eventId) {
+    appStore.loading = true;
+    appStore.loadingText = "Deletando evento...";
+    try {
+      // Change from deleteDocument to putDocument with empty data or deleted flag
+      const response = await firebaseStore.putDocument("events", eventId, { deleted: true });
+      if (response.ok) {
+        return { ok: true };
+      }
+      return { ok: false };
+    } catch (error) {
+      console.error("Error deleting event:", error);
+      return { ok: false, error };
+    } finally {
+      appStore.loading = false;
+      appStore.loadingText = null;
+    }
+  }
+
+  function $reset() {
+    event.value = {
+      name: null,
+      startDate: new Date().toISOString().split("T")[0],
+      startTime: "19:00",
+      endDate: new Date().toISOString().split("T")[0],
+      endTime: "23:00",
+      // location: null,
+      location: {
+        name: null,
+        id: null,
+        country: "BR",
+        region: null,
+        address: null,
+        city: null,
+      },
+      genres: null,
+      lineup: null,
+      price: null,
+      description: null,
+      age: "+18",
+      links: [],
+      medias: [],
+      flyerFront: null,
+      flyerBack: null,
+      image: null,
+    };
+    files.value = {
+      flyerFront: null,
+      flyerBack: null,
+      image: null,
+    };
+    sections.value = {
+      1: null,
+      2: null,
+      3: null,
+      4: null,
+    };
+  }
+
+  async function getEventById(id) {
+    return await firebaseStore.getDocumentById("events", id);
+  }
+
+  watch(
+    () => event.value.startDate,
+    (newValue) => {
+      if (event.value.endDate < newValue) {
+        event.value.endDate = newValue;
+      }
+    }
+  );
+
+  return {
+    event,
+    genres,
+    ages,
+    files,
+    eventCategories,
+    sectionBasicComplete,
+    createEvent,
+    $reset,
+    sections,
+    $v,
+    getEventById,
+    updateEvent,
+    eventCategories,
+    printEventInit,
+    deleteEvent,
+  };
 });
-
-const { mobile } = useDisplay();
-
-// Utility function to truncate text.
-function truncateText(text, limit = 15) {
-  return text.length > limit ? text.slice(0, limit) + "..." : text;
-}
-
-// Computed property for the event name that applies truncation on mobile devices.
-const displayedEventName = computed(() => {
-  return mobile.value ? truncateText(props.event.name, 15) : props.event.name;
-});
-
-// Layout configuration for a two-column design.
-const leftCol = { cols: 3, sm: 2 };
-const detailsCol = { cols: 9, sm: 10 };
-
-const eventNameClass = computed(() => "event-title");
-
-const displayedCategories = computed(() => {
-  if (!props.event?.categories) return [];
-  return mobile.value ? props.event.categories.slice(0, 3) : props.event.categories;
-});
-
-const hasMoreCategories = computed(() => {
-  return mobile.value && props.event?.categories?.length > 3;
-});
-</script>
-
-<style lang="scss" scoped>
-/* General Link Styles */
-a {
-  text-decoration: none;
-  color: inherit;
-  transition: color 0.2s;
-}
-
-a:hover {
-  color: rgba(var(--v-theme-secondary), 1);
-}
-
-/* Event Card Styles */
-.event-card {
-  padding: 8px;
-  border-radius: 8px;
-  transition: background-color 0.2s, border-color 0.2s;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-}
-
-/* Mobile Bright State: Slightly brighter background to highlight on mobile */
-.mobile-bright {
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.event-card:hover {
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.25);
-}
-
-/* Event Title Styling */
-.event-title {
-  font-size: 16px;
-  line-height: 1.5;
-  margin: 0;
-}
-
-/* Text Styling */
-.text-caption {
-  font-size: 0.85rem;
-}
-
-.text-grey-darken-1 {
-  color: #757575;
-}
-
-/* Focus Styles */
-.event-title a:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
-
-.v-btn:focus-visible {
-  outline: 2px solid currentColor;
-  outline-offset: 2px;
-}
-</style>
