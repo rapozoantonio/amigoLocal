@@ -10,7 +10,7 @@
       v-for="tab in tabs"
       :key="tab.value"
       :value="tab.value"
-      :to="useRouting ? tab.to : undefined"
+      :to="tab.to"
       class="text-subtitle-2 px-0 mr-4 w-min-0"
       exact
       variant="plain"
@@ -92,7 +92,7 @@ const tabs = computed(() => {
     return defaultTabs.value;
   } else {
     // Filter out the "Pra Você" tab when not using routing
-    return localTabs.filter(tab => tab.value !== "foryou");
+    return localTabs.filter((tab) => tab.value !== "foryou");
   }
 });
 </script>

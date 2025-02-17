@@ -4,7 +4,7 @@
       :variant="selectedCategories?.length > 0 ? 'flat' : 'outlined'" rounded="pill" class="text-caption px-6"
       @click="openSelector">Tipos de Evento
       <span class="ml-1" v-if="selectedCategories?.length > 0">({{ selectedCategories.length }})</span></v-btn>
-    <v-navigation-drawer class="navigation" floating temporary width="350" location="right"
+    <v-navigation-drawer class="navigation text-left" floating temporary width="350" location="right"
       v-model="typesSelectionOpened">
       <v-item-group multiple v-model="selectedeventTypesLocal">
         <p class="text-caption my-4 pl-4">
