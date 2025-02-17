@@ -105,11 +105,11 @@ const navigationItems = [
     to: "/events/BR/riodejaneiro",
     type: "events",
   },
-  {
-    title: "Eventos São Paulo",
-    to: "/events/BR/saopaulo",
-    type: "events",
-  },
+  // {
+  //   title: "Eventos São Paulo",
+  //   to: "/events/BR/saopaulo",
+  //   type: "events",
+  // },
   {
     title: "Carnaval",
     to: "/eventsAll/BR/carnaval",
