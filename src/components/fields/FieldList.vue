@@ -24,8 +24,7 @@
         <v-row>
             <v-col cols="12" class="pt-2">
                 <v-btn class="mb-4 " :class="[!list || list.length === 0 ? 'mt-2' : '']" @click="addItem"
-                    variant="tonal"><v-icon start>mdi-plus</v-icon> Add
-                    item</v-btn>
+                    variant="tonal"><v-icon start>mdi-plus</v-icon> {{ action ? action : "Add item" }} </v-btn>
             </v-col>
         </v-row>
     </div>
@@ -42,7 +41,7 @@ import {
 import FormField from '../form/FormField.vue';
 const list = defineModel();
 const { fieldAttrs, rules } = inject("$helpers");
-const { children, labelType, label } = defineProps(["children", "labelType", "label"]);
+const { children, labelType, label, action } = defineProps(["children", "labelType", "label", "action"]);
 
 
 function addItem() {

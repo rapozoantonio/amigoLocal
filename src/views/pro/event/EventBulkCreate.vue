@@ -98,13 +98,13 @@
                                 <v-col cols="12">
                                   <p class="text-body-2">
                                     <span class="text-grey"> Estilos:</span>
-                                    {{ event.genres }}
+                                    {{ event.genres.join(", ") }}
                                   </p>
                                 </v-col>
                                 <v-col cols="12">
                                   <p class="text-body-2">
                                     <span class="text-grey"> Categorias:</span>
-                                    {{ event.categories }}
+                                    {{ event.categories.join(", ") }}
                                   </p>
                                 </v-col>
                                 <v-col cols="12">

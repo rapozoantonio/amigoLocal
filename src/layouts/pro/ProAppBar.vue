@@ -1,12 +1,6 @@
 <template>
   <div>
-    <v-navigation-drawer
-      width="320"
-      absolute
-      v-if="xs"
-      temporary
-      v-model="opened"
-    >
+    <v-navigation-drawer width="320" absolute v-if="xs" temporary v-model="opened">
       <v-toolbar density="compact" color="background">
         <v-container>
           <v-row align="center">
@@ -31,8 +25,7 @@
               <template v-if="auth.user.photoURL">
                 <v-img :src="auth.user.photoURL"></v-img>
               </template>
-              <span v-else>{{ initials }}</span></v-avatar
-            >
+              <span v-else>{{ initials }}</span></v-avatar>
           </template>
           <v-list-item-title class="d-flex justify-space-between">
             <span>
@@ -64,23 +57,15 @@
       <v-container>
         <v-row align="center">
           <v-col cols="auto">
-            <v-app-bar-nav-icon
-              v-if="xs"
-              @click="opened = !opened"
-            ></v-app-bar-nav-icon>
+            <v-app-bar-nav-icon v-if="xs" @click="opened = !opened"></v-app-bar-nav-icon>
 
-            <v-btn v-else variant="plain" icon size="small">
+            <v-btn v-else variant="plain" icon size="small" to="/">
               <v-icon icon="mdi-ticket" />
             </v-btn>
           </v-col>
           <v-col v-if="!xs">
             <nav>
-              <v-btn
-                :to="{ name: 'event-list' }"
-                style="text-transform: none"
-                variant="plain"
-                >Eventos</v-btn
-              >
+              <v-btn :to="{ name: 'event-list' }" style="text-transform: none" variant="plain">Eventos</v-btn>
             </nav>
           </v-col>
           <v-spacer></v-spacer>
