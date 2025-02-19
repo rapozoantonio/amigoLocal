@@ -39,6 +39,7 @@ export const useEventStore = defineStore("event", () => {
       },
       genres: null,
       categories: null,
+      event_type: null,
       lineup: null,
       price: null,
       description: null,
@@ -201,7 +202,9 @@ export const useEventStore = defineStore("event", () => {
     appStore.loadingText = "Deletando evento...";
     try {
       // Change from deleteDocument to putDocument with empty data or deleted flag
-      const response = await firebaseStore.putDocument("events", eventId, { deleted: true });
+      const response = await firebaseStore.putDocument("events", eventId, {
+        deleted: true,
+      });
       if (response.ok) {
         return { ok: true };
       }

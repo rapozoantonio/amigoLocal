@@ -51,7 +51,7 @@ const { selectedCategories } = storeToRefs(eventsStore);
 
 // const { selectedGenres } = storeToRefs(eventsStore);
 
-const eventTypes = ["openbar", "day party", "lista amiga"];
+const eventTypes = ["open bar", "day party", "lista amiga"];
 //http://localhost:3001/events/BR/riodejaneiro?categories=day+party
 
 const router = useRouter();
@@ -73,10 +73,19 @@ function openSelector() {
 }
 
 function buscar() {
-  typesSelectionOpened.value = false;
+  console.log({ selectedeventTypesLocal: selectedeventTypesLocal.value })
+  const query = selectedeventTypesLocal.value.reduce((acc, type) => {
+    acc[type.replace(/ /gi, "_").toLowerCase()] = true;
+    return acc
+  }, {})
+  delete route.query.open_bar;
+  delete route.query.day_party;
+  delete route.query.lista_amiga;
   router.push({
-    query: { categories: selectedeventTypesLocal.value },
+    query: { ...route.query, ...query },
   });
+  typesSelectionOpened.value = false;
+
 }
 
 onMounted(() => {
