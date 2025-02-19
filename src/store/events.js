@@ -316,14 +316,24 @@ export const useEventsStore = defineStore("events", () => {
         q["genres[any]"] = genresToSearch;
       }
     }
-    if (route.query.categories) {
-      const categoriesToSearch = Array.isArray(route.query.categories)
-        ? route.query.categories
-        : [route.query.categories];
-      selectedCategories.value = categoriesToSearch;
-      if (categoriesToSearch.length > 0) {
-        q["categories[any]"] = categoriesToSearch;
-      }
+    // if (route.query.categories) {
+    //   const categoriesToSearch = Array.isArray(route.query.categories)
+    //     ? route.query.categories
+    //     : [route.query.categories];
+    //   selectedCategories.value = categoriesToSearch;
+    //   if (categoriesToSearch.length > 0) {
+    //     q["categories[any]"] = categoriesToSearch;
+    //   }
+    // }
+
+    if (route.query.open_bar) {
+      q["categories.open_bar"] = route.query.open_bar;
+    }
+    if (route.query.day_party) {
+      q["categories.day_party"] = route.query.day_party;
+    }
+    if (route.query.lista_amiga) {
+      q["categories.lista_amiga"] = route.query.lista_amiga;
     }
     if (route.query.startDate) {
       q["startDate[gte]"] = route.query.startDate;
@@ -434,7 +444,7 @@ export const useEventsStore = defineStore("events", () => {
   };
 
   function removeEventFromList(eventId) {
-    events.value = events.value.filter(event => event.id !== eventId);
+    events.value = events.value.filter((event) => event.id !== eventId);
   }
 
   // =========================

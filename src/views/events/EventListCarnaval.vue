@@ -46,7 +46,8 @@ onMounted(async () => {
         : [route.query.genre];
     }
 
-    await eventsStore.fetchEvents({ country: country.toUpperCase(), "region.id": region, "categories[contains]": "carnaval" })
+    // await eventsStore.fetchEvents({ country: country.toUpperCase(), "region.id": region, "event_type": "carnaval" })
+    await eventsStore.fetchEvents({ country: country.toUpperCase(), "region.id": region, "event_type": "carnaval" })
   } catch (error) {
     console.error("Error fetching Carnaval events:", error);
   }
