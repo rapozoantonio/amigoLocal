@@ -78,9 +78,16 @@ export default {
         {
           id: "categories",
           label: "Categorias",
-          type: "autocomplete",
+          type: "boolean-flags",
           items: eventCategories,
           size: "xs",
+        },
+        {
+          id: "event_type",
+          label: "Tipo de evento",
+          type: "select",
+          size: "xs",
+          items: ["carnaval", "reveillon"],
         },
         {
           id: "links",

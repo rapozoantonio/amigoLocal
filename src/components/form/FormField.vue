@@ -133,6 +133,12 @@
             </v-autocomplete>
         </template>
 
+        <!-- BOOLEAN FLAGS -->
+        <template v-else-if="type === 'boolean-flags'">
+            <field-boolean-flags :labelType="labelType" :items="items" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :label="label"></field-boolean-flags>
+        </template>
+
         <!-- AUTOCOMPLETE -->
         <template v-else-if="type === 'select'">
             <v-autocomplete @update:focused="updateInput" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"
@@ -235,6 +241,7 @@ import FieldPromoter from '../fields/FieldPromoter.vue';
 import FieldRegion from '../fields/FieldRegion.vue';
 import FieldUsername from '../fields/FieldUsername.vue';
 import FieldList from '../fields/FieldList.vue';
+import FieldBooleanFlags from '../fields/FieldBooleanFlags.vue';
 
 const { fieldAttrs, rules: fieldRules } = inject("$helpers");
 const model = defineModel("model");

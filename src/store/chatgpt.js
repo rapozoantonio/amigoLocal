@@ -87,7 +87,8 @@ export const useChatgptStore = defineStore("chatgpt", () => {
             startTime: time (format HH:mm);
             endDate: time (format HH:mm e somente terá valor se detectar que existe uma hora explicita para terminar);
             genres: [string] (possivéis opções: Funk,Sertanejo,Pagode,Samba,Forró,Axé,Pop,Eletrônica,Reggaeton,Hip Hop,MPB,Rock,Brega,Arrocha,Trap,Indie,K-pop,Jazz,Blues);
-            categories: [string] (possivéis opções: carnaval,reveillon,open bar,day party,lista amiga);`,
+            categories: boolean-flags ({key: true|false}) (possivéis opções de chave: open_bar,day_party,lista_amiga);
+            event_type: string (possivéis opções: carnaval,reveillon);`,
           },
 
           {
