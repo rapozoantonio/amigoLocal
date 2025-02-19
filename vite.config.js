@@ -8,8 +8,8 @@ import vue from "@vitejs/plugin-vue";
 
 export default defineConfig({
   plugins: [
-    vue({ 
-      template: { transformAssetUrls }
+    vue({
+      template: { transformAssetUrls },
     }),
     vuetify({
       autoImport: true,
@@ -17,12 +17,14 @@ export default defineConfig({
     }),
     ViteFonts({
       google: {
-        families: [{ 
-          name: "Inter", 
-          styles: "wght@100;300;400;500;700;900",
-          preconnect: true,
-          display: 'swap'
-        }],
+        families: [
+          {
+            name: "Inter",
+            styles: "wght@100;300;400;500;700;900",
+            preconnect: true,
+            display: "swap",
+          },
+        ],
       },
     }),
     VitePWA({
@@ -52,73 +54,75 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ["**/*.{js,css,html,woff2,ttf,svg,png}"],
-        runtimeCaching: [{
-          urlPattern: /^https:\/\/api\./,
-          handler: 'NetworkFirst',
-          options: {
-            cacheName: 'api-cache',
-            expiration: {
-              maxEntries: 100,
-              maxAgeSeconds: 86400 // 24 hours
-            }
-          }
-        }]
-      }
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/api\./,
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "api-cache",
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 86400, // 24 hours
+              },
+            },
+          },
+        ],
+      },
     }),
   ],
 
   // Define process.env
   define: {
-    'process.env': {
-      NODE_ENV: JSON.stringify(process.env.NODE_ENV)
-    }
+    "process.env": {
+      NODE_ENV: JSON.stringify(process.env.NODE_ENV),
+    },
   },
 
   build: {
-    target: 'es2015',
+    target: "es2015",
     cssCodeSplit: true,
     reportCompressedSize: true,
     chunkSizeWarningLimit: 1000,
-    
+
     rollupOptions: {
       output: {
         manualChunks: {
-          'vue-vendor': ['vue', 'vue-router', 'vuex'],
-          'ui-vendor': ['vuetify'],
+          "vue-vendor": ["vue", "vue-router"],
+          "ui-vendor": ["vuetify"],
         },
-        chunkFileNames: 'assets/js/[name]-[hash].js',
-        entryFileNames: 'assets/js/[name]-[hash].js',
-        assetFileNames: ({name}) => {
-          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? '')) {
-            return 'assets/images/[name]-[hash][extname]';
+        chunkFileNames: "assets/js/[name]-[hash].js",
+        entryFileNames: "assets/js/[name]-[hash].js",
+        assetFileNames: ({ name }) => {
+          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? "")) {
+            return "assets/images/[name]-[hash][extname]";
           }
-          if (/\.css$/.test(name ?? '')) {
-            return 'assets/css/[name]-[hash][extname]';
+          if (/\.css$/.test(name ?? "")) {
+            return "assets/css/[name]-[hash][extname]";
           }
-          return 'assets/[name]-[hash][extname]';
+          return "assets/[name]-[hash][extname]";
         },
       },
     },
 
-    minify: 'terser',
+    minify: "terser",
     terserOptions: {
       compress: {
         drop_console: true,
         drop_debugger: true,
-        pure_funcs: ['console.log', 'console.info', 'console.debug'],
+        pure_funcs: ["console.log", "console.info", "console.debug"],
       },
     },
   },
 
   optimizeDeps: {
-    include: ['vue', 'vue-router', 'vuex', 'vuetify'],
+    include: ["vue", "vue-router", "vuex", "vuetify"],
   },
 
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL("./src", import.meta.url))
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
-    extensions: ['.js', '.json', '.jsx', '.mjs', '.ts', '.tsx', '.vue'],
+    extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
 
   server: {

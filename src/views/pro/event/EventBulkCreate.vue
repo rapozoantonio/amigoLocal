@@ -104,7 +104,13 @@
                                 <v-col cols="12">
                                   <p class="text-body-2">
                                     <span class="text-grey"> Categorias:</span>
-                                    {{ event.categories.join(", ") }}
+                                    {{ event.categories }}
+                                  </p>
+                                </v-col>
+                                <v-col cols="12" v-if="event.event_type">
+                                  <p class="text-body-2">
+                                    <span class="text-grey"> Tipo de evento:</span>
+                                    {{ event.event_type }}
                                   </p>
                                 </v-col>
                                 <v-col cols="12">
@@ -175,6 +181,9 @@
             </v-card>
           </v-dialog>
         </v-col>
+        <pre>
+  {{ events }}
+</pre>
       </v-row>
     </v-container>
   </div>
