@@ -536,18 +536,19 @@ export const useEventsStore = defineStore("events", () => {
   };
 
   const getFilteredByDatesUpcomingEvents = (filtersParameter) => {
-    if (
-      filteredEvents.value.length &&
-      filtersParameter &&
-      filtersParameter.length === 2
-    ) {
+    if (Array.isArray(filtersParameter) && filtersParameter.length === 2) {
       const [startDate, endDate] = filtersParameter.map((d) => new Date(d));
+
       const eventsFiltered = filteredEvents.value.filter((e) => {
-        const eventDate = new Date(e.startDate);
-        return eventDate >= startDate && eventDate <= endDate;
+        const eventStart = new Date(e.startDate);
+        const eventEnd = e.endDate ? new Date(e.endDate) : eventStart;
+
+        // Check if event is within the range
+        return eventEnd >= startDate && eventStart <= endDate;
       });
       return eventsFiltered.length;
     }
+
     return 0;
   };
 
