@@ -1,26 +1,54 @@
-import "/node_modules/flag-icons/css/flag-icons.min.css";
-import "@vuepic/vue-datepicker/dist/main.css";
-import "@/styles/settings.scss";
+// Style imports - ordered by priority
+import '@/styles/fonts.css' // Add this new import for font definitions
+import '@/styles/settings.scss'
+import '@vuepic/vue-datepicker/dist/main.css'
+import 'flag-icons/css/flag-icons.min.css'
 
 // Composables
-import { createApp } from "vue";
+import { createApp } from 'vue'
 
 // Plugins
-import { registerPlugins } from "@/plugins";
-import VueDatePicker from "@vuepic/vue-datepicker";
+import { registerPlugins } from '@/plugins'
+import VueDatePicker from '@vuepic/vue-datepicker'
 
-// 🔽 Add PWA service worker registration (pick one option below 🔽)
-import { registerSW } from 'virtual:pwa-register'; // For Vite projects
-// import './registerServiceWorker'; // For Vue CLI projects
+// PWA registration
+import { registerSW } from 'virtual:pwa-register'
 
-import App from "./App.vue";
+// App import
+import App from './App.vue'
 
-const app = createApp(App);
-registerPlugins(app);
-app.component("VueDatePicker", VueDatePicker);
+// Performance monitoring for development
+if (process.env.NODE_ENV === 'development') {
+  // Monitor CSS/Font performance
+  const observer = new PerformanceObserver((list) => {
+    list.getEntries().forEach((entry) => {
+      if (entry.entryType === 'resource') {
+        console.debug(`Resource loaded: ${entry.name}`, {
+          duration: entry.duration,
+          type: entry.initiatorType
+        })
+      }
+    })
+  })
+  observer.observe({ entryTypes: ['resource'] })
+}
 
-// 🔽 Initialize PWA (add this line)
-registerSW(); // For Vite projects
-// (No extra line needed for Vue CLI - the import above auto-registers)
+// Create and configure app
+const app = createApp(App)
 
-app.mount("#app");
+// Register plugins
+registerPlugins(app)
+app.component('VueDatePicker', VueDatePicker)
+
+// Register service worker with refresh callback
+const updateSW = registerSW({
+  onNeedRefresh() {
+    console.log('New content available, please refresh.')
+  },
+  onOfflineReady() {
+    console.log('App ready to work offline')
+  }
+})
+
+// Mount app
+app.mount('#app')

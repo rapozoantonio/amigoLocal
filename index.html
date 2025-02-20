@@ -2,61 +2,103 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    
+    <!-- Critical Preloads -->
+    <!-- Early Preconnects -->
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://www.googleapis.com" crossorigin />
+    
+    <!-- Critical CSS -->
+    <style>
+      :root {
+        --font-fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font-fallback);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      #loading {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .footer-container {
+        min-height: 48px;
+      }
+
+      .v-application {
+        background: var(--v-background-base, #121212);
+      }
+    </style>
     
     <!-- Primary Meta Tags -->
     <title>Jubilos | Os Melhores Eventos do RJ e SP</title>
     <meta name="title" content="Jubilos | Os Melhores Eventos do RJ e SP" />
     <meta name="description" content="Encontre os eventos mais hypados de São Paulo e Rio. Shows imperdíveis, festas inesquecíveis e as melhores baladas nas duas maiores capitais do Brasil." />
     <meta name="keywords" content="balada, festa, eventos, São Paulo, Rio de Janeiro, shows, festas exclusivas, melhores eventos, ingressos, nightlife" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Jubilos" />
     
-    <!-- Open Graph / Facebook -->
+    <!-- Icons and PWA -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://jubilos.com.br" />
+    
+    <!-- Open Graph Meta Tags -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://jubilos.com.br/" />
     <meta property="og:title" content="Jubilos | Onde Rolam os Melhores Events do RJ e SP" />
     <meta property="og:description" content="Se liga nos eventos mais hypados do RJ e SP! Encontre seu rolê perfeito, dos shows mais esperados às festas mais comentadas." />
     <meta property="og:image" content="https://jubilos.com.br/og-image.jpg" />
+    <meta property="og:locale" content="pt_BR" />
     
-    <!-- Twitter -->
+    <!-- Twitter Meta Tags -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content="https://jubilos.com.br/" />
     <meta property="twitter:title" content="Jubilos | Onde Rolam os Melhores Events do RJ e SP" />
     <meta property="twitter:description" content="Se liga nos eventos mais hypados do RJ e SP! Dos shows mais esperados às festas mais comentadas, tá tudo aqui." />
     <meta property="twitter:image" content="https://jubilos.com.br/twitter-image.jpg" />
     
-    <!-- Additional Meta Tags -->
-    <meta name="robots" content="index, follow" />
-    <meta name="author" content="Jubilos" />
-    <meta name="mobile-web-app-capable" content="yes" />
-    <meta name="application-name" content="Jubilos" />
-    
-    <!-- Apple Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="apple-mobile-web-app-title" content="Jubilos" />
-    
-    <!-- Locale and Canonical -->
-    <link rel="canonical" href="https://jubilos.com.br" />
-    <meta property="og:locale" content="pt_BR" />
-    
-    <!-- Preconnect to Firebase -->
-    <link rel="preconnect" href="https://firestore.googleapis.com" />
-    <link rel="preconnect" href="https://www.googleapis.com" />
-    
-    <!-- PWA Tags -->
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    
-    <link rel="icon" href="/favicon.ico" />
-
-    <!-- Splash screens (multiple resolutions) -->
-    <link rel="apple-touch-startup-image" href="/splash/iphone5_splash.png" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)">
-    <link rel="apple-touch-startup-image" href="/splash/iphone6_splash.png" media="(device-width: 375px) and (device-height: 667px) and (-webkit-device-pixel-ratio: 2)">
-    <!-- Add more sizes as needed -->
+    <!-- Font Loading Detection -->
+    <script>
+      (function() {
+        if ("fonts" in document) {
+          Promise.all([
+            document.fonts.load('1em "Material Design Icons"'),
+            document.fonts.ready
+          ]).then(() => {
+            document.documentElement.classList.add('fonts-loaded');
+            if (process.env.NODE_ENV === 'development') {
+              console.debug('Fonts loaded successfully');
+            }
+          }).catch(err => {
+            console.warn('Font loading failed:', err);
+            document.documentElement.classList.add('fonts-failed');
+          });
+        }
+      })();
+    </script>
   </head>
   <body>
-    <!-- Schema.org with updated tone -->
+    <div id="app">
+      <div id="loading" class="animated-gradient">
+        <div class="loader"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+    
+    <!-- Schema.org Data -->
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -72,16 +114,6 @@
       }
     </script>
     
-    <div id="app">
-      <div id="loading" class="animated-gradient">
-        <div class="loader"></div>
-      </div>
-    </div>
-
-    
-    <script type="module" src="/src/main.js"></script>
-    
-    <!-- Fallback for JavaScript disabled -->
     <noscript>
       <div style="text-align: center; padding: 20px;">
         Ei! Para curtir o Jubilos, você precisa ativar o JavaScript no seu navegador.

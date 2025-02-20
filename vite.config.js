@@ -4,7 +4,21 @@ import { VitePWA } from "vite-plugin-pwa";
 import ViteFonts from "unplugin-fonts/vite";
 import { defineConfig } from "vite";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
+import compression from "vite-plugin-compression";
 import vue from "@vitejs/plugin-vue";
+
+// Helper to create compression plugin with common options
+const createCompressionPlugin = (algorithm) =>
+  compression({
+    algorithm,
+    ext: algorithm === "gzip" ? ".gz" : ".br",
+    threshold: 10240, // 10KB
+    deleteOriginFile: false,
+    filter: /\.(js|mjs|json|css|html|ttf|woff|woff2)$/i, // Added font files
+    compressionOptions: {
+      level: 9, // Maximum compression
+    },
+  });
 
 export default defineConfig({
   plugins: [
@@ -14,7 +28,12 @@ export default defineConfig({
     vuetify({
       autoImport: true,
       styles: { configFile: "src/styles/settings.scss" },
+      directives: true,
+      importComposables: true,
+      treeshaking: true,
     }),
+    createCompressionPlugin("gzip"),
+    createCompressionPlugin("brotliCompress"),
     ViteFonts({
       google: {
         families: [
@@ -23,6 +42,8 @@ export default defineConfig({
             styles: "wght@100;300;400;500;700;900",
             preconnect: true,
             display: "swap",
+            preload: true,
+            prefetch: true,
           },
         ],
       },
@@ -62,7 +83,33 @@ export default defineConfig({
               cacheName: "api-cache",
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 86400, // 24 hours
+                maxAgeSeconds: 86400,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.googleapis\.com/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts-stylesheets",
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+              },
+            },
+          },
+          {
+            urlPattern: /^https:\/\/fonts\.gstatic\.com/,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "google-fonts-webfonts",
+              expiration: {
+                maxAgeSeconds: 60 * 60 * 24 * 365,
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
               },
             },
           },
@@ -71,7 +118,6 @@ export default defineConfig({
     }),
   ],
 
-  // Define process.env
   define: {
     "process.env": {
       NODE_ENV: JSON.stringify(process.env.NODE_ENV),
@@ -83,23 +129,54 @@ export default defineConfig({
     cssCodeSplit: true,
     reportCompressedSize: true,
     chunkSizeWarningLimit: 1000,
+    sourcemap: process.env.NODE_ENV !== "production",
 
     rollupOptions: {
       output: {
-        manualChunks: {
-          "vue-vendor": ["vue", "vue-router"],
-          "ui-vendor": ["vuetify"],
-        },
-        chunkFileNames: "assets/js/[name]-[hash].js",
-        entryFileNames: "assets/js/[name]-[hash].js",
-        assetFileNames: ({ name }) => {
-          if (/\.(gif|jpe?g|png|svg)$/.test(name ?? "")) {
-            return "assets/images/[name]-[hash][extname]";
+        manualChunks: (id) => {
+          // Vendor chunks
+          if (id.includes("node_modules")) {
+            if (
+              id.includes("vue") ||
+              id.includes("pinia") ||
+              id.includes("@vue")
+            ) {
+              return "vendor-vue";
+            }
+            if (id.includes("vuetify")) {
+              return "vendor-vuetify";
+            }
+            if (id.includes("firebase")) {
+              return "vendor-firebase";
+            }
+            return "vendor-others";
           }
-          if (/\.css$/.test(name ?? "")) {
-            return "assets/css/[name]-[hash][extname]";
+
+          // Match webpackChunkName patterns from router
+          if (id.includes("/views/events/")) {
+            return "events";
           }
-          return "assets/[name]-[hash][extname]";
+          if (id.includes("/views/admin/")) {
+            return "admin";
+          }
+          if (id.includes("/views/promoter/")) {
+            return "promoter";
+          }
+          if (id.includes("/views/pro/")) {
+            return "pro";
+          }
+          if (id.includes("/views/locations/")) {
+            return "locations";
+          }
+          if (id.includes("/layouts/")) {
+            return "layouts"; // Added for layouts
+          }
+          if (id.includes("/views/auth/")) {
+            return "auth"; // Added for auth views
+          }
+          if (id.includes("/components/")) {
+            return "components";
+          }
         },
       },
     },
@@ -107,15 +184,36 @@ export default defineConfig({
     minify: "terser",
     terserOptions: {
       compress: {
-        drop_console: true,
+        drop_console: process.env.NODE_ENV === "production",
         drop_debugger: true,
         pure_funcs: ["console.log", "console.info", "console.debug"],
+        passes: 2,
+      },
+      format: {
+        comments: false,
       },
     },
   },
 
   optimizeDeps: {
-    include: ["vue", "vue-router", "vuex", "vuetify"],
+    include: [
+      "vue",
+      "vue-router",
+      "pinia",
+      "vuetify",
+      "@vueuse/core",
+      "firebase/app",
+      "firebase/auth",
+      "firebase/firestore",
+      "firebase/storage", // Added if you use storage
+      "firebase/functions", // Added if you use functions
+    ],
+    exclude: [
+      "@vueuse/shared",
+      "firebase/analytics", // Exclude unused Firebase features
+      "firebase/performance",
+      "firebase/remote-config",
+    ],
   },
 
   resolve: {
@@ -127,5 +225,8 @@ export default defineConfig({
 
   server: {
     port: 3001,
+    headers: {
+      "Cache-Control": "no-store",
+    },
   },
 });

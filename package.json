@@ -11,6 +11,7 @@
   "dependencies": {
     "@googlemaps/js-api-loader": "^1.16.6",
     "@mdi/font": "7.0.96",
+    "@mdi/js": "^7.4.47",
     "@sweetalert2/theme-dark": "^5.0.16",
     "@vuelidate/core": "^2.0.3",
     "@vuelidate/validators": "^2.0.4",
@@ -24,6 +25,7 @@
     "primevue": "^3.50.0",
     "roboto-fontface": "*",
     "sweetalert2": "^11.10.7",
+    "vite-plugin-compression": "^0.5.1",
     "vue": "^3.2.0",
     "vue-flag-icon": "^2.1.0",
     "vue-router": "^4.0.0",
