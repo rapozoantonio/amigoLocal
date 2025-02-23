@@ -59,7 +59,7 @@ onMounted(async () => {
     //   "reveillon",
     // ]);
 
-    await eventsStore.fetchEvents({ country: country.toUpperCase(), "region.id": region, "categories[contains]": "reveillon" })
+    await eventsStore.fetchEvents({ country: country.toUpperCase(), "region.id": region, "event_type": "reveillon" })
   } catch (error) {
     console.error("Error fetching Reveillon events:", error);
   }
