@@ -46,7 +46,7 @@ onMounted(async () => {
 
     await eventsStore.fetchEvents({
       country: country.toUpperCase(),
-      "categories[contains]": "carnaval",
+      "event_type": "carnaval",
     });
   } catch (error) {
     console.error("Error fetching Carnaval events:", error);
