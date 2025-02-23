@@ -35,7 +35,21 @@ export const useChatgptStore = defineStore("chatgpt", () => {
           {
             role: "system",
             content: `Atue como um especialista de eventos, você precisa incluir essas informações em campos separados e retornar um json com esses campos: 
-                             {name: string, startDate: date, startTime: time, endDate: date, endTime: time, location: {name: string, country: string(country code short code), region: string, address: string}, genres: array[string], lineup: array[string], price: [{name: string, value: number}], description: string,  links: array[{name: string, url: string}]}`,
+                             name: string, 
+                             location: {name: string, country: string(country code short code), 
+                             region: string, address: string}, 
+                             lineup: array[string], 
+                             price: [{name: string, value: number}], 
+                             description: string,  
+                             links: array[{name: string, url: string}]
+                              startDate: date (format yyyy-MM-dd);
+                              endDate: date (format yyyy-MM-dd e somente terá valor se detectar um rango de datas para esse evento);
+                              startTime: time (format HH:mm);
+                              endDate: time (format HH:mm e somente terá valor se detectar que existe uma hora explicita para terminar);
+                              genres: [string] (possivéis opções: Funk,Sertanejo,Pagode,Samba,Forró,Axé,Pop,Eletrônica,Reggaeton,Hip Hop,MPB,Rock,Brega,Arrocha,Trap,Indie,K-pop,Jazz,Blues);
+                              categories: boolean-flags ({key: true|false}) (possivéis opções de chave: open_bar,day_party,lista_amiga);
+                              event_type: string (possivéis opções: carnaval,reveillon);
+                             `,
           },
 
           {
