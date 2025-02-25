@@ -10,7 +10,7 @@
       v-for="tab in tabs"
       :key="tab.value"
       :value="tab.value"
-      :to="tab.to"
+      :to="props.useRouting ? tab.to : undefined"
       class="text-subtitle-2 px-0 mr-4 w-min-0"
       exact
       variant="plain"
