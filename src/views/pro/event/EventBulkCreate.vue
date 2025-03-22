@@ -220,6 +220,8 @@ const selection = ref({
   opened: false,
 });
 
+console.log({ firebaseStore });
+
 function openEditDialog(index) {
   selection.value.index = index;
   selection.value.edit = true;
