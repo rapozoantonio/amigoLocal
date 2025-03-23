@@ -277,6 +277,27 @@ const routes = [
     ],
   },
   {
+    path: "/prod",
+    component: () => import(/* webpackChunkName: "pro-layout" */ "@/layouts/prod/LayoutProd.vue"),
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: "events/list",
+        name: "prod-events-list",
+        component: () => import(/* webpackChunkName: "pro-events" */ "@/views/prod/event/ProdEventList.vue"),
+      },
+      {
+        path: "event",
+        name: "prod-event",
+        component: () => import(/* webpackChunkName: "pro-events" */ "@/views/prod/event/ProdEventDetail.vue"),
+      },
+      {
+        path: "events/create",
+        name: "prod-events-create",
+        component: () => import(/* webpackChunkName: "pro-events" */ "@/views/prod/event/EventCreate.vue"),
+      },]
+  },
+  {
     path: "/admin",
     component: () => import(/* webpackChunkName: "admin-layout" */ "@/layouts/admin/LayoutAdmin.vue"),
     meta: {
