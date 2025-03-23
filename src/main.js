@@ -1,5 +1,4 @@
-// Style imports - ordered by priority
-import '@/styles/fonts.css' // Add this new import for font definitions
+import '@/styles/fonts.css'
 import '@/styles/settings.scss'
 import '@vuepic/vue-datepicker/dist/main.css'
 import 'flag-icons/css/flag-icons.min.css'
@@ -10,6 +9,9 @@ import { createApp } from 'vue'
 // Plugins
 import { registerPlugins } from '@/plugins'
 import VueDatePicker from '@vuepic/vue-datepicker'
+
+// Replace vue-meta with @vueuse/head
+import { createHead } from '@vueuse/head'
 
 // PWA registration
 import { registerSW } from 'virtual:pwa-register'
@@ -35,6 +37,10 @@ if (process.env.NODE_ENV === 'development') {
 
 // Create and configure app
 const app = createApp(App)
+
+// Create and register the head
+const head = createHead()
+app.use(head)
 
 // Register plugins
 registerPlugins(app)
