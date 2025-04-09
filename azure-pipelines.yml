@@ -1,0 +1,23 @@
+trigger:
+  - master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self
+  persistCredentials: true  # This is crucial for PR Bot to work
+  
+- task: AzurePRBot@1
+  displayName: 'AI PR Review'
+  inputs:
+    provider: 'openai'
+    api_key: $(OPENAI_API_KEY)
+    model: 'gpt-4o'
+    ignore_patterns: |
+      **/*.md
+      **/*.json
+      package-lock.json
+    custom_instructions: |
+      Focus on code quality, potential bugs, and adherence to best practices.
+      Pay attention to performance issues and security concerns.
