@@ -1,7 +1,7 @@
 trigger:
   - master
 pool:
-  name: Default  # Try this first
+  vmImage: 'ubuntu-latest'  # Using Microsoft-hosted Ubuntu agent
 steps:
 - checkout: self
   persistCredentials: true
