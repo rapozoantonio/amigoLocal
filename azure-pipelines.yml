@@ -1,9 +1,7 @@
 trigger:
   - master
-
 pool:
-  vmImage: 'ubuntu-latest'
-
+  name: Default  # Change this to use your self-hosted agent pool
 steps:
 - checkout: self
   persistCredentials: true  # This is crucial for PR Bot to work
