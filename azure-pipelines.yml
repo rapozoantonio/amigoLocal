@@ -1,10 +1,10 @@
 trigger:
   - master
 pool:
-  name: Default  # Change this to use your self-hosted agent pool
+  name: Default  # Try this first
 steps:
 - checkout: self
-  persistCredentials: true  # This is crucial for PR Bot to work
+  persistCredentials: true
   
 - task: AzurePRBot@1
   displayName: 'AI PR Review'
