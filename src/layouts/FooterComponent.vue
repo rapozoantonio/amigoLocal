@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import FlagIcon from "@/components/FlagIcon.vue";
+import FlagIcon from "@/promotion/components/FlagIcon.vue";
 
 const items = [
   {

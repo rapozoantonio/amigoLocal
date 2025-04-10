@@ -1,11 +1,15 @@
 // vite.config.js
 import { fileURLToPath, URL } from "node:url";
+import path from "path"; // Add this import
 import { VitePWA } from "vite-plugin-pwa";
 import ViteFonts from "unplugin-fonts/vite";
 import { defineConfig } from "vite";
 import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 import compression from "vite-plugin-compression";
 import vue from "@vitejs/plugin-vue";
+
+// Use destructuring to get resolve from path
+const { resolve } = path; // Add this line
 
 // Helper to create compression plugin with common options
 const createCompressionPlugin = (algorithm) =>
@@ -132,6 +136,11 @@ export default defineConfig({
     sourcemap: process.env.NODE_ENV !== "production",
 
     rollupOptions: {
+      input: {
+        promotion: resolve(__dirname, 'promotion.html'),
+        management: resolve(__dirname, 'management.html'),
+        tickets: resolve(__dirname, 'tickets.html')
+      },
       output: {
         manualChunks: (id) => {
           // Vendor chunks

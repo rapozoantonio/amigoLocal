@@ -83,8 +83,8 @@ import { ref } from "vue";
 
 import { useDisplay } from "vuetify/lib/framework.mjs";
 
-import ProfileButton from "@/components/interface/ProfileButton.vue";
-import { useAuthStore } from "@/store/auth";
+import ProfileButton from "@/promotion/components/interface/ProfileButton.vue";
+import { useAuthStore } from "@/promotion/store/auth";
 
 const auth = useAuthStore();
 
