@@ -4,7 +4,10 @@
   "private": true,
   "scripts": {
     "dev": "vite --host",
-    "build": "vite build",
+    "build": "npm run build:promotion && npm run build:management && npm run build:tickets",
+    "build:promotion": "vite build --config vite.config.js --outDir dist/promotion",
+    "build:management": "vite build --config vite.config.js --outDir dist/management",
+    "build:tickets": "vite build --config vite.config.js --outDir dist/tickets",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore"
   },

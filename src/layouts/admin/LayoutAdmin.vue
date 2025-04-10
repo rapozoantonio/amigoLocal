@@ -11,5 +11,5 @@
 import AdminBar from "./AdminAppBar.vue";
 import AdminView from "./AdminView.vue";
 import FooterComponent from "../FooterComponent.vue";
-import LoadingOverlay from "@/components/interface/LoadingOverlay.vue";
+import LoadingOverlay from "@/layouts/components/LoadingOverlay.vue";
 </script>

@@ -4,8 +4,8 @@
  * Automatically included in `./src/main.js`
  */
 
-import router from '../router';
-import pinia from '../store';
+import router from '../promotion/router';
+import pinia from '../promotion/store';
 import helpers from './helpers';
 import swal from './sweetalert';
 // Plugins
