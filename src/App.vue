@@ -3,23 +3,17 @@
 </template>
 
 <script setup>
-import {
-  onMounted,
-  ref,
-} from 'vue';
+import { onMounted, ref } from 'vue'
+import useSeo from '@/composables/useSeo'
 
-const mounted = ref(false);
+// Use default SEO settings by calling useSeo with no parameters
+useSeo()
 
-// import { useConfigStore } from './store/config';
-
-// const configStore = useConfigStore();
+const mounted = ref(false)
 
 onMounted(() => {
-  // configStore.init();
-
-  mounted.value = true;
+  mounted.value = true
 })
-
 </script>
 
 <style>
@@ -73,17 +67,14 @@ label.required:after {
 .animated-gradient {
   animation: animateBg 3s linear infinite;
   animation-direction: alternate;
-  /* background-image: linear-gradient(90deg, #25f800, #1100f8, #ffe607, #f70000); */
   background-image: linear-gradient(90deg, #780101, #2b2926, #780101, #2b2926);
   background-size: 300% 100%;
-
 }
 
 @keyframes animateBg {
   0% {
     background-position: 100% 0%;
   }
-
   100% {
     background-position: 50% 0%;
   }
@@ -98,11 +89,8 @@ label.required:after {
   width: 100%;
   min-height: 300px;   
   filter: blur(30px) brightness(0.3);
-
-  /* Dark red/gray/black layered gradients */
   background-color: #0a0a0a;
   background-image:
-    /* Subtle repeating radial “noise” */
     repeating-radial-gradient(
       circle at 50% 50%, 
       rgba(255, 255, 255, 0.02),
@@ -110,7 +98,6 @@ label.required:after {
       transparent 3px,
       transparent 30px
     ),
-    /* Soft radial hotspots of deep red */
     radial-gradient(
       circle at 20% 30%, 
       rgba(60, 0, 0, 0.3), 
@@ -121,7 +108,6 @@ label.required:after {
       rgba(100, 0, 0, 0.2), 
       transparent 70%
     ),
-    /* Main linear gradient from blackish grey to red */
     linear-gradient(
       to bottom right,
       #000 0%,

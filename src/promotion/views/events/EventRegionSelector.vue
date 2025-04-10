@@ -50,9 +50,6 @@
                       'elevation-2': selectedCountry === country.code,
                     }"
                     height="56"
-                    :color="
-                      selectedCountry === country.code ? 'primary' : 'surface'
-                    "
                     @click="selectCountry(country.code)"
                   >
                     <div class="d-flex align-center justify-start w-100">
@@ -72,9 +69,7 @@
             <!-- Region selection with animation -->
             <v-expand-transition>
               <v-sheet
-                v-if="
-                  selectedCountry && regions?.[selectedCountry.toUpperCase()]
-                "
+                v-if="selectedCountry && regions?.[selectedCountry.toUpperCase()]"
               >
                 <v-divider class="mb-6"></v-divider>
 
@@ -84,7 +79,7 @@
 
                 <v-row class="region-grid">
                   <v-col
-                    v-for="region in regions[selectedCountry.toUpperCase()]"
+                    v-for="region in regionsWithEventCount"
                     :key="region.id"
                     cols="12"
                     sm="6"
@@ -97,13 +92,20 @@
                         params: { country: selectedCountry, region: region.id },
                       }"
                       height="56"
-                      :color="
-                        selectedRegion === region.id ? 'primary' : 'surface'
-                      "
                       class="region-btn text-none"
+                      :class="{ 'no-events': region.eventCount === 0 }"
                       @click="selectedRegion = region.id"
                     >
-                      {{ region.name }}
+                      <div class="d-flex align-center justify-between w-100">
+                        <span>{{ region.name }}</span>
+                        <!-- Badge showing number of events in the region -->
+                        <v-badge
+                          :content="region.eventCount"
+                          class="ml-4"
+                          color="primary"
+                          overlap
+                        ></v-badge>
+                      </div>
                     </v-btn>
                   </v-col>
                 </v-row>
@@ -119,10 +121,13 @@
 <script setup>
 import { computed, ref, onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
-import { useConfigStore } from "@/promotion/store/config";
+import { useConfigStore } from "@/store/config";
+// Import the events store to determine event counts per region
+import { useEventsStore } from "@/store/events";
 
 const configStore = useConfigStore();
 const { countries, regions } = storeToRefs(configStore);
+const eventsStore = useEventsStore();
 
 const selectedCountry = ref("BR");
 const selectedRegion = ref(null);
@@ -135,26 +140,36 @@ const filteredCountries = computed(() => {
   const query = searchQuery.value.toLowerCase().trim();
   const allCountries = countries.value.filter((c) => c.featured);
 
-  // If no search query, return all featured countries
+  // If no search query, return all featured countries and reset country selection to BR
   if (!query) {
-    selectedCountry.value = "BR"; // Reset to Brasil when search is cleared
+    selectedCountry.value = "BR";
     return allCountries;
   }
 
-  // Search in countries and their regions
   return allCountries.filter((country) => {
-    // Check country names and codes
-    const matchesCountry = 
+    const matchesCountry =
       country.names.pt.toLowerCase().includes(query) ||
       country.code.toLowerCase().includes(query);
-
-    // Check regions if they exist for this country
     const countryRegions = regions.value?.[country.code.toUpperCase()] || [];
-    const matchesRegion = countryRegions.some(region => 
+    const matchesRegion = countryRegions.some((region) =>
       region.name.toLowerCase().includes(query)
     );
-
     return matchesCountry || matchesRegion;
+  });
+});
+
+// Computed property to add event count to each region of the selected country.
+const regionsWithEventCount = computed(() => {
+  const countryCode = selectedCountry.value.toUpperCase();
+  const allRegions = regions.value?.[countryCode] || [];
+  return allRegions.map((region) => {
+    // Count events that have a matching region id.
+    const eventCount = eventsStore.events
+      ? eventsStore.events.filter(
+          (event) => event.region && event.region.id === region.id
+        ).length
+      : 0;
+    return { ...region, eventCount };
   });
 });
 
@@ -162,15 +177,17 @@ const filteredCountries = computed(() => {
 function selectCountry(code) {
   selectedCountry.value = code;
   selectedRegion.value = null;
-  searchQuery.value = ""; // Clear search when country is selected
+  searchQuery.value = ""; // Clear search when a country is selected
 
-  // Smooth scroll with offset for mobile
+  // Smooth scroll with offset for mobile to the region section.
   setTimeout(() => {
     const regionSection = document.querySelector(".region-grid");
     if (regionSection) {
       const offset = 80;
-      const top = regionSection.getBoundingClientRect().top + window.pageYOffset - offset;
-
+      const top =
+        regionSection.getBoundingClientRect().top +
+        window.pageYOffset -
+        offset;
       window.scrollTo({
         top,
         behavior: "smooth",
@@ -179,7 +196,7 @@ function selectCountry(code) {
   }, 100);
 }
 
-// Reset function for when search is cleared
+// Reset function for when search is cleared.
 function handleSearchClear() {
   if (!searchQuery.value) {
     selectedCountry.value = "BR";
@@ -187,7 +204,7 @@ function handleSearchClear() {
   }
 }
 
-// Watch for search query changes
+// Watch for changes in the search query.
 watch(searchQuery, (newValue) => {
   if (!newValue) {
     handleSearchClear();
@@ -224,6 +241,11 @@ onMounted(() => {
 .loading-card {
   max-width: 600px;
   margin: 0 auto;
+}
+
+/* Style for regions with no events */
+.no-events {
+  opacity: 0.6;
 }
 
 /* Mobile optimizations */

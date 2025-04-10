@@ -267,7 +267,8 @@ function buscar() {
     router.push({
       query: {
         ...route.query,
-        dateRange: [],
+        startDate: '',
+        endDate:''
       },
     });
   }
