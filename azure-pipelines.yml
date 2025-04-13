@@ -15,6 +15,24 @@ steps:
   condition: succeededOrFailed()
 
 - script: |
+    echo "===== BUILD CONTEXT INFORMATION ====="
+    echo "Build.Reason: $(Build.Reason)"
+    echo "Build.SourceBranch: $(Build.SourceBranch)"
+    echo "System.PullRequest.SourceBranch: $(System.PullRequest.SourceBranch)"
+    echo "System.PullRequest.TargetBranch: $(System.PullRequest.TargetBranch)"
+    echo "System.PullRequest.PullRequestId: $(System.PullRequest.PullRequestId)"
+    
+    echo "===== OPENAI API KEY CHECK ====="
+    # Safely check if API key exists without revealing it
+    if [ -n "$(OPENAI_API_KEY)" ]; then
+      echo "OPENAI_API_KEY is set (length: ${#OPENAI_API_KEY})"
+    else
+      echo "WARNING: OPENAI_API_KEY is not set!"
+    fi
+  displayName: 'Check build context'
+  condition: succeededOrFailed()
+
+- script: |
     echo "===== DETAILED TASK DIRECTORY INSPECTION ====="
     echo "Looking for tasks in the standard locations:"
     
@@ -58,6 +76,7 @@ steps:
       Focus on code quality, potential bugs, and adherence to best practices.
       Pay attention to performance issues and security concerns.
   continueOnError: true
+  timeoutInMinutes: 10
 
 - script: |
     echo "===== POST-EXECUTION DIAGNOSTICS ====="
@@ -96,4 +115,16 @@ steps:
       echo "Task directory not found after execution"
     fi
   displayName: 'Post-execution diagnostics'
+  condition: succeededOrFailed()
+
+- script: |
+    echo "===== TASK EXECUTION LOG CHECK ====="
+    echo "Checking recent agent logs for task execution details..."
+    
+    # Find and display any relevant log files
+    find /home/vsts -type f -name "*.log" -mmin -15 | xargs grep -l "AzurePRBot" | xargs cat 2>/dev/null || echo "No recent logs found with task mentions"
+    
+    echo "Checking Azure DevOps task execution logs..."
+    find /home/vsts/.azure-pipelines -type f -name "*.log" -mmin -15 2>/dev/null | xargs grep -l "AzurePRBot" | xargs cat 2>/dev/null || echo "No task execution logs found"
+  displayName: 'Check task logs'
   condition: succeededOrFailed()
