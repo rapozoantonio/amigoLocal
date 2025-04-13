@@ -6,6 +6,20 @@ steps:
 - checkout: self
   persistCredentials: true
   
+- script: |
+    echo "Cleaning task cache..."
+    if [ -d "$(Agent.ToolsDirectory)/_tasks/AzurePRBot_*" ]; then
+      rm -rf $(Agent.ToolsDirectory)/_tasks/AzurePRBot_*
+    fi
+  displayName: 'Clean task cache'
+  condition: succeededOrFailed()
+
+- script: |
+    echo "Checking for task files..."
+    find $(Agent.ToolsDirectory) -name "AzurePRBot" || echo "No task files found yet"
+  displayName: 'Debug - Check task files before'
+  condition: succeededOrFailed()
+  
 - task: AzurePRBot@1
   displayName: 'AI PR Review'
   inputs:
@@ -18,3 +32,9 @@ steps:
     custom_instructions: |
       Focus on code quality, potential bugs, and adherence to best practices.
       Pay attention to performance issues and security concerns.
+
+- script: |
+    echo "Checking installed task version after execution..."
+    find $(Agent.ToolsDirectory)/_tasks -name "AzurePRBot*" | xargs ls -la || echo "No task files found"
+  displayName: 'Check task version after'
+  condition: succeededOrFailed()
