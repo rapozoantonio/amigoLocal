@@ -1,5 +1,10 @@
 trigger:
   - master
+
+# Add this section to reference your variable group
+variables:
+  - group: PR-Bot-Variables
+
 pool:
   vmImage: 'ubuntu-latest'
 steps:
