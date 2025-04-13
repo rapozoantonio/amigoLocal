@@ -15,9 +15,34 @@ steps:
   condition: succeededOrFailed()
 
 - script: |
-    echo "Checking for task files..."
-    find $(Agent.ToolsDirectory) -name "AzurePRBot" || echo "No task files found yet"
-  displayName: 'Debug - Check task files before'
+    echo "===== DETAILED TASK DIRECTORY INSPECTION ====="
+    echo "Looking for tasks in the standard locations:"
+    
+    echo "1. Agent tools directory:"
+    ls -la $(Agent.ToolsDirectory)/_tasks/ 2>/dev/null || echo "No _tasks directory found"
+    
+    echo "2. Work directory:"
+    ls -la /home/vsts/work/_tasks/ 2>/dev/null || echo "No work/_tasks directory found"
+    
+    echo "3. Checking for existing AzurePRBot task:"
+    find /home -name "AzurePRBot*" -type d 2>/dev/null || echo "No AzurePRBot directories found"
+    
+    echo "4. Check task installation directory structure:"
+    TASK_DIR=$(find /home -name "AzurePRBot_018f87db-0fa6-79f2-8a8a-7661bb024e67" -type d 2>/dev/null | head -1)
+    if [ ! -z "$TASK_DIR" ]; then
+      echo "Found task directory: $TASK_DIR"
+      echo "Listing contents:"
+      ls -la "$TASK_DIR"
+      
+      echo "Checking version directories:"
+      ls -la "$TASK_DIR"/* 2>/dev/null
+      
+      echo "Checking for dist/index.js:"
+      find "$TASK_DIR" -name "index.js" 2>/dev/null
+    else
+      echo "Task directory not found"
+    fi
+  displayName: 'Pre-execution diagnostics'
   condition: succeededOrFailed()
   
 - task: AzurePRBot@1
@@ -32,9 +57,43 @@ steps:
     custom_instructions: |
       Focus on code quality, potential bugs, and adherence to best practices.
       Pay attention to performance issues and security concerns.
+  continueOnError: true
 
 - script: |
-    echo "Checking installed task version after execution..."
-    find $(Agent.ToolsDirectory)/_tasks -name "AzurePRBot*" | xargs ls -la || echo "No task files found"
-  displayName: 'Check task version after'
+    echo "===== POST-EXECUTION DIAGNOSTICS ====="
+    echo "1. Checking task installation after execution:"
+    find /home -name "AzurePRBot*" -type d 2>/dev/null || echo "No AzurePRBot directories found"
+    
+    echo "2. Check task.json and version details:"
+    TASK_DIR=$(find /home -name "AzurePRBot_018f87db-0fa6-79f2-8a8a-7661bb024e67" -type d 2>/dev/null | head -1)
+    if [ ! -z "$TASK_DIR" ]; then
+      echo "Found task directory: $TASK_DIR"
+      
+      echo "Listing version directories:"
+      ls -la "$TASK_DIR"
+      
+      for VERSION_DIR in "$TASK_DIR"/*/ ; do
+        echo "Examining version directory: $VERSION_DIR"
+        ls -la "$VERSION_DIR"
+        
+        echo "Checking for task.json:"
+        if [ -f "$VERSION_DIR/task.json" ]; then
+          echo "task.json found, checking contents:"
+          cat "$VERSION_DIR/task.json" | grep -E '"version"|"execution"'
+        else
+          echo "No task.json found"
+        fi
+        
+        echo "Checking for dist directory:"
+        if [ -d "$VERSION_DIR/dist" ]; then
+          echo "dist directory found, contents:"
+          ls -la "$VERSION_DIR/dist/"
+        else
+          echo "No dist directory found"
+        fi
+      done
+    else
+      echo "Task directory not found after execution"
+    fi
+  displayName: 'Post-execution diagnostics'
   condition: succeededOrFailed()
