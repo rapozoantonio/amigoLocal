@@ -1,3 +1,13 @@
+TODO:
+
+- MOVE UI FILES FROM VIP-LISTS TO MANAGEMENT BUNDLE
+- START WITH COLLECTIONS AND SMALL FIXES
+- ADD STRIPE PAYMENT METHOD
+- START TESTING/ PRODUCTION
+
+
+
+
 Here's the updated README based on your requests, including all the key points you've mentioned:
 
 ---

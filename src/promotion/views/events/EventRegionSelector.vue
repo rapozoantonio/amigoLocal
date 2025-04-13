@@ -121,9 +121,9 @@
 <script setup>
 import { computed, ref, onMounted, watch } from "vue";
 import { storeToRefs } from "pinia";
-import { useConfigStore } from "@/store/config";
+import { useConfigStore } from "@/promotion/store/config";
 // Import the events store to determine event counts per region
-import { useEventsStore } from "@/store/events";
+import { useEventsStore } from "@/promotion/store/events";
 
 const configStore = useConfigStore();
 const { countries, regions } = storeToRefs(configStore);
