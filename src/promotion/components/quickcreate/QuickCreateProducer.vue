@@ -52,10 +52,10 @@ import { storeToRefs } from 'pinia';
 
 import FieldCountry from '@/promotion/components/fields/FieldCountry.vue';
 import FieldRegion from '@/promotion/components/fields/FieldRegion.vue';
-import FormBox from '@/promotion/components/form/FormBox.vue';
+import FormBox from '@/core/components/form/FormBox.vue';
 import FormCard from '@/promotion/components/form/FormCard.vue';
 import FormDialog from '@/promotion/components/form/FormDialog.vue';
-import producerSchema from '@/schemas/quickProducerSchema';
+import producerSchema from '@/core/schemas/quickProducerSchema';
 import { useProducerStore } from '@/promotion/store/producer';
 
 FormCard

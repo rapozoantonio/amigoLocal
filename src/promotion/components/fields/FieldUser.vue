@@ -55,7 +55,7 @@ import { defineModel, inject, ref } from "vue";
 
 import { storeToRefs } from "pinia";
 
-import userSchema from "@/schemas/quickUserSchema";
+import userSchema from "@/core/schemas/quickUserSchema";
 import { useConfigStore } from "@/promotion/store/config";
 import { useUserStore } from "@/promotion/store/user";
 import { useUsersStore } from "@/store/users";

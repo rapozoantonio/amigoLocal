@@ -68,7 +68,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useAuthStore } from "@/promotion/store/auth";
+import { useAuthStore } from "@/core/store/auth";
 import { useTheme } from 'vuetify'
 
 const route = useRoute();

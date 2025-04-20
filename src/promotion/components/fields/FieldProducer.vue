@@ -81,7 +81,7 @@ import { defineModel, inject, ref } from "vue";
 import { storeToRefs } from "pinia";
 
 import QuickCreateProducer from "@/promotion/components/quickcreate/QuickCreateProducer.vue";
-import producerSchema from "@/schemas/quickProducerSchema";
+import producerSchema from "@/core/schemas/quickProducerSchema";
 import { useConfigStore } from "@/promotion/store/config";
 import { useProducerStore } from "@/promotion/store/producer";
 import { useProducersStore } from "@/promotion/store/producers";

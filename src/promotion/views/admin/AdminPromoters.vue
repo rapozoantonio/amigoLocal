@@ -70,9 +70,9 @@ import {
     functions,
     httpsCallable,
 } from '@/core/plugins/firebase';
-import promoterRequestSchema from '@/schemas/promoterRequestSchema';
+import promoterRequestSchema from '@/core/schemas/promoterRequestSchema';
 import { useAppStore } from '@/promotion/store/app';
-import { useFirebaseStore } from '@/promotion/store/firebase';
+import { useFirebaseStore } from '@/core/store/firebase';
 
 const appStore = useAppStore();
 const loading = ref(false)

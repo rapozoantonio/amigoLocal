@@ -24,9 +24,9 @@ import {
 // VARIABLES
 import countries from '@/core/assets/countries.js';
 import FormCard from '@/promotion/components/form/FormCard.vue';
-import locationSchema from '@/schemas/locationSchema';
+import locationSchema from '@/core/schemas/locationSchema';
 // FIREBASE
-import { useFirebaseStore } from '@/promotion/store/firebase';
+import { useFirebaseStore } from '@/core/store/firebase';
 import { Loader } from '@googlemaps/js-api-loader';
 
 const firebaseStore = useFirebaseStore();

@@ -8,7 +8,7 @@ import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";
 
 import { useAppStore } from "./app";
-import { useFirebaseStore } from "./firebase";
+import { useFirebaseStore } from "../../core/store/firebase";
 
 export const useEventStore = defineStore("event", () => {
   const firebaseStore = useFirebaseStore();

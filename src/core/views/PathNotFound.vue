@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pa-0 bg-black min-h-screen">
+  <v-container class="pa-0 bg-black min-h-screen">
     <v-row align="center" justify="center" class="ma-0 fill-height">
       <v-col cols="12" sm="8" md="6" class="pa-4">
         <v-card flat color="transparent" class="text-center pa-4">

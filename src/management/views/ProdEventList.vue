@@ -1,5 +1,5 @@
 <template>
-  <v-container class="event-container" fluid>
+  <v-container>
     <!-- Skeleton loader for improved perceived performance -->
     <v-sheet v-if="loading" class="w-100">
       <v-skeleton-loader
@@ -133,9 +133,10 @@
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify/lib/framework.mjs";
-import EventListItem from "@/promotion/components/prod/event/EventListItem.vue";
-import FloatingActionButton from "@/promotion/components/prod/event/FloatingActionButton.vue";
-import NewEventModal from "@/promotion/components/prod/event/NewEventModal.vue"; // Import the new modal component
+import EventListItem from "@/management/components/events/EventListItem.vue";
+import FloatingActionButton from "@/management/components/FloatingActionButton.vue";
+import NewEventModal from "@/management/components/events/NewEventModal.vue";
+import { eventsData } from "@/management/consts/eventListMockData"; 
 
 const router = useRouter();
 const { xs, name: displayName } = useDisplay();
@@ -145,14 +146,14 @@ const loadingMore = ref(false);
 const hasMoreEvents = ref(true);
 const deleteDialog = ref(false);
 const eventToDelete = ref(null);
-const newEventModalVisible = ref(false); // State for new event modal visibility
+const newEventModalVisible = ref(false);
 
 // References and scroll state
 const filtersContainer = ref(null);
 
 // Search and filters
 const searchQuery = ref("");
-const activeFilter = ref("upcoming"); // Using a single filter control instead of an object
+const activeFilter = ref("upcoming");
 
 // Pagination
 const page = ref(1);
@@ -160,66 +161,6 @@ const eventsPerPage = 10;
 
 // Events data - replace with API calls in production
 const events = ref([]);
-
-// Updated eventsData with revenue information
-const eventsData = [
-  {
-    id: 1,
-    name: "Festa de Lançamento",
-    date: new Date(new Date().getTime() + 86400000 * 7), // 7 days in future
-    location: "Club XYZ, São Paulo",
-    checkInCount: 0,
-    totalGuests: 250,
-    status: "upcoming",
-    thumbnail: "https://picsum.photos/id/103/300/200",
-    vipListsCount: 3,
-    promotersCount: 5,
-    revenue: 15500,
-    revenuePrediction: 10000,
-  },
-  {
-    id: 2,
-    name: "Noite Eletrônica",
-    date: new Date(new Date().getTime() + 86400000 * 14), // 14 days in future
-    location: "Espaço Cultural, Rio de Janeiro",
-    checkInCount: 0,
-    totalGuests: 180,
-    status: "upcoming",
-    thumbnail: "https://picsum.photos/id/106/300/200",
-    vipListsCount: 2,
-    promotersCount: 4,
-    revenue: 8000,
-    revenuePrediction: 12000,
-  },
-  {
-    id: 3,
-    name: "Aniversário Club",
-    date: new Date(new Date().getTime() - 86400000 * 7), // 7 days in past
-    location: "Club ABC, Belo Horizonte",
-    checkInCount: 143,
-    totalGuests: 150,
-    status: "completed",
-    thumbnail: "https://picsum.photos/id/109/300/200",
-    vipListsCount: 2,
-    promotersCount: 3,
-    revenue: 35000,
-    revenuePrediction: 20000,
-  },
-  {
-    id: 4,
-    name: "Festival de Verão",
-    date: new Date(new Date().getTime() + 86400000 * 30), // 30 days in future
-    location: "Praia Grande, Santos",
-    checkInCount: 0,
-    totalGuests: 500,
-    status: "upcoming",
-    thumbnail: "https://picsum.photos/id/110/300/200",
-    vipListsCount: 5,
-    promotersCount: 8,
-    revenue: 0, // No revenue yet for future event
-    revenuePrediction: 75000,
-  },
-];
 
 // Mock API call to fetch events
 const fetchEvents = async () => {
@@ -375,73 +316,3 @@ onUnmounted(() => {
   window.removeEventListener("scroll", handleScroll);
 });
 </script>
-
-<style scoped>
-.event-container {
-  padding-top: 16px;
-  padding-bottom: 80px; /* Extra space for FAB */
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-}
-
-.events-content {
-  margin-bottom: 72px; /* Space for FAB */
-}
-
-.event-list-enter-active,
-.event-list-leave-active {
-  transition: all 0.3s ease;
-}
-
-.event-list-enter-from,
-.event-list-leave-to {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.filters-container {
-  position: sticky;
-  top: 64px; /* Adjust based on your app bar height */
-  z-index: 4;
-  background-color: var(--v-theme-background);
-  padding-top: 12px;
-  padding-bottom: 12px;
-  transition: box-shadow 0.3s ease;
-}
-
-/* Add shadow when scrolled to indicate "sticky" status */
-.filters-container.is-sticky {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Responsive adjustments */
-@media (min-width: 960px) {
-  .event-container {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-
-/* Optimize for mobile scrolling performance */
-.event-list {
-  will-change: transform;
-  overscroll-behavior: contain;
-}
-
-/* Empty state centering */
-.empty-state {
-  min-height: 40vh;
-}
-
-/* Search field style adjustments */
-.search-field {
-  border-radius: 24px;
-}
-
-@media (max-width: 599px) {
-  .filters-container {
-    top: 56px; /* Smaller top offset for mobile */
-  }
-}
-</style>

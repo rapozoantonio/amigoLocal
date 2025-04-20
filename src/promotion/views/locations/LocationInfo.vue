@@ -51,7 +51,7 @@ import EventHorizontalList from "@/promotion/components/events/EventHorizontalLi
 import EventListNextEvents from "@/promotion/components/events/EventListNextEvents.vue";
 import FollowButton from "@/promotion/components/interface/FollowButton.vue";
 import CardMetric from "@/promotion/components/metrics/CardMetric.vue";
-import { event } from "@/schemas/event.js";
+import { event } from "@/core/schemas/event.js";
 import { useEventsStore } from "@/promotion/store/events";
 import { useLocationsStore } from "@/promotion/store/locations";
 

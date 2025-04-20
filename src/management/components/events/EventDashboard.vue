@@ -433,8 +433,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
-import FourStatCards from "@/promotion/components/prod/event/FourStatCards.vue";
-import HealthScore from "@/promotion/components/prod/event/HealthScore.vue";
+import FourStatCards from "@/management/components/events/FourStatCards.vue";
+import HealthScore from "@/management/components/events/HealthScore.vue";
 
 const props = defineProps({
   event: {

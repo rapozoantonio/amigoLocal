@@ -7,7 +7,7 @@ import { useRouter } from "vue-router";
 
 import { auth } from "@/core/plugins/firebase";
 
-import { useFirebaseStore } from "./firebase";
+import { useFirebaseStore } from "../../core/store/firebase";
 
 export const useUserStore = defineStore("user", () => {
   const user = ref(null);

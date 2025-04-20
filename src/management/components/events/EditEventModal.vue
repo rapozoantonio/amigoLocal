@@ -1,18 +1,19 @@
 <template>
   <v-dialog
     v-model="dialogVisible"
-    fullscreen
+    :fullscreen="$vuetify.display.xs"
+    :max-width="$vuetify.display.xs ? '100%' : '600px'"
     :scrim="true"
     transition="dialog-bottom-transition"
     :retain-focus="false"
   >
-    <v-card class="new-event-modal">
+    <v-card class="edit-event-modal">
       <!-- Modal header with close button -->
       <v-toolbar dark color="primary">
         <v-btn icon @click="closeDialog" class="me-2">
           <v-icon>mdi-close</v-icon>
         </v-btn>
-        <v-toolbar-title>Novo Evento</v-toolbar-title>
+        <v-toolbar-title>Editar Evento</v-toolbar-title>
         <v-spacer></v-spacer>
       </v-toolbar>
 
@@ -129,6 +130,69 @@
                 ></v-text-field>
               </v-col>
             </v-row>
+
+            <!-- Status selector -->
+            <v-row>
+              <v-col cols="12">
+                <v-select
+                  v-model="eventData.status"
+                  :items="statusOptions"
+                  :rules="statusRules"
+                  label="Status"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                  prepend-inner-icon="mdi-tag"
+                  class="mb-3"
+                ></v-select>
+              </v-col>
+            </v-row>
+
+            <!-- Revenue prediction -->
+            <v-row>
+              <v-col cols="12">
+                <v-text-field
+                  v-model="eventData.revenuePrediction"
+                  label="Meta de receita (R$)"
+                  placeholder="Digite a meta de receita"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                  prepend-inner-icon="mdi-currency-usd"
+                  type="number"
+                  class="mb-3"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+
+            <!-- Image upload -->
+            <v-row>
+              <v-col cols="12">
+                <v-file-input
+                  v-model="eventData.thumbnailFile"
+                  label="Imagem de capa"
+                  variant="outlined"
+                  density="comfortable"
+                  hide-details="auto"
+                  prepend-inner-icon="mdi-image"
+                  accept="image/*"
+                  class="mb-3"
+                  placeholder="Selecione uma imagem"
+                  truncate-length="15"
+                >
+                  <template v-slot:selection="{ fileNames }">
+                    <template
+                      v-for="(fileName, index) in fileNames"
+                      :key="index"
+                    >
+                      <v-chip size="small" label color="primary" class="me-2">
+                        {{ fileName }}
+                      </v-chip>
+                    </template>
+                  </template>
+                </v-file-input>
+              </v-col>
+            </v-row>
           </v-container>
         </v-form>
       </v-card-text>
@@ -136,39 +200,23 @@
       <!-- Action buttons -->
       <v-divider></v-divider>
       <v-card-actions class="pa-4">
-        <v-row>
-          <!-- On smaller screens, stack buttons -->
-          <v-col
-            cols="12"
-            sm="6"
-            class="d-flex justify-center justify-sm-start mb-2 mb-sm-0"
-          >
-            <v-btn
-              color="primary"
-              variant="flat"
-              width="100%"
-              :disabled="!formValid || loading"
-              @click="saveAndContinue"
-              class="text-none"
-            >
-              <v-icon start>mdi-content-save</v-icon>
-              Salvar e continuar
-            </v-btn>
-          </v-col>
-          <v-col cols="12" sm="6" class="d-flex justify-center justify-sm-end">
-            <v-btn
-              color="grey-darken-1"
-              variant="flat"
-              width="100%"
-              :disabled="!formValid || loading"
-              @click="saveAndClose"
-              class="text-none"
-            >
-              <v-icon start>mdi-content-save-outline</v-icon>
-              Salvar e fechar
-            </v-btn>
-          </v-col>
-        </v-row>
+        <v-spacer></v-spacer>
+        <v-btn
+          color="grey-darken-1"
+          variant="text"
+          @click="closeDialog"
+          :disabled="loading"
+        >
+          Cancelar
+        </v-btn>
+        <v-btn
+          color="primary"
+          variant="flat"
+          :disabled="!formValid || loading"
+          @click="saveEvent"
+        >
+          Salvar alterações
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -176,17 +224,21 @@
 
 <script setup>
 import { ref, computed, watch, nextTick } from "vue";
-import { useRouter } from "vue-router";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 
 const props = defineProps({
   modelValue: {
     type: Boolean,
     default: false,
   },
+  event: {
+    type: Object,
+    required: true,
+  },
 });
 
 const emit = defineEmits(["update:modelValue", "saved"]);
-const router = useRouter();
+const { xs } = useDisplay();
 
 // Dialog visibility state
 const dialogVisible = computed({
@@ -203,12 +255,23 @@ const loading = ref(false);
 const dateMenu = ref(false);
 const timeMenu = ref(false);
 
-// Form data
+// Status options
+const statusOptions = [
+  { title: "Em breve", value: "upcoming" },
+  { title: "Ao vivo", value: "live" },
+  { title: "Realizado", value: "completed" },
+  { title: "Cancelado", value: "cancelled" },
+];
+
+// Form data - initialize with event data
 const eventData = ref({
   name: "",
-  date: new Date().toISOString().substr(0, 10), // Current date in YYYY-MM-DD format
-  time: "20:00", // Default time
+  date: "",
+  time: "",
   location: "",
+  status: "upcoming",
+  revenuePrediction: 0,
+  thumbnailFile: null,
 });
 
 // Format date for display
@@ -233,13 +296,23 @@ const locationRules = [
   (v) => (v && v.length >= 3) || "Local deve ter pelo menos 3 caracteres",
 ];
 
+const statusRules = [(v) => !!v || "Status é obrigatório"];
+
 // Methods
-const resetForm = () => {
+const initializeForm = () => {
+  const eventDate = new Date(props.event.date);
+
   eventData.value = {
-    name: "",
-    date: new Date().toISOString().substr(0, 10),
-    time: "20:00",
-    location: "",
+    name: props.event.name || "",
+    date: eventDate.toISOString().substr(0, 10),
+    time: eventDate.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }),
+    location: props.event.location || "",
+    status: props.event.status || "upcoming",
+    revenuePrediction: props.event.revenuePrediction || 0,
+    thumbnailFile: null,
   };
 
   // Reset validation
@@ -250,7 +323,6 @@ const resetForm = () => {
 
 const closeDialog = () => {
   dialogVisible.value = false;
-  resetForm();
 };
 
 const validateForm = async () => {
@@ -272,101 +344,48 @@ const saveEvent = async () => {
     );
 
     // Create the event object to be saved
-    const newEvent = {
+    const updatedEvent = {
+      ...props.event,
       name: eventData.value.name,
       date: datetime,
       location: eventData.value.location,
-      status: "upcoming",
-      totalGuests: 0,
-      checkInCount: 0,
-      vipListsCount: 0,
-      promotersCount: 0,
-      revenue: 0,
-      revenuePrediction: 0,
+      status: eventData.value.status,
+      revenuePrediction: parseFloat(eventData.value.revenuePrediction) || 0,
     };
 
-    // In a real app, this would be an API call
-    // await eventService.createEvent(newEvent);
-    console.log("Event created:", newEvent);
+    // In a real app, this would be an API call to update the event
+    // await eventService.updateEvent(updatedEvent.id, updatedEvent);
+    console.log("Event updated:", updatedEvent);
 
-    // Emit saved event with mock ID for demo
-    const savedEvent = { ...newEvent, id: Date.now() };
-    emit("saved", savedEvent);
+    // Handle file upload if a new thumbnail was selected
+    if (eventData.value.thumbnailFile) {
+      // In a real app, upload the file to your storage service
+      // const uploadResult = await fileUploadService.uploadEventThumbnail(updatedEvent.id, eventData.value.thumbnailFile);
+      // updatedEvent.thumbnail = uploadResult.url;
+      console.log("Would upload thumbnail:", eventData.value.thumbnailFile);
+    }
 
-    return savedEvent;
+    // Emit saved event with updated data
+    emit("saved", updatedEvent);
+    closeDialog();
   } catch (error) {
-    console.error("Error creating event:", error);
+    console.error("Error updating event:", error);
     // Handle error (show toast notification, etc.)
-    return null;
   } finally {
     loading.value = false;
   }
 };
 
-const saveAndContinue = async () => {
-  const savedEvent = await saveEvent();
-  if (savedEvent) {
-    // Navigate to the event details page
-    router.push(`/event/${savedEvent.id}`);
-    closeDialog();
-  }
-};
-
-const saveAndClose = async () => {
-  const savedEvent = await saveEvent();
-  if (savedEvent) {
-    closeDialog();
-  }
-};
-
-// Reset form when dialog opens
-watch(dialogVisible, (newValue) => {
-  if (newValue) {
-    nextTick(() => {
-      if (form.value) {
-        resetForm();
-      }
-    });
-  }
-});
+// Initialize form when dialog opens or event changes
+watch(
+  () => [dialogVisible.value, props.event],
+  () => {
+    if (dialogVisible.value) {
+      nextTick(() => {
+        initializeForm();
+      });
+    }
+  },
+  { immediate: true }
+);
 </script>
-
-<style scoped>
-.new-event-modal {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* Adjusted card content to handle overflows properly */
-.new-event-modal .v-card-text {
-  flex: 1;
-  overflow-y: auto;
-  padding-bottom: 24px;
-}
-
-/* Ensure the footer sticks to the bottom */
-.new-event-modal .v-card-actions {
-  flex-shrink: 0;
-}
-
-/* Responsive padding adjustments */
-@media (min-width: 600px) {
-  .new-event-modal .v-card-text {
-    padding-left: 24px;
-    padding-right: 24px;
-  }
-
-  .new-event-modal .v-card-actions {
-    padding-left: 24px;
-    padding-right: 24px;
-  }
-}
-
-/* Make dialogs more compact on desktop */
-@media (min-width: 960px) {
-  .v-dialog:not(.v-dialog--fullscreen) {
-    max-width: 600px;
-  }
-}
-</style>

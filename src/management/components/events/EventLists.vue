@@ -221,10 +221,10 @@
 
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import TabFilterComponent from "@/promotion/components/prod/event/TabFilterComponent.vue";
-import FourStatCards from "@/promotion/components/prod/event/FourStatCards.vue";
-import GenericCRUDModal from "@/promotion/components/prod/event/GenericCRUDModal.vue";
-import BulkAddGuestsModal from "@/promotion/components/prod/event/BulkAddGuestsModal.vue";
+import TabFilterComponent from "@/management/components/events/TabFilterComponent.vue";
+import FourStatCards from "@/management/components/events/FourStatCards.vue";
+import GenericCRUDModal from "@/management/components/events/GenericCRUDModal.vue";
+import BulkAddGuestsModal from "@/management/components/events/BulkAddGuestsModal.vue";
 
 // State
 const loading = ref(true);
@@ -486,15 +486,3 @@ const listCards = computed(() => [
 
 onMounted(fetchLists);
 </script>
-
-<style scoped>
-.list-card {
-  transition: transform 0.2s ease;
-}
-.list-card:hover {
-  transform: translateY(-2px);
-}
-.v-progress-linear {
-  transition: width 0.5s ease;
-}
-</style>

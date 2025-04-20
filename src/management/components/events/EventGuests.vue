@@ -329,7 +329,14 @@
 
 <script setup>
 import { ref, computed, onMounted, shallowRef } from 'vue';
-import TabFilterComponent from '@/promotion/components/prod/event/TabFilterComponent.vue';
+import TabFilterComponent from '@/management/components/events/TabFilterComponent.vue';
+import {
+  statusOptions,
+  listOptions,
+  getStatusColor,
+  getStatusText,
+  generateMockGuests
+} from '@/management/consts/guestsMockData';
 
 const loading = ref(true);
 const searchQuery = ref('');
@@ -347,27 +354,6 @@ const formValid = ref(false);
 const formSubmitting = ref(false);
 const actionLoading = ref(false);
 const selectedGuest = shallowRef(null);
-
-// Filter options
-const statusOptions = [
-  { title: 'Todos', value: 'all' },
-  { title: 'Pendentes', value: 'pending' },
-  { title: 'Check-in Realizado', value: 'checked-in' },
-  { title: 'Cancelados', value: 'cancelled' },
-];
-const listOptions = [
-  { title: 'Todas', value: 'all' },
-  { title: 'VIP', value: 'VIP' },
-  { title: 'Promotor Carlos', value: 'Promotor Carlos' },
-  { title: 'Promotor Maria', value: 'Promotor Maria' },
-  { title: 'Pré-venda', value: 'Pré-venda' },
-];
-
-// Status mapping functions
-const statusColorMap = { 'checked-in': 'success', pending: 'warning', cancelled: 'error' };
-const statusTextMap = { 'checked-in': 'Check-in', pending: 'Pendente', cancelled: 'Cancelado' };
-const getStatusColor = (status) => statusColorMap[status] || 'grey';
-const getStatusText = (status) => statusTextMap[status] || 'Desconhecido';
 
 // Form data
 const guestForm = ref({ name: '', email: '', phone: '', document: '', instagram: '', list: 'VIP', vip: false, blacklist: false, });
@@ -410,31 +396,7 @@ const fetchGuests = async () => {
   loading.value = true;
   try {
     await new Promise((resolve) => setTimeout(resolve, 500));
-    const mockGuests = [];
-    const statusValues = ['pending', 'checked-in', 'cancelled'];
-    const lists = ['VIP', 'Promotor Carlos', 'Promotor Maria', 'Pré-venda'];
-    for (let i = 1; i <= itemsPerPage.value; i++) {
-      const id = (currentPage.value - 1) * itemsPerPage.value + i;
-      if (id > 120) break;
-      const status = statusValues[Math.floor(Math.random() * (statusFilter.value === 'all' ? 3 : 1))];
-      if (statusFilter.value !== 'all' && status !== statusFilter.value) continue;
-      const list = lists[Math.floor(Math.random() * lists.length)];
-      if (listFilter.value !== 'all' && list !== listFilter.value) continue;
-      const hasCheckedIn = status === 'checked-in';
-      mockGuests.push({
-        id,
-        name: `Convidado ${id}`,
-        email: `convidado${id}@exemplo.com`,
-        phone: `(11) 9${Math.floor(Math.random() * 10000)}-${Math.floor(Math.random() * 10000)}`,
-        document: `${Math.floor(Math.random() * 1000)}.${Math.floor(Math.random() * 1000)}.${Math.floor(Math.random() * 1000)}-${Math.floor(Math.random() * 100)}`,
-        list,
-        vip: Math.random() > 0.7,
-        status,
-        checkInTime: hasCheckedIn ? new Date(Date.now() - Math.floor(Math.random() * 3600000)) : null,
-        checkInBy: hasCheckedIn ? 'Hostess Ana' : null,
-      });
-    }
-    guests.value = mockGuests;
+    guests.value = generateMockGuests(currentPage.value, itemsPerPage.value, statusFilter.value, listFilter.value);
     totalItems.value = 120;
   } catch (error) {
     console.error('Error fetching guests:', error);
@@ -563,9 +525,7 @@ const deleteGuest = async () => {
   }
 };
 
-// **** New functions to fix "editar" and add guest functionality ****
-
-// Edit guest function (was missing)
+// Edit guest function
 const editGuest = (guest) => {
   // Fill the form with the guest data and open the edit dialog
   guestForm.value = { ...guest };
@@ -611,45 +571,3 @@ const saveGuestEdit = async () => {
 // Initialization
 onMounted(fetchGuests);
 </script>
-
-<style scoped>
-@media (max-width: 600px) {
-  .guest-card {
-    padding: 8px;
-    margin-bottom: 8px;
-  }
-  .guest-name {
-    font-size: 0.875rem;
-    line-height: 1.25;
-  }
-  .status-chip {
-    font-size: 0.65rem;
-    height: 18px;
-  }
-  .action-btn {
-    min-width: 42px;
-    min-height: 42px;
-  }
-  .guest-checked-in {
-    border-left-width: 3px;
-  }
-  .guest-pending {
-    border-left: 3px solid rgb(var(--v-theme-warning));
-  }
-}
-.guest-card {
-  transition: transform 0.2s ease;
-}
-.guest-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-.guest-details {
-  gap: 12px;
-  row-gap: 8px;
-}
-.status-chip {
-  font-weight: 600;
-  letter-spacing: 0.25px;
-}
-</style>

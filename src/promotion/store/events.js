@@ -14,7 +14,7 @@ import {
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
 import { firestore } from "@/core/plugins/firebase";
-import { useFirebaseStore } from "./firebase";
+import { useFirebaseStore } from "../../core/store/firebase";
 import { useRoute, useRouter } from "vue-router";
 
 // Cache configuration

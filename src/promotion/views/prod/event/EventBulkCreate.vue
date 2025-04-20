@@ -194,13 +194,13 @@ import { computed, inject, ref } from "vue";
 
 import { useAppStore } from "@/promotion/store/app";
 import { useChatgptStore } from "@/promotion/store/chatgpt.js";
-import { useFirebaseStore } from "@/promotion/store/firebase.js";
-import eventSchema from "@/schemas/eventSchema";
-import bulkEventSchema from "@/schemas/bulkEventSchema";
-import FormBox from "@/promotion/components/form/FormBox.vue";
+import { useFirebaseStore } from "@/core/store/firebase.js";
+import eventSchema from "@/core/schemas/eventSchema";
+import bulkEventSchema from "@/core/schemas/bulkEventSchema";
+import FormBox from "@/core/components/form/FormBox.vue";
 import { useEventStore } from "@/promotion/store/event";
 import Swal from "sweetalert2";
-import { useAuthStore } from "@/promotion/store/auth";
+import { useAuthStore } from "@/core/store/auth";
 import { useRouter } from "vue-router";
 import FormField from "@/promotion/components/form/FormField.vue";
 const router = useRouter();
