@@ -120,7 +120,7 @@ import {
 // VARIABLES
 import countries from '@/core/assets/countries.js';
 // FIREBASE
-import { useFirebaseStore } from '@/promotion/store/firebase';
+import { useFirebaseStore } from '@/core/store/firebase';
 import { Loader } from '@googlemaps/js-api-loader';
 
 const firebaseStore = useFirebaseStore();

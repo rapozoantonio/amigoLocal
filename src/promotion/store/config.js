@@ -6,7 +6,7 @@ import $countries from "@/core/assets/countries";
 import $genres from "@/core/assets/genres";
 import $regions from "@/core/assets/regions";
 
-import { useFirebaseStore } from "./firebase";
+import { useFirebaseStore } from "../../core/store/firebase";
 
 export const useConfigStore = defineStore("config", () => {
   const eventConfig = ref(null);

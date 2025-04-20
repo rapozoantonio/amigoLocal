@@ -70,7 +70,7 @@ import { storeToRefs } from 'pinia';
 
 import QuickCreateLocation
     from '@/promotion/components/quickcreate/QuickCreateLocation.vue';
-import locationSchema from '@/schemas/locationSchema';
+import locationSchema from '@/core/schemas/locationSchema';
 import { useConfigStore } from '@/promotion/store/config';
 import { useLocationStore } from '@/promotion/store/location';
 import { useLocationsStore } from '@/promotion/store/locations';

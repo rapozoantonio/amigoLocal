@@ -2,7 +2,7 @@ import { ref } from 'vue';
 
 import { defineStore } from 'pinia';
 
-import { useFirebaseStore } from './firebase';
+import { useFirebaseStore } from '../../core/store/firebase';
 
 export const useConfigStore = defineStore("config", () => {
   const countries = ref(null);

@@ -80,7 +80,7 @@ import { defineModel, inject, ref } from "vue";
 
 import { storeToRefs } from "pinia";
 
-import promoterSchema from "@/schemas/quickPromoterSchema";
+import promoterSchema from "@/core/schemas/quickPromoterSchema";
 import { useConfigStore } from "@/promotion/store/config";
 import { usePromoterStore } from "@/promotion/store/promoters";
 import { usePromotersStore } from "@/promotion/store/promoters";

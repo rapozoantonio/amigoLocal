@@ -11,9 +11,9 @@ import { inject, ref, watch } from "vue";
 
 import { storeToRefs } from "pinia";
 import FormCard from "@/promotion/components/form/FormCard.vue";
-import { useFirebaseStore } from "@/promotion/store/firebase";
+import { useFirebaseStore } from "@/core/store/firebase";
 import { useUserStore } from "@/promotion/store/user";
-import promoterSchema from "@/schemas/promoterSchema";
+import promoterSchema from "@/core/schemas/promoterSchema";
 import { useAppStore } from "@/promotion/store/app";
 const appStore = useAppStore();
 const userStore = useUserStore();

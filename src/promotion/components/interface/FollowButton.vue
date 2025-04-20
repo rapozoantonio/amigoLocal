@@ -35,12 +35,12 @@
 <script setup>
 import { computed, ref } from "vue";
 import { storeToRefs } from "pinia";
-import { useAuthStore } from "@/promotion/store/auth";
+import { useAuthStore } from "@/core/store/auth";
 import { useEventsStore } from "@/promotion/store/events";
-import { useFirebaseStore } from "@/promotion/store/firebase";
+import { useFirebaseStore } from "@/core/store/firebase";
 import { useLocationsStore } from "@/promotion/store/locations";
 import { useUserStore } from "@/promotion/store/user";
-import LoginBox from "./LoginBox.vue";
+import LoginBox from "../../../core/components/interface/LoginBox.vue";
 
 // Stores
 const firebase = useFirebaseStore();

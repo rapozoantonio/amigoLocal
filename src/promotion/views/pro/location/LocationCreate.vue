@@ -212,7 +212,7 @@ import FieldCountry from '@/promotion/components/fields/FieldCountry.vue';
 import FieldLinks from '@/promotion/components/fields/FieldLinks.vue';
 import FieldRegion from '@/promotion/components/fields/FieldRegion.vue';
 // FIREBASE
-import { useFirebaseStore } from '@/promotion/store/firebase';
+import { useFirebaseStore } from '@/core/store/firebase';
 import { useLocationStore } from '@/promotion/store/location';
 import { Loader } from '@googlemaps/js-api-loader';
 

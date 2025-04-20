@@ -38,12 +38,12 @@ import { storeToRefs } from "pinia";
 
 import FormSteps from "@/promotion/components/form/FormSteps.vue";
 import EventCreateGptAssistence from "@/promotion/components/pro/event/EventCreateGptAssistence.vue";
-import eventSchema from "@/schemas/eventSchema";
+import eventSchema from "@/core/schemas/eventSchema";
 import { useConfigStore } from "@/promotion/store/config";
 import { useEventStore } from "@/promotion/store/event";
 import { useAppStore } from "@/promotion/store/app";
 import { useRouter } from "vue-router";
-import { useAuthStore } from "@/promotion/store/auth";
+import { useAuthStore } from "@/core/store/auth";
 
 // Components
 const eventStore = useEventStore();

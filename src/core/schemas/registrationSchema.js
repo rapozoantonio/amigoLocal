@@ -38,7 +38,7 @@ export default {
       fields: [
         {
           id: "emailOptin",
-          label: "Se inscreber",
+          label: "Se inscrever",
           type: "checkbox",
           size: "lg",
           prepend:

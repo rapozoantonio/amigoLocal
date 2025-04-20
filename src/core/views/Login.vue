@@ -8,7 +8,7 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import LoginBox from "@/promotion/components/interface/LoginBox.vue";
+import LoginBox from "@/core/components/interface/LoginBox.vue";
 
 const router = useRouter();
 const route = useRoute();

@@ -12,8 +12,8 @@ import {
 } from "firebase/auth";
 import { defineStore } from "pinia";
 import { useRoute, useRouter } from "vue-router";
-import { useFirebaseStore } from "@/promotion/store/firebase";
-import { auth } from "../../core/plugins/firebase";
+import { useFirebaseStore } from "@/core/store/firebase";
+import { auth } from "../plugins/firebase";
 
 export const useAuthStore = defineStore("auth", () => {
   // State
@@ -67,41 +67,30 @@ export const useAuthStore = defineStore("auth", () => {
       error.value = { message: "", code: "" };
 
       const provider = new GoogleAuthProvider();
-      provider.addScope("https://www.googleapis.com/auth/user.birthday.read");
+      // Remove the birthday scope that's causing issues
+      // provider.addScope("https://www.googleapis.com/auth/user.birthday.read");
 
       const result = await signInWithPopup(auth, provider);
 
       if (result.user) {
-        // Try to fetch birthday data if needed
-        try {
-          const scope = await fetch(
-            "https://www.googleapis.com/auth/user.birthday.read",
-            {
-              headers: { Authorization: "Bearer " + result.user.accessToken },
-              mode: "no-cors",
-            }
-          );
-          const birthday = await scope.json();
-          // Handle birthday data as needed
-        } catch (scopeError) {
-          console.warn("Could not fetch birthday scope:", scopeError);
-        }
-
+        // Remove the problematic fetch attempt for birthday data
+        
         const { claims } = await getIdTokenResult(result.user);
         updateUserState(result.user, claims);
 
-        // if (route.query.redirect && route.query.redirect !== "") {
-        //   await router.push(atob(route.query.redirect));
-        // }
+        // Handle redirect if needed
+        if (route.query.redirect && route.query.redirect !== "") {
+          await router.push(atob(route.query.redirect));
+        }
 
         return { ok: true, data: result.user };
       }
     } catch (err) {
+      console.error("Google sign-in error:", err);
       error.value = {
-        message: ERROR_MESSAGES[err.code] || "Erro durante o login",
+        message: ERROR_MESSAGES[err.code] || "Erro durante o login com Google",
         code: err.code,
       };
-      // throw error.value;
       return { ok: false, error: error.value };
     } finally {
       loading.value = false;

@@ -370,9 +370,18 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, shallowRef } from "vue";
-import TabFilterComponent from "@/promotion/components/prod/event/TabFilterComponent.vue";
-import FourStatCards from "@/promotion/components/prod/event/FourStatCards.vue";
-import GenericCRUDModal from "@/promotion/components/prod/event/GenericCRUDModal.vue";
+import TabFilterComponent from "@/management/components/events/TabFilterComponent.vue";
+import FourStatCards from "@/management/components/events/FourStatCards.vue";
+import GenericCRUDModal from "@/management/components/events/GenericCRUDModal.vue";
+import { 
+  mockHostesses, 
+  hostessTableHeaders,
+  statusOptions, 
+  areaOptions, 
+  timelineHours,
+  hourLabels,
+  getAreaColor
+} from '@/management/consts/hostessesMockData';
 
 const props = defineProps({
   event: { type: Object, required: true },
@@ -388,43 +397,8 @@ const areaFilter = ref("all");
 const hostesses = shallowRef([]);
 const filteredHostesses = shallowRef([]);
 
-// Remove inline dialogs for deletion and details
-
-// Timeline hours (static)
-const timelineHours = [18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4];
-
-// Static table headers and filter options
-const tableHeaders = [
-  { title: "Nome", key: "name" },
-  { title: "Status", key: "confirmed", width: "120px" },
-  { title: "Área", key: "area", width: "120px" },
-  { title: "Entrada", key: "startTime", width: "100px", align: "center" },
-  { title: "Saída", key: "endTime", width: "100px", align: "center" },
-  { title: "Horas", key: "hours", width: "80px", align: "center" },
-  { title: "Check-ins", key: "checkIns", width: "100px", align: "center" },
-  {
-    title: "Ações",
-    key: "actions",
-    width: "120px",
-    align: "center",
-    sortable: false,
-  },
-];
-
-const statusOptions = [
-  { title: "Todas", value: "all" },
-  { title: "Confirmadas", value: "confirmed" },
-  { title: "Pendentes", value: "pending" },
-];
-
-const areaOptions = [
-  { title: "Todas as áreas", value: "all" },
-  { title: "Entrada", value: "Entrada" },
-  { title: "VIP", value: "VIP" },
-  { title: "Camarote", value: "Camarote" },
-  { title: "Pista", value: "Pista" },
-  { title: "Bar", value: "Bar" },
-];
+// Use imported table headers
+const tableHeaders = hostessTableHeaders;
 
 // GenericCRUDModal reactive variables
 const modalVisible = ref(false);
@@ -433,17 +407,6 @@ const modalEditMode = ref(false);
 const promotersOptions = ref([]); // Not used for Hostess but required by the component
 
 // Utility functions
-const getAreaColor = (area) => {
-  const areaColorMap = {
-    Entrada: "blue",
-    VIP: "purple",
-    Camarote: "pink",
-    Pista: "green",
-    Bar: "amber",
-  };
-  return areaColorMap[area] || "grey";
-};
-
 const parseTimeToMinutes = (timeString) => {
   const [hours, minutes] = timeString.split(":");
   return parseInt(hours) * 60 + parseInt(minutes);
@@ -480,19 +443,6 @@ const getScheduleBarStyle = (hostess) => {
   };
 };
 
-const hourLabels = [
-  "18h",
-  "19h",
-  "20h",
-  "21h",
-  "22h",
-  "23h",
-  "00h",
-  "01h",
-  "02h",
-  "03h",
-  "04h",
-];
 const getHourLabel = (index) => hourLabels[index] || `${index}h`;
 
 // Fetch and filter functions
@@ -501,68 +451,6 @@ const fetchHostesses = async () => {
   loading.value = true;
   try {
     await new Promise((resolve) => setTimeout(resolve, 500));
-    const mockHostesses = [
-      {
-        id: 1,
-        name: "Ana Silva",
-        phone: "(11) 99876-5432",
-        area: "Entrada",
-        startTime: "20:00",
-        endTime: "04:00",
-        payment: 150,
-        confirmed: true,
-        checkIns: 42,
-        notes: "Experiência em eventos de grande porte.",
-      },
-      {
-        id: 2,
-        name: "Beatriz Santos",
-        phone: "(11) 98765-4321",
-        area: "VIP",
-        startTime: "21:00",
-        endTime: "05:00",
-        payment: 180,
-        confirmed: true,
-        checkIns: 35,
-        notes: "Fala inglês e espanhol.",
-      },
-      {
-        id: 3,
-        name: "Carolina Lima",
-        phone: "(11) 97654-3210",
-        area: "Camarote",
-        startTime: "22:00",
-        endTime: "04:00",
-        payment: 160,
-        confirmed: true,
-        checkIns: 28,
-        notes: "",
-      },
-      {
-        id: 4,
-        name: "Daniela Costa",
-        phone: "(11) 96543-2109",
-        area: "Pista",
-        startTime: "21:00",
-        endTime: "03:00",
-        payment: 140,
-        confirmed: false,
-        checkIns: 0,
-        notes: "Primeira vez trabalhando neste evento.",
-      },
-      {
-        id: 5,
-        name: "Elena Ferreira",
-        phone: "(11) 95432-1098",
-        area: "Bar",
-        startTime: "20:00",
-        endTime: "03:00",
-        payment: 140,
-        confirmed: true,
-        checkIns: 15,
-        notes: "Experiência em servir bebidas.",
-      },
-    ];
     hostesses.value = mockHostesses;
     filterHostesses();
   } catch (error) {
@@ -725,170 +613,3 @@ const hostessCards = ref([
   },
 ]);
 </script>
-
-<style scoped>
-.event-hostesses {
-  background-color: rgb(var(--v-theme-background));
-}
-.hostesses-header {
-  background-color: rgb(var(--v-theme-background));
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-.search-field {
-  border-radius: 8px;
-  flex: 1;
-  max-width: 300px;
-}
-.status-filter,
-.area-filter {
-  min-width: 120px;
-}
-.hostesses-content {
-  min-height: 400px;
-}
-.stat-card {
-  border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-}
-.hostess-card {
-  border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-  overflow: hidden;
-}
-.hostess-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-.hostess-confirmed {
-  border-left: 4px solid var(--v-success-base);
-}
-.area-chip {
-  padding: 0 4px;
-  height: 16px;
-}
-.status-chip {
-  font-weight: 500;
-}
-.schedule-info {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-.schedule-block {
-  flex: 1;
-}
-.empty-state {
-  border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface));
-  padding: 32px;
-}
-.detail-item {
-  display: flex;
-  align-items: center;
-}
-.metric-card {
-  border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface-variant));
-  transition: transform 0.2s;
-  height: 100%;
-}
-.metric-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-.details-section {
-  margin-bottom: 24px;
-}
-/* Schedule timeline styles */
-.schedule-card {
-  border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface));
-  overflow: hidden;
-}
-.time-block {
-  width: 60px;
-  flex-shrink: 0;
-  height: 100%;
-  border-right: 1px dashed rgba(0, 0, 0, 0.1);
-}
-.time-block:last-child {
-  border-right: none;
-}
-.time-block-inner {
-  height: 100%;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
-}
-.timeline-container {
-  position: relative;
-  height: 100%;
-}
-.timeline-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.02);
-}
-.schedule-bar {
-  height: 24px;
-  top: 8px;
-  background-color: rgba(var(--v-primary-base), 0.7);
-  border-radius: 4px;
-  color: white;
-  overflow: hidden;
-  white-space: nowrap;
-  transition: all 0.3s ease;
-}
-.confirmed-bar {
-  background-color: rgba(var(--v-success-base), 0.7);
-}
-.schedule-bar-content {
-  height: 100%;
-  padding: 0 8px;
-}
-/* Performance chart styles */
-.performance-card {
-  border-radius: 12px;
-}
-.performance-chart {
-  height: 150px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-.chart-bars {
-  height: 120px;
-}
-.chart-bar-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 40px;
-}
-.chart-bar {
-  width: 24px;
-  min-height: 4px;
-  border-radius: 2px 2px 0 0;
-  transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-/* Responsive adjustments */
-@media (max-width: 600px) {
-  .filter-bar {
-    flex-wrap: wrap;
-  }
-  .search-field {
-    max-width: none;
-    margin-right: 0;
-  }
-  .stat-card {
-    margin-bottom: 8px;
-  }
-  .time-block {
-    width: 50px;
-  }
-}
-</style>

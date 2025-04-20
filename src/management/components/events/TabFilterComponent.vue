@@ -190,21 +190,3 @@ watch(
   { deep: true }
 );
 </script>
-
-<style scoped>
-.filter-container {
-  border-radius: 8px;
-}
-
-/* Ensure proper spacing on mobile */
-@media (max-width: 600px) {
-  .filter-container .v-col {
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
-  .search-field {
-    /* Full width on mobile */
-    width: 100%;
-  }
-}
-</style>

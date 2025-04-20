@@ -293,6 +293,7 @@
                   <div class="leaderboard-list pa-2">
                     <div
                       v-for="(promoter, index) in getSortedPromotersByMetric(
+                        filteredPromoters,
                         metric
                       )"
                       :key="promoter.id"
@@ -360,9 +361,20 @@
 
 <script setup>
 import { ref, computed, onMounted, watch, shallowRef } from "vue";
-import TabFilterComponent from "@/promotion/components/prod/event/TabFilterComponent.vue";
-import FourStatCards from "@/promotion/components/prod/event/FourStatCards.vue";
-import GenericCRUDModal from "@/promotion/components/prod/event/GenericCRUDModal.vue";
+import TabFilterComponent from "@/management/components/events/TabFilterComponent.vue";
+import FourStatCards from "@/management/components/events/FourStatCards.vue";
+import GenericCRUDModal from "@/management/components/events/GenericCRUDModal.vue";
+
+// Import the necessary mock data at the top of the script section
+import { 
+  mockPromoters, 
+  promoterTableHeaders, 
+  statusOptions, 
+  calculateConversionRate, 
+  formatCurrency, 
+  getLeaderboardAvatarColor,
+  getSortedPromotersByMetric
+} from '@/management/consts/promotersMockData';
 
 const props = defineProps({
   event: { type: Object, required: true },
@@ -384,32 +396,7 @@ const editMode = ref(false);
 const formSubmitting = ref(false);
 
 // Static table headers & filter options
-const tableHeaders = [
-  { title: "Nome", key: "name" },
-  { title: "Status", key: "active", width: "100px" },
-  { title: "Convidados", key: "guests", width: "100px", align: "center" },
-  { title: "Check-ins", key: "checkIns", width: "100px", align: "center" },
-  {
-    title: "Conversão",
-    key: "conversionRate",
-    width: "100px",
-    align: "center",
-  },
-  { title: "Receita", key: "revenue", width: "120px", align: "end" },
-  {
-    title: "Ações",
-    key: "actions",
-    width: "120px",
-    align: "center",
-    sortable: false,
-  },
-];
-
-const statusOptions = [
-  { title: "Todos", value: "all" },
-  { title: "Ativos", value: "active" },
-  { title: "Inativos", value: "inactive" },
-];
+const tableHeaders = promoterTableHeaders;
 
 // Computed stats for cards
 const totalPromoters = computed(() => promoters.value.length);
@@ -460,73 +447,6 @@ const fetchPromoters = async () => {
   loading.value = true;
   try {
     await new Promise((resolve) => setTimeout(resolve, 500));
-    const mockPromoters = [
-      {
-        id: 1,
-        name: "Carlos Silva",
-        email: "carlos@exemplo.com",
-        phone: "(11) 99876-5432",
-        active: true,
-        guests: 75,
-        checkIns: 42,
-        revenue: 9450,
-        quota: 100,
-        commission: 12,
-        notes: "Promotor experiente, trabalha principalmente com público VIP.",
-      },
-      {
-        id: 2,
-        name: "Mariana Costa",
-        email: "mariana@exemplo.com",
-        phone: "(11) 98765-4321",
-        active: true,
-        guests: 68,
-        checkIns: 45,
-        revenue: 8160,
-        quota: 80,
-        commission: 10,
-        notes: "Foco em público universitário.",
-      },
-      {
-        id: 3,
-        name: "Rafael Mendes",
-        email: "rafael@exemplo.com",
-        phone: "(11) 97654-3210",
-        active: true,
-        guests: 50,
-        checkIns: 22,
-        revenue: 6000,
-        quota: 70,
-        commission: 10,
-        notes: "",
-      },
-      {
-        id: 4,
-        name: "Júlia Santos",
-        email: "julia@exemplo.com",
-        phone: "(11) 96543-2109",
-        active: true,
-        guests: 32,
-        checkIns: 18,
-        revenue: 3840,
-        quota: 50,
-        commission: 8,
-        notes: "Primeira festa com a equipe.",
-      },
-      {
-        id: 5,
-        name: "Pedro Oliveira",
-        email: "pedro@exemplo.com",
-        phone: "(11) 95432-1098",
-        active: false,
-        guests: 25,
-        checkIns: 0,
-        revenue: 3000,
-        quota: 40,
-        commission: 10,
-        notes: "Inativo temporariamente.",
-      },
-    ];
     promoters.value = mockPromoters;
     filterPromoters();
   } catch (error) {
@@ -561,46 +481,6 @@ const filterPromoters = () => {
     return true;
   });
 };
-
-// Utility functions
-const formatCurrency = (value) => {
-  const num = Number(value) || 0;
-  if (num >= 1000000) return `R$ ${(num / 1000000).toFixed(1)}M`;
-  if (num >= 1000) return `R$ ${(num / 1000).toFixed(1)}k`;
-  return `R$ ${num}`;
-};
-
-const calculateConversionRate = (promoter) => {
-  if (!promoter.guests) return 0;
-  return Math.round((promoter.checkIns / promoter.guests) * 100);
-};
-
-const getSortedPromotersByMetric = (metric) => {
-  const sorted = [...filteredPromoters.value];
-  switch (metric) {
-    case "guests":
-      return sorted.sort((a, b) => b.guests - a.guests);
-    case "checkIns":
-      return sorted.sort((a, b) => b.checkIns - a.checkIns);
-    case "revenue":
-      return sorted.sort((a, b) => b.revenue - a.revenue);
-    case "conversion":
-      return sorted.sort(
-        (a, b) => calculateConversionRate(b) - calculateConversionRate(a)
-      );
-    default:
-      return sorted;
-  }
-};
-
-const leaderboardAvatarColors = [
-  "warning",
-  "grey-lighten-1",
-  "amber-darken-3",
-  "primary",
-];
-const getLeaderboardAvatarColor = (index) =>
-  index < 3 ? leaderboardAvatarColors[index] : leaderboardAvatarColors[3];
 
 // Promoter actions using GenericCRUDModal
 const addPromoter = () => {
@@ -659,87 +539,3 @@ const resetFilters = () => {
 
 onMounted(fetchPromoters);
 </script>
-
-<style scoped>
-.event-promoters {
-  background-color: rgb(var(--v-theme-background));
-}
-.promoters-header {
-  background-color: rgb(var(--v-theme-background));
-  position: sticky;
-  top: 0;
-  z-index: 5;
-}
-.promoters-content {
-  min-height: 400px;
-}
-.promoter-card {
-  border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease;
-  overflow: hidden;
-}
-.promoter-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-.promoter-active {
-  border-left: 4px solid var(--v-success-base);
-}
-.performance-stats {
-  background-color: rgba(0, 0, 0, 0.02);
-}
-.stat-block {
-  flex: 1;
-}
-.empty-state {
-  border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface));
-  padding: 32px;
-}
-.leaderboard-card {
-  border-radius: 12px;
-  background-color: rgb(var(--v-theme-surface));
-  overflow: hidden;
-}
-.leaderboard-item {
-  border-radius: 8px;
-  background-color: rgb(var(--v-theme-surface));
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease;
-}
-.leaderboard-item:hover {
-  transform: translateY(-2px);
-}
-.top-1 {
-  background-color: rgba(var(--v-warning-base), 0.1);
-  border-left: 3px solid var(--v-warning-base);
-}
-.top-2 {
-  background-color: rgba(var(--v-grey-base), 0.1);
-  border-left: 3px solid var(--v-grey-lighten1);
-}
-.top-3 {
-  background-color: rgba(var(--v-amber-darken3), 0.05);
-  border-left: 3px solid var(--v-amber-darken3);
-}
-.rank-badge {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 12px;
-}
-.metric-value {
-  font-size: 16px;
-}
-@media (max-width: 600px) {
-  .promoters-header {
-    flex-direction: column;
-  }
-}
-</style>

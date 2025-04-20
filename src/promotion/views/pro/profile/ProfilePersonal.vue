@@ -20,12 +20,12 @@ import { storeToRefs } from 'pinia';
 import { VDateInput } from 'vuetify/labs/VDateInput';
 
 import FormCard from '@/promotion/components/form/FormCard.vue';
-import userSchema from '@/schemas/userSchema';
-import { useFirebaseStore } from '@/promotion/store/firebase';
+import userSchema from '@/core/schemas/userSchema';
+import { useFirebaseStore } from '@/core/store/firebase';
 import { useUserStore } from '@/promotion/store/user';
 import FormSteps from '@/promotion/components/form/FormSteps.vue';
-import FormBox from '@/promotion/components/form/FormBox.vue';
-import promoterSchema from '@/schemas/promoterSchema';
+import FormBox from '@/core/components/form/FormBox.vue';
+import promoterSchema from '@/core/schemas/promoterSchema';
 
 const { fieldAttrs } = inject("$helpers");
 

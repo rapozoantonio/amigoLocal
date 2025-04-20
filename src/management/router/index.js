@@ -1,18 +1,23 @@
 // management/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from "@/core/store/auth";
+import Login from "@/core/views/Login.vue";
+import Register from "@/core/views/Register.vue";
+import PathNotFound from "@/core/views/PathNotFound.vue";
 
 // Define routes without authentication requirements
 const routes = [
   {
     path: "/",
     component: () => import("@/core/layouts/prod/LayoutProd.vue"),
+    meta: { requiresAuth: true },
     children: [
       {
         path: "",
         name: "dashboard",
         // Add aliases for dashboard
         alias: ["home", "admin-dashboard"],
-        component: () => import("@/management/views/ProdEventList.vue"),
+        component: () => import("@/management/views/PricingPlans.vue"),
       },
       {
         path: "events",
@@ -32,6 +37,11 @@ const routes = [
         component: () => import("@/management/views/ProdEventDetail.vue"),
         props: true,
       },
+      {
+        path: "profile",
+        name: "profile",
+        component: () => import("@/management/views/ProdEventList.vue"), // Reuse event list as placeholder
+      },
     ],
   },
   // Add a direct route for event-list for named route navigation
@@ -39,28 +49,24 @@ const routes = [
     path: "/event-list",
     name: "event-list",
     component: () => import("@/management/views/ProdEventList.vue"),
+    meta: { requiresAuth: true },
   },
   
-  // Auth-related routes (simplified for now)
+  // Auth-related routes - use local management views
   {
     path: "/login",
     name: "login",
-    component: () => import("@/core/views/Login.vue"),
+    component: Login,
   },
   {
     path: "/register",
     name: "register",
-    component: () => import("@/core/views/Login.vue"), // Reuse login as placeholder
+    component: Register,
   },
   {
     path: "/reset-password",
     name: "reset-password",
-    component: () => import("@/core/views/Login.vue"), // Reuse login as placeholder
-  },
-  {
-    path: "/profile",
-    name: "profile",
-    component: () => import("@/management/views/ProdEventList.vue"), // Reuse event list as placeholder
+    component: Login, // Use Login as placeholder
   },
   
   // Redirects for promotion routes
@@ -79,7 +85,7 @@ const routes = [
   {
     path: "/:pathMatch(.*)*",
     name: "not-found", 
-    component: () => import("@/core/views/PathNotFound.vue"),
+    component: PathNotFound,
   },
 ];
 
@@ -103,9 +109,28 @@ if (typeof window !== 'undefined') {
   );
 }
 
-// Simple route guard - no auth checks
-router.beforeEach((to, from, next) => {
+// Auth guard for protected routes
+router.beforeEach(async (to, from, next) => {
   console.log(`Management router navigating to: ${to.fullPath}`);
+  
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  
+  if (!requiresAuth) {
+    next();
+    return;
+  }
+
+  const authStore = useAuthStore();
+  const user = await authStore.getCurrentUser();
+
+  if (!user && requiresAuth) {
+    // Redirect to login with return path
+    next({
+      name: 'login',
+      query: { redirect: btoa(to.fullPath) }
+    });
+    return;
+  }
   
   // Special handler for login redirections
   if (to.name === 'login' && to.query.redirect) {
