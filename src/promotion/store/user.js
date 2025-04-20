@@ -5,7 +5,7 @@ import { onAuthStateChanged, getIdTokenResult } from "firebase/auth";
 import { defineStore } from "pinia";
 import { useRouter } from "vue-router";
 
-import { auth } from "@/plugins/firebase";
+import { auth } from "@/core/plugins/firebase";
 
 import { useFirebaseStore } from "./firebase";
 

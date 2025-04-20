@@ -2,9 +2,9 @@ import { computed, ref } from "vue";
 
 import { defineStore } from "pinia";
 
-import $countries from "@/assets/countries";
-import $genres from "@/assets/genres";
-import $regions from "@/assets/regions";
+import $countries from "@/core/assets/countries";
+import $genres from "@/core/assets/genres";
+import $regions from "@/core/assets/regions";
 
 import { useFirebaseStore } from "./firebase";
 

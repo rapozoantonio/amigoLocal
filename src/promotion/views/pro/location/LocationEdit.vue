@@ -22,7 +22,7 @@ import {
 } from 'vue3-google-map';
 
 // VARIABLES
-import countries from '@/assets/countries.js';
+import countries from '@/core/assets/countries.js';
 import FormCard from '@/promotion/components/form/FormCard.vue';
 import locationSchema from '@/schemas/locationSchema';
 // FIREBASE

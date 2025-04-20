@@ -1,4 +1,4 @@
-//promotion/main.js
+//management/main.js
 import '@/core/styles/fonts.css'
 import '@/core/styles/settings.scss'
 import '@vuepic/vue-datepicker/dist/main.css'
@@ -29,31 +29,15 @@ import App from '../App.vue'
 // Set environment variable to indicate we're in the management entry point
 if (typeof window !== 'undefined') {
   // Set global flags
-  window.isAdminSubdomain = false;
-  window.ENTRY_POINT = 'promotion';
+  window.isAdminSubdomain = true
+  window.ENTRY_POINT = 'management'
   
   // Add a class to body to help with CSS targeting
-  document.body.classList.add('promotion-app');
+  document.body.classList.add('management-app')
   
-  console.log('Promotion entry point initialized');
-  console.log('Current hostname:', window.location.hostname);
-  console.log('Current pathname:', window.location.pathname);
-}
-
-// Performance monitoring for development
-if (process.env.NODE_ENV === 'development') {
-  // Monitor CSS/Font performance
-  const observer = new PerformanceObserver((list) => {
-    list.getEntries().forEach((entry) => {
-      if (entry.entryType === 'resource') {
-        console.debug(`Resource loaded: ${entry.name}`, {
-          duration: entry.duration,
-          type: entry.initiatorType
-        })
-      }
-    })
-  })
-  observer.observe({ entryTypes: ['resource'] })
+  console.log('Management entry point initialized')
+  console.log('Current hostname:', window.location.hostname)
+  console.log('Current pathname:', window.location.pathname)
 }
 
 // Create and configure app
@@ -63,8 +47,7 @@ const app = createApp(App)
 const head = createHead()
 app.use(head)
 
-// Register plugins directly instead of using the shared registerPlugins function
-// to avoid loading the promotion router
+// Register plugins directly
 app.use(vuetify)
 app.use(pinia)
 app.use(helpers)
@@ -73,9 +56,10 @@ app.use(swal)
 // Explicitly use the management router
 app.use(router)
 
-// Make router available globally
-window.router = router;
+// Make router available globally for debugging
+window.router = router
 
+// Register components
 app.component('VueDatePicker', VueDatePicker)
 
 // Register service worker with refresh callback
@@ -90,3 +74,12 @@ const updateSW = registerSW({
 
 // Mount app
 app.mount('#app')
+
+// Force an initial navigation if needed
+if ((window.location.pathname === '/' || window.location.pathname === '/admin') && 
+    (window.isAdminSubdomain === true || window.location.hostname.startsWith('admin.'))) {
+  console.log('Forcing initial navigation to management dashboard');
+  setTimeout(() => {
+    router.push({ name: 'dashboard' });
+  }, 100);
+}

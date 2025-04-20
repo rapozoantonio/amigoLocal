@@ -23,7 +23,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
 
-import { auth, firestore, storage } from "@/plugins/firebase";
+import { auth, firestore, storage } from "@/core/plugins/firebase";
 
 export const useFirebaseStore = defineStore("firebase", () => {
   // CONVERTERS

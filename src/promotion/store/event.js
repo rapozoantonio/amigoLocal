@@ -2,7 +2,7 @@ import { computed, ref, watch } from "vue";
 
 import { defineStore } from "pinia";
 
-import $genres from "@/assets/genres";
+import $genres from "@/core/assets/genres";
 import $eventCategories from "@/assets/eventCategories";
 import { useVuelidate } from "@vuelidate/core";
 import { required } from "@vuelidate/validators";

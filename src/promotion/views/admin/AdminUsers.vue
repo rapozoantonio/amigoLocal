@@ -80,7 +80,7 @@ import {
 import {
     functions,
     httpsCallable,
-} from '@/plugins/firebase';
+} from '@/core/plugins/firebase';
 
 import FormDialog from '@/promotion/components/form/FormDialog.vue';
 

@@ -11,6 +11,11 @@ import swal from './sweetalert';
 // Plugins
 import vuetify from './vuetify';
 
-export function registerPlugins(app) {
-  app.use(vuetify).use(pinia).use(router).use(helpers).use(swal);
+export function registerPlugins(app, options = {}) {
+  app.use(vuetify).use(pinia).use(helpers).use(swal);
+  
+  // Only register the default router if not explicitly skipped
+  if (!options.skipRouter) {
+    app.use(router);
+  }
 }

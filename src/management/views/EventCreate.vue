@@ -64,8 +64,8 @@ async function submitEvent() {
     console.log({ response });
     if (response.ok) {
       response.notify().then(() => {
-        // eventStore.$reset();
-        router.push({ name: "promoter-id", params: { id: auth.user.uid } })
+        // Redirect to events list in the management interface
+        router.push({ name: "prod-events-list" });
       });
 
     }

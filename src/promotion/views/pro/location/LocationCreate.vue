@@ -206,8 +206,8 @@ import {
 import { useDisplay } from 'vuetify/lib/framework.mjs';
 
 // VARIABLES
-import Allcountries from '@/assets/countries.js';
-import regions from '@/assets/regions.js';
+import Allcountries from '@/core/assets/countries.js';
+import regions from '@/core/assets/regions.js';
 import FieldCountry from '@/promotion/components/fields/FieldCountry.vue';
 import FieldLinks from '@/promotion/components/fields/FieldLinks.vue';
 import FieldRegion from '@/promotion/components/fields/FieldRegion.vue';

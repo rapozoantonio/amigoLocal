@@ -69,7 +69,7 @@ import FormDialog from '@/promotion/components/form/FormDialog.vue';
 import {
     functions,
     httpsCallable,
-} from '@/plugins/firebase';
+} from '@/core/plugins/firebase';
 import promoterRequestSchema from '@/schemas/promoterRequestSchema';
 import { useAppStore } from '@/promotion/store/app';
 import { useFirebaseStore } from '@/promotion/store/firebase';

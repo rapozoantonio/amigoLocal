@@ -5,7 +5,7 @@ import { useAuthStore } from "@/promotion/store/auth";
 const routes = [
   {
     path: "/",
-    component: () => import("@/layouts/default/LayoutDefault.vue"),
+    component: () => import("@/core/layouts/default/LayoutDefault.vue"),
     children: [
       {
         path: "",
@@ -93,12 +93,12 @@ const routes = [
       {
         path: "login",
         name: "login",
-        component: () => import(/* webpackChunkName: "auth" */ "@/promotion/views/Login.vue"),
+        component: () => import(/* webpackChunkName: "auth" */ "@/core/views/Login.vue"),
       },
       {
         path: "register",
         name: "register",
-        component: () => import(/* webpackChunkName: "auth" */ "@/promotion/views/Register.vue"),
+        component: () => import(/* webpackChunkName: "auth" */ "@/core/views/Register.vue"),
       },
       {
         path: "promoters/:id",
@@ -214,7 +214,7 @@ const routes = [
   },
   {
     path: "/pro",
-    component: () => import(/* webpackChunkName: "pro-layout" */ "@/layouts/pro/LayoutPro.vue"),
+    component: () => import(/* webpackChunkName: "pro-layout" */ "@/core/layouts/pro/LayoutPro.vue"),
     meta: { requiresAuth: true },
     children: [
       {
@@ -276,29 +276,8 @@ const routes = [
     ],
   },
   {
-    path: "/prod",
-    component: () => import(/* webpackChunkName: "pro-layout" */ "@/layouts/prod/LayoutProd.vue"),
-    meta: { requiresAuth: true },
-    children: [
-      {
-        path: "events/list",
-        name: "prod-events-list",
-        component: () => import(/* webpackChunkName: "pro-events" */ "@/promotion/views/prod/event/ProdEventList.vue"),
-      },
-      {
-        path: "event",
-        name: "prod-event",
-        component: () => import(/* webpackChunkName: "pro-events" */ "@/promotion/views/prod/event/ProdEventDetail.vue"),
-      },
-      {
-        path: "events/create",
-        name: "prod-events-create",
-        component: () => import(/* webpackChunkName: "pro-events" */ "@/promotion/views/prod/event/EventCreate.vue"),
-      },]
-  },
-  {
     path: "/admin",
-    component: () => import(/* webpackChunkName: "admin-layout" */ "@/layouts/admin/LayoutAdmin.vue"),
+    component: () => import(/* webpackChunkName: "admin-layout" */ "@/core/layouts/admin/LayoutAdmin.vue"),
     meta: {
       requiresAuth: true,
       requiresAdmin: false,
@@ -329,22 +308,22 @@ const routes = [
   {
     path: "/:pathMatch(.*)*",
     name: "path-not-found",
-    component: () => import(/* webpackChunkName: "error" */ "@/promotion/views/PathNotFound.vue"),
+    component: () => import(/* webpackChunkName: "error" */ "@/core/views/PathNotFound.vue"),
   },
   {
     path: "/sitemap.xml",
     name: "sitemap",
-    component: () => import(/* webpackChunkName: "static" */ "@/promotion/views/SitemapXML.vue"),
+    component: () => import(/* webpackChunkName: "static" */ "@/core/views/SitemapXML.vue"),
   },
   {
     path: "/termos-de-uso",
     name: "termos-de-uso",
-    component: () => import(/* webpackChunkName: "static" */ "@/promotion/views/TermsOfUse.vue"),
+    component: () => import(/* webpackChunkName: "static" */ "@/core/views/TermsOfUse.vue"),
   },
   {
     path: "/termos-de-privacidade",
     name: "termos-de-privacidade",
-    component: () => import(/* webpackChunkName: "static" */ "@/promotion/views/PrivacyPolicy.vue"),
+    component: () => import(/* webpackChunkName: "static" */ "@/core/views/PrivacyPolicy.vue"),
   },
 ];
 

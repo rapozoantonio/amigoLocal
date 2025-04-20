@@ -2,7 +2,7 @@ import { ref } from "vue";
 import { collection, doc, getDoc, getDocs, query } from "firebase/firestore";
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
-import { firestore } from "@/plugins/firebase";
+import { firestore } from "@/core/plugins/firebase";
 
 export const usePromotersStore = defineStore("promoters", () => {
   const promoter = ref(null);

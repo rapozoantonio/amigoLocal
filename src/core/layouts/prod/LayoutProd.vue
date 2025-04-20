@@ -8,7 +8,7 @@
 </template>
 
 <script setup>
-import LoadingOverlay from "@/layouts/components/LoadingOverlay.vue";
+import LoadingOverlay from "@/core/layouts/components/LoadingOverlay.vue";
 import ProdBar from "./ProdAppBar.vue";
 import FooterComponent from "../FooterComponent.vue";
 import ProdView from "./ProdView.vue";
