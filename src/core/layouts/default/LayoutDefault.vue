@@ -12,5 +12,5 @@ import DefaultBar from "./DefaultAppBar.vue";
 
 import DefaultView from "./DefaultView.vue";
 import DefaultFooter from "../FooterComponent.vue";
-import LoadingOverlay from "@/layouts/components/LoadingOverlay.vue";
+import LoadingOverlay from "@/core/layouts/components/LoadingOverlay.vue";
 </script>

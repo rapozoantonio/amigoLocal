@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    
+    <!-- Critical Preloads -->
+    <!-- Early Preconnects -->
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://www.googleapis.com" crossorigin />
+    
+    <!-- Critical CSS -->
+    <style>
+      :root {
+        --font-fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font-fallback);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      #loading {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .footer-container {
+        min-height: 48px;
+      }
+
+      .v-application {
+        background: var(--v-background-base, #121212);
+      }
+    </style>
+    
+    <!-- Primary Meta Tags -->
+    <title>Jubilos Management | Portal para Produtores de Eventos</title>
+    <meta name="title" content="Jubilos Management | Portal para Produtores de Eventos" />
+    <meta name="description" content="Gerencie seus eventos com eficiência. Controle listas VIP, acompanhe presença e analise o desempenho dos seus eventos no RJ e SP." />
+    <meta name="keywords" content="gestão de eventos, lista VIP, produtores de eventos, análise de eventos, São Paulo, Rio de Janeiro, gerenciamento de festas" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Jubilos" />
+    <meta name="entry-point" content="management" />
+    
+    <!-- Icons and PWA -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://admin.jubilos.com.br" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://admin.jubilos.com.br/" />
+    <meta property="og:title" content="Jubilos Management | Portal para Produtores de Eventos" />
+    <meta property="og:description" content="Gerencie seus eventos com eficiência. Controle listas VIP, acompanhe presença e analise o desempenho dos seus eventos." />
+    <meta property="og:image" content="https://jubilos.com.br/og-image-management.jpg" />
+    <meta property="og:locale" content="pt_BR" />
+    
+    <!-- Twitter Meta Tags -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://admin.jubilos.com.br/" />
+    <meta property="twitter:title" content="Jubilos Management | Portal para Produtores de Eventos" />
+    <meta property="twitter:description" content="Gerencie seus eventos com eficiência. Controle listas VIP, acompanhe presença e analise o desempenho." />
+    <meta property="twitter:image" content="https://jubilos.com.br/twitter-image-management.jpg" />
+    
+    <!-- Font Loading Detection -->
+    <script>
+      (function() {
+        if ("fonts" in document) {
+          Promise.all([
+            document.fonts.load('1em "Material Design Icons"'),
+            document.fonts.ready
+          ]).then(() => {
+            document.documentElement.classList.add('fonts-loaded');
+            if (process.env.NODE_ENV === 'development') {
+              console.debug('Fonts loaded successfully');
+            }
+          }).catch(err => {
+            console.warn('Font loading failed:', err);
+            document.documentElement.classList.add('fonts-failed');
+          });
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="loading" class="animated-gradient">
+        <div class="loader"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/management/main.js"></script>
+    
+    <!-- Schema.org Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Jubilos Management",
+        "applicationCategory": "EventManagement",
+        "operatingSystem": "Web",
+        "description": "Plataforma de gerenciamento para produtores de eventos no Rio de Janeiro e São Paulo",
+        "offers": {
+          "@type": "Offer",
+          "category": "Event Management & Analytics"
+        }
+      }
+    </script>
+    
+    <noscript>
+      <div style="text-align: center; padding: 20px;">
+        Ei! Para acessar o Jubilos Management, você precisa ativar o JavaScript no seu navegador.
+      </div>
+    </noscript>
+  </body>
+</html>

@@ -13,7 +13,7 @@ import {
 } from "firebase/firestore";
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
-import { firestore } from "@/plugins/firebase";
+import { firestore } from "@/core/plugins/firebase";
 import { useFirebaseStore } from "./firebase";
 import { useRoute, useRouter } from "vue-router";
 

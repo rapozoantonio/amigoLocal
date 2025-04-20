@@ -1,102 +1,126 @@
-// router/index.js
+// management/router/index.js
 import { createRouter, createWebHistory } from "vue-router";
-import { useAuthStore } from "@/promotion/store/auth";
 
+// Define routes without authentication requirements
 const routes = [
   {
     path: "/",
-    component: () => import("@/layouts/default/LayoutDefault.vue"),
+    component: () => import("@/core/layouts/prod/LayoutProd.vue"),
     children: [
       {
         path: "",
-        name: "home",
-        component: () => import(/* webpackChunkName: "events" */ "@/promotion/views/events/RegionSelector.vue"),
-      },
-    ],
-  },
-  {
-    path: "/prod",
-    component: () => import(/* webpackChunkName: "pro-layout" */ "@/layouts/prod/LayoutProd.vue"),
-    meta: { requiresAuth: true },
-    children: [
-      {
-        path: "events/list",
-        name: "prod-events-list",
-        component: () => import(/* webpackChunkName: "pro-events" */ "@/promotion/views/prod/event/ProdEventList.vue"),
+        name: "dashboard",
+        // Add aliases for dashboard
+        alias: ["home", "admin-dashboard"],
+        component: () => import("@/management/views/ProdEventList.vue"),
       },
       {
-        path: "event",
-        name: "prod-event",
-        component: () => import(/* webpackChunkName: "pro-events" */ "@/promotion/views/prod/event/ProdEventDetail.vue"),
+        path: "events",
+        name: "events-list",
+        // Add alias for event-list (singular) to match existing components
+        alias: "/event-list",
+        component: () => import("@/management/views/ProdEventList.vue"),
       },
       {
         path: "events/create",
-        name: "prod-events-create",
-        component: () => import(/* webpackChunkName: "pro-events" */ "@/promotion/views/prod/event/EventCreate.vue"),
+        name: "event-create",
+        component: () => import("@/management/views/EventCreate.vue"),
+      },
+      {
+        path: "events/:id",
+        name: "event-detail",
+        component: () => import("@/management/views/ProdEventDetail.vue"),
+        props: true,
       },
     ],
   },
+  // Add a direct route for event-list for named route navigation
+  {
+    path: "/event-list",
+    name: "event-list",
+    component: () => import("@/management/views/ProdEventList.vue"),
+  },
+  
+  // Auth-related routes (simplified for now)
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("@/core/views/Login.vue"),
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: () => import("@/core/views/Login.vue"), // Reuse login as placeholder
+  },
+  {
+    path: "/reset-password",
+    name: "reset-password",
+    component: () => import("@/core/views/Login.vue"), // Reuse login as placeholder
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: () => import("@/management/views/ProdEventList.vue"), // Reuse event list as placeholder
+  },
+  
+  // Redirects for promotion routes
+  {
+    path: "/events/:country/:region(.*)",
+    redirect: "/",
+  },
+  {
+    path: "/events/:country",
+    redirect: "/",
+  },
+  {
+    path: "/admin",
+    redirect: "/",
+  },
   {
     path: "/:pathMatch(.*)*",
-    name: "path-not-found",
-    component: () => import(/* webpackChunkName: "error" */ "@/promotion/views/PathNotFound.vue"),
-  },
-  {
-    path: "/sitemap.xml",
-    name: "sitemap",
-    component: () => import(/* webpackChunkName: "static" */ "@/promotion/views/SitemapXML.vue"),
-  },
-  {
-    path: "/termos-de-uso",
-    name: "termos-de-uso",
-    component: () => import(/* webpackChunkName: "static" */ "@/promotion/views/TermsOfUse.vue"),
-  },
-  {
-    path: "/termos-de-privacidade",
-    name: "termos-de-privacidade",
-    component: () => import(/* webpackChunkName: "static" */ "@/promotion/views/PrivacyPolicy.vue"),
+    name: "not-found", 
+    component: () => import("@/core/views/PathNotFound.vue"),
   },
 ];
 
-// Optimized authentication check
-const checkAuth = async (to) => {
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
-  const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin);
-
-  if (!requiresAuth && !requiresAdmin) return true;
-
-  const authStore = useAuthStore();
-  const user = await authStore.getCurrentUser();
-
-  if (!user) {
-    return {
-      name: "login",
-      query: { redirect: btoa(to.fullPath) }
-    };
-  }
-
-  if (requiresAdmin && (!user.admin || user.role !== "admin")) {
-    return { name: "error401" };
-  }
-
-  return true;
-};
-
-// Create router instance
+// Create router instance with the correct base URL
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHistory("/"),
   routes,
-  scrollBehavior: () => ({ top: 0, left: 0 }),
 });
 
-// Route guard
-router.beforeEach(async (to) => {
-  // Check for inactive routes
-  if (to.matched.some(record => record.meta.isActive === false)) {
-    return { name: "path-not-found" };
-  }
+// Make router available globally for debugging
+if (typeof window !== 'undefined') {
+  window.managementRouter = router;
+  
+  // Log all registered routes
+  console.log('Management Router Routes:', 
+    router.getRoutes().map(r => ({ 
+      name: r.name, 
+      path: r.path,
+      fullPath: r.path
+    }))
+  );
+}
 
-  return await checkAuth(to);
+// Simple route guard - no auth checks
+router.beforeEach((to, from, next) => {
+  console.log(`Management router navigating to: ${to.fullPath}`);
+  
+  // Special handler for login redirections
+  if (to.name === 'login' && to.query.redirect) {
+    console.log('Login with redirect detected:', to.query.redirect);
+  }
+  
+  // Intercept promotion routes
+  if (to.fullPath.includes('/events/br/')) {
+    console.log('Intercepted promotion redirect');
+    next('/');
+    return;
+  }
+  
+  // Allow all navigation
+  next();
 });
 
 export default router;

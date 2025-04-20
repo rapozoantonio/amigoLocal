@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+    
+    <!-- Critical Preloads -->
+    <!-- Early Preconnects -->
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin />
+    <link rel="preconnect" href="https://www.googleapis.com" crossorigin />
+    
+    <!-- Critical CSS -->
+    <style>
+      :root {
+        --font-fallback: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--font-fallback);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      #loading {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .footer-container {
+        min-height: 48px;
+      }
+
+      .v-application {
+        background: var(--v-background-base, #121212);
+      }
+    </style>
+    
+    <!-- Primary Meta Tags -->
+    <title>Jubilos Tickets | Compre Ingressos para os Melhores Eventos</title>
+    <meta name="title" content="Jubilos Tickets | Compre Ingressos para os Melhores Eventos" />
+    <meta name="description" content="Compre ingressos para os eventos mais hypados de São Paulo e Rio. Acesse promoções exclusivas e siga seus promotores favoritos." />
+    <meta name="keywords" content="ingressos, comprar ingressos, eventos, São Paulo, Rio de Janeiro, shows, festas exclusivas, tickets online" />
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Jubilos" />
+    <meta name="entry-point" content="tickets" />
+    
+    <!-- Icons and PWA -->
+    <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="canonical" href="https://tickets.jubilos.com.br" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://tickets.jubilos.com.br/" />
+    <meta property="og:title" content="Jubilos Tickets | Compre Ingressos para os Melhores Eventos" />
+    <meta property="og:description" content="Garanta seu ingresso para os eventos mais hypados do RJ e SP. Promoções exclusivas e experiência VIP." />
+    <meta property="og:image" content="https://jubilos.com.br/og-image-tickets.jpg" />
+    <meta property="og:locale" content="pt_BR" />
+    
+    <!-- Twitter Meta Tags -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://tickets.jubilos.com.br/" />
+    <meta property="twitter:title" content="Jubilos Tickets | Compre Ingressos para os Melhores Eventos" />
+    <meta property="twitter:description" content="Garanta seu ingresso para os eventos mais hypados do RJ e SP. Promoções exclusivas e experiência VIP." />
+    <meta property="twitter:image" content="https://jubilos.com.br/twitter-image-tickets.jpg" />
+    
+    <!-- Font Loading Detection -->
+    <script>
+      (function() {
+        if ("fonts" in document) {
+          Promise.all([
+            document.fonts.load('1em "Material Design Icons"'),
+            document.fonts.ready
+          ]).then(() => {
+            document.documentElement.classList.add('fonts-loaded');
+            if (process.env.NODE_ENV === 'development') {
+              console.debug('Fonts loaded successfully');
+            }
+          }).catch(err => {
+            console.warn('Font loading failed:', err);
+            document.documentElement.classList.add('fonts-failed');
+          });
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="app">
+      <div id="loading" class="animated-gradient">
+        <div class="loader"></div>
+      </div>
+    </div>
+
+    <script type="module" src="/src/tickets/main.js"></script>
+    
+    <!-- Schema.org Data -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Jubilos Tickets",
+        "applicationCategory": "TicketReservation",
+        "operatingSystem": "Web",
+        "description": "Plataforma para comprar ingressos dos eventos mais hypados de São Paulo e Rio de Janeiro",
+        "offers": {
+          "@type": "Offer",
+          "category": "Event Tickets & Reservations"
+        }
+      }
+    </script>
+    
+    <noscript>
+      <div style="text-align: center; padding: 20px;">
+        Ei! Para comprar ingressos no Jubilos, você precisa ativar o JavaScript no seu navegador.
+      </div>
+    </noscript>
+  </body>
+</html>

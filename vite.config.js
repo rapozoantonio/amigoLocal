@@ -1,6 +1,6 @@
 // vite.config.js
 import { fileURLToPath, URL } from "node:url";
-import path from "path"; // Add this import
+import path from "path";
 import { VitePWA } from "vite-plugin-pwa";
 import ViteFonts from "unplugin-fonts/vite";
 import { defineConfig } from "vite";
@@ -8,8 +8,7 @@ import vuetify, { transformAssetUrls } from "vite-plugin-vuetify";
 import compression from "vite-plugin-compression";
 import vue from "@vitejs/plugin-vue";
 
-// Use destructuring to get resolve from path
-const { resolve } = path; // Add this line
+const { resolve } = path;
 
 // Helper to create compression plugin with common options
 const createCompressionPlugin = (algorithm) =>
@@ -31,7 +30,7 @@ export default defineConfig({
     }),
     vuetify({
       autoImport: true,
-      styles: { configFile: "src/styles/settings.scss" },
+      styles: { configFile: "src/core/styles/settings.scss" },
       directives: true,
       importComposables: true,
       treeshaking: true,
@@ -120,6 +119,30 @@ export default defineConfig({
         ],
       },
     }),
+    // Add custom plugin for subdomain handling
+    {
+      name: 'subdomain-handler',
+      configureServer(server) {
+        return () => {
+          server.middlewares.use((req, res, next) => {
+            const host = req.headers.host || '';
+            
+            // Check if we're on the admin subdomain
+            if (host.startsWith('admin.')) {
+              console.log(`Subdomain detected: ${host}, serving management.html`);
+              // Rewrite to management.html
+              req.url = '/management.html';
+            } else if (req.url === '/' || req.url === '/index.html') {
+              // Explicitly serve promotion.html for base domain
+              console.log(`Base domain detected: ${host}, serving promotion.html`);
+              req.url = '/promotion.html';
+            }
+            
+            next();
+          });
+        };
+      }
+    }
   ],
 
   define: {
@@ -186,6 +209,11 @@ export default defineConfig({
           if (id.includes("/components/")) {
             return "components";
           }
+          
+          // Add specific chunks for management-related code
+          if (id.includes("/management/")) {
+            return "management";
+          }
         },
       },
     },
@@ -237,5 +265,7 @@ export default defineConfig({
     headers: {
       "Cache-Control": "no-store",
     },
+    host: "localhost",
+    cors: true,
   },
 });

@@ -296,7 +296,7 @@ const filteredEvents = computed(() => {
 
 // Navigation functions
 const navigateToEventDetails = (eventId) => {
-  router.push(`/event/${eventId}`);
+  router.push(`/events/${eventId}`);
 };
 
 // Show new event modal
@@ -313,11 +313,11 @@ const handleNewEventSaved = (newEvent) => {
 };
 
 const navigateToAddEvent = () => {
-  router.push("/event/new");
+  router.push("/events/create");
 };
 
 const navigateToEditEvent = (eventId) => {
-  router.push(`/event/${eventId}/edit`);
+  router.push(`/events/${eventId}/edit`);
 };
 
 // Event actions

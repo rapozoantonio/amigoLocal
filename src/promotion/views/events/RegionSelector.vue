@@ -1,14 +1,11 @@
 <template>
-  <v-container>
+  <v-container v-if="!isAdminSubdomain">
     <v-row>
       <v-col cols="12">
-        <!-- <v-progress-circular v-if="!countries" indeterminate></v-progress-circular> -->
-
         <v-card flat variant="plain">
           <v-card-text class="text-center">
             <p class="text-h5 mb-4">Buscando eventos na sua zona</p>
             <v-progress-circular size="large" width="7" color="primary" indeterminate></v-progress-circular>
-
           </v-card-text>
         </v-card>
         <template v-if="false">
@@ -48,20 +45,19 @@
       </v-col>
     </v-row>
   </v-container>
+  <!-- Render nothing if on admin subdomain -->
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
-
-
+import { computed, onMounted, ref, inject } from "vue";
 import { storeToRefs } from 'pinia';
-
 import { useConfigStore } from '@/promotion/store/config';
 import router from '@/promotion/router';
 
+// Inject the admin status from App.vue
+const isAdminSubdomain = inject('isAdminSubdomain', false);
 
 const configStore = useConfigStore();
-
 const { countries, regions } = storeToRefs(configStore);
 
 const selectedCountry = ref("BR");
@@ -80,7 +76,9 @@ function selectCountry(code) {
   selectedCountry.value = code;
   selectedRegion.value = null;
 
-  divider.value.$el.scrollIntoView();
+  if (divider.value && divider.value.$el) {
+    divider.value.$el.scrollIntoView();
+  }
 }
 
 function selectRegion(region) {
@@ -92,6 +90,12 @@ const IP_CACHE_KEY = 'user_region_info';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
 
 async function getUserRegion() {
+  // Skip geolocation if on admin subdomain
+  if (isAdminSubdomain) {
+    console.log('Skipping geolocation redirect on admin subdomain');
+    return;
+  }
+
   try {
     // Check cache first
     const cachedData = localStorage.getItem(IP_CACHE_KEY);
@@ -128,13 +132,21 @@ async function getUserRegion() {
     return handleRegionRouting(info);
 
   } catch (error) {
-    return redirectToRio();
+    // Only redirect to Rio if not on admin subdomain
+    if (!isAdminSubdomain) {
+      return redirectToRio();
+    }
   }
 }
 
 function handleRegionRouting(info) {
-  if (regions[info.country]) {
-    const checkForRegion = regions[info.country].find(r => r.name === info.region);
+  // Skip if on admin subdomain
+  if (isAdminSubdomain) {
+    return;
+  }
+  
+  if (regions.value && regions.value[info.country]) {
+    const checkForRegion = regions.value[info.country].find(r => r.name === info.region);
     if (checkForRegion) {
       return router.push({ 
         name: "events", 
@@ -149,6 +161,11 @@ function handleRegionRouting(info) {
 }
 
 function redirectToRio() {
+  // Skip redirect if on admin subdomain
+  if (isAdminSubdomain) {
+    return;
+  }
+  
   return router.push({ 
     name: "events", 
     params: { 
@@ -159,12 +176,21 @@ function redirectToRio() {
 }
 
 onMounted(async () => {
+  console.log('RegionSelector mounted, isAdminSubdomain:', isAdminSubdomain);
+  
+  // Skip everything if we're on the admin subdomain
+  if (isAdminSubdomain) {
+    console.log('On admin subdomain, skipping country/region redirection');
+    return;
+  }
 
   if (!countries.value) {
-
     configStore.init();
   }
-  await getUserRegion();
-
+  
+  // Only perform geolocation and routing if not on admin subdomain
+  if (!isAdminSubdomain) {
+    await getUserRegion();
+  }
 });
 </script>

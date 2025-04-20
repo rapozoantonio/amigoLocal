@@ -13,7 +13,7 @@ import {
 import { defineStore } from "pinia";
 import { useRoute, useRouter } from "vue-router";
 import { useFirebaseStore } from "@/promotion/store/firebase";
-import { auth } from "../../plugins/firebase";
+import { auth } from "../../core/plugins/firebase";
 
 export const useAuthStore = defineStore("auth", () => {
   // State

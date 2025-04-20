@@ -589,7 +589,7 @@ const fetchEventData = async () => {
 
 // Enhanced navigation and interactions
 const goBack = () => {
-  router.push("/eventos");
+  router.push("/events");
 };
 
 const editBasicInfo = () => {

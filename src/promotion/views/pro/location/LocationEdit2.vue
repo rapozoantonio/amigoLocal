@@ -118,7 +118,7 @@ import {
 } from 'vue3-google-map';
 
 // VARIABLES
-import countries from '@/assets/countries.js';
+import countries from '@/core/assets/countries.js';
 // FIREBASE
 import { useFirebaseStore } from '@/promotion/store/firebase';
 import { Loader } from '@googlemaps/js-api-loader';

@@ -11,7 +11,7 @@ import {
 import { defineStore } from 'pinia';
 import Swal from 'sweetalert2';
 
-import { firestore } from '@/plugins/firebase';
+import { firestore } from '@/core/plugins/firebase';
 
 export const useProducersStore = defineStore("producers", () => {
   const producer = ref(null);

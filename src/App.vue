@@ -1,18 +1,36 @@
 <template>
-  <router-view />
+  <div>
+    <router-view />
+  </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import useSeo from '@/composables/useSeo'
+import { onMounted, ref, provide } from 'vue'
+import useSeo from '@/core/composables/useSeo'
 
 // Use default SEO settings by calling useSeo with no parameters
 useSeo()
 
 const mounted = ref(false)
+const isAdminSubdomain = ref(false)
+
+// Detect if we're on the admin subdomain
+function detectAdminSubdomain() {
+  // Check if we're on the admin subdomain
+  isAdminSubdomain.value = window.location.hostname.startsWith('admin.') || 
+                          window.location.pathname.startsWith('/admin') ||
+                          (typeof window !== 'undefined' && window.ENTRY_POINT === 'management');
+  
+  // Provide this information to child components
+  provide('isAdminSubdomain', isAdminSubdomain.value)
+  
+  console.log('App mounted on subdomain:', window.location.hostname)
+  console.log('Is admin subdomain:', isAdminSubdomain.value)
+}
 
 onMounted(() => {
   mounted.value = true
+  detectAdminSubdomain()
 })
 </script>
 

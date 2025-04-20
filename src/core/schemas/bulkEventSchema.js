@@ -1,5 +1,5 @@
 import eventCategories from "@/assets/eventCategories";
-import genres from "@/assets/genres";
+import genres from "@/core/assets/genres";
 
 export default {
   name: "events",
