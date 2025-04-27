@@ -1,15 +1,7 @@
 <template>
   <div>
-    <v-autocomplete
-      v-if="users"
-      v-bind="{ ...fieldAttrs, ...$attrs }"
-      v-model="user"
-      :items="users"
-      item-value="id"
-      item-title="name"
-      @update:modelValue="changeUser"
-      clearable
-    >
+    <v-autocomplete v-if="users" v-bind="{ ...fieldAttrs, ...$attrs }" v-model="user" :items="users" item-value="id"
+      item-title="name" @update:modelValue="changeUser" clearable>
       <template #prepend-item>
         <v-list-item density="compact">
           <v-list-item-subtitle>Users</v-list-item-subtitle>
@@ -24,11 +16,9 @@
       </template>
       <template v-slot:item="{ item, props }">
         <v-list-item v-bind="props">
-          <v-list-item-subtitle
-            >{{ item.raw.username }} ({{
-              item.raw.country
-            }})</v-list-item-subtitle
-          >
+          <v-list-item-subtitle>{{ item.raw.username }} ({{
+            item.raw.country
+          }})</v-list-item-subtitle>
         </v-list-item>
       </template>
     </v-autocomplete>

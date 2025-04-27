@@ -1,12 +1,7 @@
 <template>
-  <v-dialog
-    v-model="dialogVisible"
-    :fullscreen="$vuetify.display.xs"
-    :max-width="$vuetify.display.xs ? '100%' : '600px'"
-    :scrim="true"
-    transition="dialog-bottom-transition"
-    :retain-focus="false"
-  >
+  <v-dialog v-model="dialogVisible" :fullscreen="$vuetify.display.xs"
+    :max-width="$vuetify.display.xs ? '100%' : '600px'" :scrim="true" transition="dialog-bottom-transition"
+    :retain-focus="false">
     <v-card class="edit-event-modal">
       <!-- Modal header with close button -->
       <v-toolbar dark color="primary">
@@ -18,15 +13,8 @@
       </v-toolbar>
 
       <!-- Loading overlay -->
-      <v-overlay
-        :model-value="loading"
-        class="align-center justify-center"
-        persistent
-      >
-        <v-progress-circular
-          indeterminate
-          color="primary"
-        ></v-progress-circular>
+      <v-overlay :model-value="loading" class="align-center justify-center" persistent>
+        <v-progress-circular indeterminate color="primary"></v-progress-circular>
       </v-overlay>
 
       <!-- Form content -->
@@ -36,79 +24,37 @@
             <!-- Event name -->
             <v-row>
               <v-col cols="12">
-                <v-text-field
-                  v-model="eventData.name"
-                  :rules="nameRules"
-                  label="Nome do evento"
-                  placeholder="Digite o nome do evento"
-                  required
-                  variant="outlined"
-                  density="comfortable"
-                  bg-color="surface"
-                  autofocus
-                  hide-details="auto"
-                  class="mb-3"
-                ></v-text-field>
+                <v-text-field v-model="eventData.name" :rules="nameRules" label="Nome do evento"
+                  placeholder="Digite o nome do evento" required variant="outlined" density="comfortable"
+                  bg-color="surface" autofocus hide-details="auto" class="mb-3"></v-text-field>
               </v-col>
             </v-row>
 
             <!-- Date and Time -->
             <v-row>
               <v-col cols="12" sm="6">
-                <v-menu
-                  v-model="dateMenu"
-                  :close-on-content-click="false"
-                  location="bottom"
-                  transition="scale-transition"
-                  min-width="auto"
-                >
+                <v-menu v-model="dateMenu" :close-on-content-click="false" location="bottom"
+                  transition="scale-transition" min-width="auto">
                   <template v-slot:activator="{ props }">
-                    <v-text-field
-                      v-model="formattedDate"
-                      label="Data"
-                      readonly
-                      v-bind="props"
-                      :rules="dateRules"
-                      variant="outlined"
-                      hide-details="auto"
-                      prepend-inner-icon="mdi-calendar"
-                      class="mb-3"
-                    ></v-text-field>
+                    <v-text-field v-model="formattedDate" label="Data" readonly v-bind="props" :rules="dateRules"
+                      variant="outlined" hide-details="auto" prepend-inner-icon="mdi-calendar"
+                      class="mb-3"></v-text-field>
                   </template>
-                  <v-date-picker
-                    v-model="eventData.date"
-                    @update:model-value="dateMenu = false"
-                    min="2023-01-01"
-                  ></v-date-picker>
+                  <v-date-picker v-model="eventData.date" @update:model-value="dateMenu = false"
+                    min="2023-01-01"></v-date-picker>
                 </v-menu>
               </v-col>
 
               <v-col cols="12" sm="6">
-                <v-menu
-                  v-model="timeMenu"
-                  :close-on-content-click="false"
-                  location="bottom"
-                  transition="scale-transition"
-                  min-width="auto"
-                >
+                <v-menu v-model="timeMenu" :close-on-content-click="false" location="bottom"
+                  transition="scale-transition" min-width="auto">
                   <template v-slot:activator="{ props }">
-                    <v-text-field
-                      v-model="eventData.time"
-                      label="Horário"
-                      readonly
-                      v-bind="props"
-                      :rules="timeRules"
-                      variant="outlined"
-                      hide-details="auto"
-                      prepend-inner-icon="mdi-clock-outline"
-                      class="mb-3"
-                    ></v-text-field>
+                    <v-text-field v-model="eventData.time" label="Horário" readonly v-bind="props" :rules="timeRules"
+                      variant="outlined" hide-details="auto" prepend-inner-icon="mdi-clock-outline"
+                      class="mb-3"></v-text-field>
                   </template>
-                  <v-time-picker
-                    v-model="eventData.time"
-                    @update:model-value="timeMenu = false"
-                    format="24hr"
-                  ></v-time-picker>
+                  <v-time-picker v-model="eventData.time" @update:model-value="timeMenu = false"
+                    format="24hr"></v-time-picker>
                 </v-menu>
               </v-col>
             </v-row>
@@ -116,75 +62,38 @@
             <!-- Location -->
             <v-row>
               <v-col cols="12">
-                <v-text-field
-                  v-model="eventData.location"
-                  :rules="locationRules"
-                  label="Local"
-                  placeholder="Digite o local do evento"
-                  required
-                  variant="outlined"
-                  density="comfortable"
-                  hide-details="auto"
-                  prepend-inner-icon="mdi-map-marker"
-                  class="mb-3"
-                ></v-text-field>
+                <v-text-field v-model="eventData.location" :rules="locationRules" label="Local"
+                  placeholder="Digite o local do evento" required variant="outlined" density="comfortable"
+                  hide-details="auto" prepend-inner-icon="mdi-map-marker" class="mb-3"></v-text-field>
               </v-col>
             </v-row>
 
             <!-- Status selector -->
             <v-row>
               <v-col cols="12">
-                <v-select
-                  v-model="eventData.status"
-                  :items="statusOptions"
-                  :rules="statusRules"
-                  label="Status"
-                  variant="outlined"
-                  density="comfortable"
-                  hide-details="auto"
-                  prepend-inner-icon="mdi-tag"
-                  class="mb-3"
-                ></v-select>
+                <v-select v-model="eventData.status" :items="statusOptions" :rules="statusRules" label="Status"
+                  variant="outlined" density="comfortable" hide-details="auto" prepend-inner-icon="mdi-tag"
+                  class="mb-3"></v-select>
               </v-col>
             </v-row>
 
             <!-- Revenue prediction -->
             <v-row>
               <v-col cols="12">
-                <v-text-field
-                  v-model="eventData.revenuePrediction"
-                  label="Meta de receita (R$)"
-                  placeholder="Digite a meta de receita"
-                  variant="outlined"
-                  density="comfortable"
-                  hide-details="auto"
-                  prepend-inner-icon="mdi-currency-usd"
-                  type="number"
-                  class="mb-3"
-                ></v-text-field>
+                <v-text-field v-model="eventData.revenuePrediction" label="Meta de receita (R$)"
+                  placeholder="Digite a meta de receita" variant="outlined" density="comfortable" hide-details="auto"
+                  prepend-inner-icon="mdi-currency-usd" type="number" class="mb-3"></v-text-field>
               </v-col>
             </v-row>
 
             <!-- Image upload -->
             <v-row>
               <v-col cols="12">
-                <v-file-input
-                  v-model="eventData.thumbnailFile"
-                  label="Imagem de capa"
-                  variant="outlined"
-                  density="comfortable"
-                  hide-details="auto"
-                  prepend-inner-icon="mdi-image"
-                  accept="image/*"
-                  class="mb-3"
-                  placeholder="Selecione uma imagem"
-                  truncate-length="15"
-                >
+                <v-file-input v-model="eventData.thumbnailFile" label="Imagem de capa" variant="outlined"
+                  density="comfortable" hide-details="auto" prepend-inner-icon="mdi-image" accept="image/*" class="mb-3"
+                  placeholder="Selecione uma imagem" truncate-length="15">
                   <template v-slot:selection="{ fileNames }">
-                    <template
-                      v-for="(fileName, index) in fileNames"
-                      :key="index"
-                    >
+                    <template v-for="(fileName, index) in fileNames" :key="index">
                       <v-chip size="small" label color="primary" class="me-2">
                         {{ fileName }}
                       </v-chip>
@@ -201,20 +110,10 @@
       <v-divider></v-divider>
       <v-card-actions class="pa-4">
         <v-spacer></v-spacer>
-        <v-btn
-          color="grey-darken-1"
-          variant="text"
-          @click="closeDialog"
-          :disabled="loading"
-        >
+        <v-btn color="grey-darken-1" variant="text" @click="closeDialog" :disabled="loading">
           Cancelar
         </v-btn>
-        <v-btn
-          color="primary"
-          variant="flat"
-          :disabled="!formValid || loading"
-          @click="saveEvent"
-        >
+        <v-btn color="primary" variant="flat" :disabled="!formValid || loading" @click="saveEvent">
           Salvar alterações
         </v-btn>
       </v-card-actions>

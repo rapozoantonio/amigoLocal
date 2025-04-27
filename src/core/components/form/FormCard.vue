@@ -129,7 +129,7 @@
 <script setup>
 import { ref } from "vue";
 
-import FormField from "@/promotion/components/form/FormField.vue";
+import FormField from "@/core/components/form/FormField.vue";
 
 const model = defineModel("model");
 const emit = defineEmits(["submit"]);

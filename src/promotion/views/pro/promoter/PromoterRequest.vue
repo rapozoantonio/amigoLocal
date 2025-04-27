@@ -16,7 +16,7 @@ import {
 
 import { storeToRefs } from 'pinia';
 
-import FormCard from '@/promotion/components/form/FormCard.vue';
+import FormCard from '@/core/components/form/FormCard.vue';
 import promoterRequestSchema from '@/core/schemas/promoterRequestSchema';
 import { useAuthStore } from '@/core/store/auth';
 import { useFirebaseStore } from '@/core/store/firebase';

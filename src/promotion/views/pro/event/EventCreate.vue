@@ -36,7 +36,7 @@ import { ref } from "vue";
 
 import { storeToRefs } from "pinia";
 
-import FormSteps from "@/promotion/components/form/FormSteps.vue";
+import FormSteps from "@/core/components/form/FormSteps.vue";
 import EventCreateGptAssistence from "@/promotion/components/pro/event/EventCreateGptAssistence.vue";
 import eventSchema from "@/core/schemas/eventSchema";
 import { useConfigStore } from "@/promotion/store/config";

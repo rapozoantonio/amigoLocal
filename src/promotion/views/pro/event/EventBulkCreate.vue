@@ -202,7 +202,7 @@ import { useEventStore } from "@/promotion/store/event";
 import Swal from "sweetalert2";
 import { useAuthStore } from "@/core/store/auth";
 import { useRouter } from "vue-router";
-import FormField from "@/promotion/components/form/FormField.vue";
+import FormField from "@/core/components/form/FormField.vue";
 const router = useRouter();
 const helpers = inject("$helpers");
 const auth = useAuthStore();

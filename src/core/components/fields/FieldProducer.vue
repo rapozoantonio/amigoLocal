@@ -1,15 +1,7 @@
 <template>
   <div>
-    <v-autocomplete
-      v-if="producers"
-      v-bind="{ ...fieldAttrs, ...$attrs }"
-      v-model="producer"
-      :items="producers"
-      item-value="id"
-      item-title="name"
-      @update:modelValue="changeProducer"
-      clearable
-    >
+    <v-autocomplete v-if="producers" v-bind="{ ...fieldAttrs, ...$attrs }" v-model="producer" :items="producers"
+      item-value="id" item-title="name" @update:modelValue="changeProducer" clearable>
       <template #prepend-item>
         <v-list-item density="compact">
           <v-list-item-subtitle>Producers</v-list-item-subtitle>
@@ -24,11 +16,9 @@
       </template>
       <template v-slot:item="{ item, props }">
         <v-list-item v-bind="props">
-          <v-list-item-subtitle
-            >{{ item.raw.username }} ({{
-              item.raw.country
-            }})</v-list-item-subtitle
-          >
+          <v-list-item-subtitle>{{ item.raw.username }} ({{
+            item.raw.country
+          }})</v-list-item-subtitle>
         </v-list-item>
       </template>
     </v-autocomplete>
@@ -48,16 +38,8 @@
       </template>
     </v-alert>
 
-    <form-dialog
-      v-model:opened="dialog"
-      v-if="newProducer"
-      @submit="createAndAssociate"
-      action="Create and Associate"
-      :schema="producerSchema"
-      v-model:model="newProducer"
-      labelType="in"
-      title="Add promoter"
-    ></form-dialog>
+    <form-dialog v-model:opened="dialog" v-if="newProducer" @submit="createAndAssociate" action="Create and Associate"
+      :schema="producerSchema" v-model:model="newProducer" labelType="in" title="Add promoter"></form-dialog>
 
     <!-- <v-dialog v-model="dialog" v-if="false">
             <v-card max-width="500" min-width="300" class="mx-auto">

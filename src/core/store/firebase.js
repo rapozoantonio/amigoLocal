@@ -17,6 +17,7 @@ import {
   startAfter,
   updateDoc,
   where,
+  onSnapshot,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 // Utilities
@@ -187,6 +188,31 @@ export const useFirebaseStore = defineStore("firebase", () => {
     }
   }
 
+  async function watchCollection(
+    path,
+    addedCallback,
+    modifiedCallback,
+    removedCallback
+  ) {
+    const q = query(collection(firestore, path));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          console.log("New doc: ", change.doc.data());
+          addedCallback(change.doc.data());
+        }
+        if (change.type === "modified") {
+          modifiedCallback(change.doc.data());
+        }
+        if (change.type === "removed") {
+          console.log("Removed city: ", change.doc.data());
+          removedCallback(change.doc.data());
+        }
+      });
+    });
+    return unsubscribe;
+  }
+
   // UPLOAD PICTURES
   async function uploadPictures(pictures) {
     const promises = pictures.map(async (picture) => {
@@ -284,6 +310,19 @@ export const useFirebaseStore = defineStore("firebase", () => {
       return true;
     } catch (error) {
       return false;
+    }
+  }
+
+  async function deleteDocument(col, docId) {
+    try {
+      const docRef = doc(firestore, `${col}/${docId}`);
+      const deleteResponse = await deleteDoc(docRef);
+      return {
+        ok: true,
+      };
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, error };
     }
   }
 
@@ -473,7 +512,7 @@ export const useFirebaseStore = defineStore("firebase", () => {
   // GET COLLECTION
   async function getCollection(data) {
     console.log("getCollection", data);
-    const queries = Object.entries(data.query);
+    const queries = data.query ? Object.entries(data.query) : [];
     const pageSize = data.limit || 15;
     const order = data.orderBy || "created_at";
     const direction = data.direction || "desc";
@@ -780,5 +819,7 @@ export const useFirebaseStore = defineStore("firebase", () => {
     countDocuments,
     getEventsByCategory,
     postBulkDocuments,
+    watchCollection,
+    deleteDocument,
   };
 });

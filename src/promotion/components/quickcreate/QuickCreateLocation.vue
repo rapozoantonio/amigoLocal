@@ -49,14 +49,14 @@
 
 <script setup>
 import {
-  inject,
-  ref,
+    inject,
+    ref,
 } from 'vue';
 
 import { storeToRefs } from 'pinia';
 
-import FieldCountry from '@/promotion/components/fields/FieldCountry.vue';
-import FieldRegion from '@/promotion/components/fields/FieldRegion.vue';
+import FieldCountry from '@/core/components/fields/FieldCountry.vue';
+import FieldRegion from '@/core/components/fields/FieldRegion.vue';
 import { useLocationStore } from '@/promotion/store/location';
 
 const locationStore = useLocationStore();
@@ -68,10 +68,10 @@ const form = ref(null);
 
 async function createAndAssociate(event) {
     const { valid, errors } = await event
-    
+
     if (valid) {
         const response = await locationStore.createLocation(false);
-        
+
         if (response.ok) {
             emit("create", response.data.document)
         }

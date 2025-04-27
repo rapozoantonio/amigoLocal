@@ -84,7 +84,7 @@ import {
     watch,
 } from 'vue';
 
-import FormDialog from '@/promotion/components/form/FormDialog.vue';
+import FormDialog from '@/core/components/form/FormDialog.vue';
 import {
     functions,
     httpsCallable,

@@ -255,10 +255,10 @@
               @update:hostesses="updateHostessesCount"
             />
           </v-window-item>
-
+<!-- 
           <v-window-item value="reports">
             <event-reports :event="event" />
-          </v-window-item>
+          </v-window-item> -->
         </v-window>
       </v-card>
     </template>
