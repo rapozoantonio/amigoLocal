@@ -44,17 +44,17 @@
 
 <script setup>
 import {
-  inject,
-  ref,
+    inject,
+    ref,
 } from 'vue';
 
 import { storeToRefs } from 'pinia';
 
-import FieldCountry from '@/promotion/components/fields/FieldCountry.vue';
-import FieldRegion from '@/promotion/components/fields/FieldRegion.vue';
+import FieldCountry from '@/core/components/fields/FieldCountry.vue';
+import FieldRegion from '@/core/components/fields/FieldRegion.vue';
 import FormBox from '@/core/components/form/FormBox.vue';
-import FormCard from '@/promotion/components/form/FormCard.vue';
-import FormDialog from '@/promotion/components/form/FormDialog.vue';
+import FormCard from '@/core/components/form/FormCard.vue';
+import FormDialog from '@/core/components/form/FormDialog.vue';
 import producerSchema from '@/core/schemas/quickProducerSchema';
 import { useProducerStore } from '@/promotion/store/producer';
 
@@ -71,10 +71,10 @@ const files = ref({})
 
 async function createAndAssociate(event) {
     const { valid, errors } = await event
-    
+
     if (valid) {
         const response = await producerStore.createProducer(false);
-        
+
         if (response.ok) {
             emit("create", response.data.document)
         }
@@ -88,7 +88,7 @@ async function createAndAssociate(event) {
 async function createAndAssociate2(event) {
 
     const response = await producerStore.createProducer(false);
-    
+
     if (response.ok) {
         emit("create", response.data.document)
     }

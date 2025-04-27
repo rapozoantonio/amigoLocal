@@ -82,7 +82,7 @@ import {
     httpsCallable,
 } from '@/core/plugins/firebase';
 
-import FormDialog from '@/promotion/components/form/FormDialog.vue';
+import FormDialog from '@/core/components/form/FormDialog.vue';
 
 const loading = ref(false)
 const users = ref([]);

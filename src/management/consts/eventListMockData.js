@@ -10,14 +10,6 @@ export const eventsData = [
     name: "Festa de Lançamento",
     date: new Date(new Date().getTime() + 86400000 * 7), // 7 days in future
     location: "Club XYZ, São Paulo",
-    checkInCount: 0,
-    totalGuests: 250,
-    status: "upcoming",
-    thumbnail: "https://picsum.photos/id/103/300/200",
-    vipListsCount: 3,
-    promotersCount: 5,
-    revenue: 15500,
-    revenuePrediction: 10000,
   },
   {
     id: 2,
@@ -65,5 +57,5 @@ export const eventsData = [
 
 // Additional mock methods if needed
 export const getMockEventById = (id) => {
-  return eventsData.find(event => event.id === id);
+  return eventsData.find((event) => event.id === id);
 };

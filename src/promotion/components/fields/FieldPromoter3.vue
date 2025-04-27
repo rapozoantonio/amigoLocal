@@ -85,7 +85,7 @@ import { useConfigStore } from "@/promotion/store/config";
 import { usePromoterStore } from "@/promotion/store/promoters";
 import { usePromotersStore } from "@/promotion/store/promoters";
 
-import FormDialog from "../form/FormDialog.vue";
+import FormDialog from "../../../core/components/form/FormDialog.vue";
 
 const { fieldAttrs, rules } = inject("$helpers");
 

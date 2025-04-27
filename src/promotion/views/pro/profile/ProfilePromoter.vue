@@ -10,7 +10,7 @@
 import { inject, ref, watch } from "vue";
 
 import { storeToRefs } from "pinia";
-import FormCard from "@/promotion/components/form/FormCard.vue";
+import FormCard from "@/core/components/form/FormCard.vue";
 import { useFirebaseStore } from "@/core/store/firebase";
 import { useUserStore } from "@/promotion/store/user";
 import promoterSchema from "@/core/schemas/promoterSchema";
