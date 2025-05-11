@@ -121,28 +121,32 @@ export default defineConfig({
     }),
     // Add custom plugin for subdomain handling
     {
-      name: 'subdomain-handler',
+      name: "subdomain-handler",
       configureServer(server) {
         return () => {
           server.middlewares.use((req, res, next) => {
-            const host = req.headers.host || '';
-            
+            const host = req.headers.host || "";
+
             // Check if we're on the admin subdomain
-            if (host.startsWith('admin.')) {
-              console.log(`Subdomain detected: ${host}, serving management.html`);
+            if (host.startsWith("admin.")) {
+              console.log(
+                `Subdomain detected: ${host}, serving management.html`
+              );
               // Rewrite to management.html
-              req.url = '/management.html';
-            } else if (req.url === '/' || req.url === '/index.html') {
+              req.url = "/management.html";
+            } else if (req.url === "/" || req.url === "/index.html") {
               // Explicitly serve promotion.html for base domain
-              console.log(`Base domain detected: ${host}, serving promotion.html`);
-              req.url = '/promotion.html';
+              console.log(
+                `Base domain detected: ${host}, serving promotion.html`
+              );
+              req.url = "/promotion.html";
             }
-            
+
             next();
           });
         };
-      }
-    }
+      },
+    },
   ],
 
   define: {
@@ -160,9 +164,9 @@ export default defineConfig({
 
     rollupOptions: {
       input: {
-        promotion: resolve(__dirname, 'promotion.html'),
-        management: resolve(__dirname, 'management.html'),
-        tickets: resolve(__dirname, 'tickets.html')
+        promotion: resolve(__dirname, "promotion.html"),
+        management: resolve(__dirname, "management.html"),
+        tickets: resolve(__dirname, "tickets.html"),
       },
       output: {
         manualChunks: (id) => {
@@ -209,7 +213,7 @@ export default defineConfig({
           if (id.includes("/components/")) {
             return "components";
           }
-          
+
           // Add specific chunks for management-related code
           if (id.includes("/management/")) {
             return "management";

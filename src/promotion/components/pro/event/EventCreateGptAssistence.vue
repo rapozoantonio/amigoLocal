@@ -2,14 +2,7 @@
   <v-bottom-sheet v-model="opened">
     <template v-slot:activator="{ props }">
       <div class="text-center">
-        <v-btn
-          :block="block"
-          v-bind="props"
-          color="primary"
-          :size="size"
-          :text="action"
-          :variant="variant"
-        ></v-btn>
+        <v-btn :block="block" v-bind="props" color="primary" :size="size" :text="action" :variant="variant"></v-btn>
       </div>
     </template>
 
@@ -24,12 +17,7 @@
           <p class="text-body-2 mb-4">
             {{ text }}
           </p>
-          <v-textarea
-            variant="filled"
-            rows="12"
-            color="primary"
-            v-model="textInput"
-          >
+          <v-textarea variant="filled" rows="12" color="primary" v-model="textInput">
           </v-textarea>
           <v-btn color="primary" class="mb-4" @click="useAssistente">
             Enviar
@@ -44,7 +32,7 @@
 import { ref } from "vue";
 
 import { useAppStore } from "@/promotion/store/app";
-import { useChatgptStore } from "@/promotion/store/chatgpt.js";
+import { useChatgptStore } from "@/core/store/chatgpt.js";
 import { useEventStore } from "@/promotion/store/event.js";
 
 const chatgptStore = useChatgptStore();

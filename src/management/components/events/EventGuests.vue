@@ -1,16 +1,14 @@
 <template>
   <div class="event-guests">
     <!-- Filter and stats sections -->
-    <TabFilterComponent
-      searchPlaceholder="Buscar convidados por nome, cpf, celular, email, instagram..."
-      :searchValue="searchQuery"
-      :filterOptions="[
+    <TabFilterComponent searchPlaceholder="Buscar convidados por nome, cpf, celular, email, instagram..."
+      :searchValue="searchQuery" :filterOptions="[
         { label: 'Status', options: statusOptions, modelValue: statusFilter },
-        { label: 'Lista', options: listOptions, modelValue: listFilter }
-      ]"
-      @filter-change="handleFilterChange"
-      @reset="resetFilters"
-    />
+        { label: 'Lista', options: listsItems, modelValue: listFilter },
+      ]" @filter-change="handleFilterChange" @reset="resetFilters" />
+
+    <!-- <event-guest-filter-bar v-model:search="searchQuery" v-model:status="statusFilter" v-model:list="listFilter"
+      :items="{ status: statusOptions, list: listsItems }"></event-guest-filter-bar> -->
 
     <div class="stat-chips d-flex overflow-x-auto px-4 py-2">
       <v-chip class="me-2 stat-chip" color="primary" density="compact" variant="outlined">
@@ -47,321 +45,118 @@
 
       <!-- Guest cards -->
       <template v-else>
-        <v-card
-          v-for="guest in filteredGuests"
-          :key="guest.id"
-          border="thin"
-          flat
-          :ripple="false"
-          class="guest-card mb-3"
-          :class="{ 'guest-checked-in': guest.status === 'checked-in', 'guest-pending': guest.status === 'pending' }"
-        >
-          <div class="d-flex guest-card-content">
-            <!-- Guest info section -->
-            <div class="guest-info pa-3 flex-grow-1">
-              <div class="d-flex align-start mb-1">
-                <v-menu location="bottom end">
-                  <template v-slot:activator="{ props }">
-                    <v-btn v-bind="props" icon variant="text" color="grey" size="small" class="action-btn me-2">
-                      <v-icon>mdi-dots-vertical</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list density="compact">
-                    <v-list-item @click="editGuest(guest)" prepend-icon="mdi-pencil" title="Editar" />
-                    <v-list-item v-if="guest.status !== 'cancelled'" @click="cancelGuest(guest)" prepend-icon="mdi-cancel" title="Cancelar" />
-                    <v-list-item v-if="guest.status === 'cancelled'" @click="restoreGuest(guest)" prepend-icon="mdi-restore" title="Restaurar" />
-                    <v-divider />
-                    <v-list-item @click="showDeleteConfirm(guest)" prepend-icon="mdi-delete" title="Excluir" class="text-error" />
-                  </v-list>
-                </v-menu>
-                <div class="guest-name text-subtitle-1 font-weight-medium">{{ guest.name }}</div>
-                <v-spacer />
-                <v-chip size="x-small" :color="getStatusColor(guest.status)" text-color="white" class="status-chip ms-2">
-                  {{ getStatusText(guest.status) }}
-                </v-chip>
-              </div>
-            </div>
+        <event-guest-item v-for="guest in filteredGuests" :key="guest.id" :guest="guest" @update="updateGuest"
+          :loading="guest.id === guestForm.id ? actionLoading : false" @delete="deleteGuest" @checkin="performCheckIn"
+          @edit="editGuest" :lists="lists"></event-guest-item>
 
-            <!-- Action buttons -->
-            <div class="guest-actions d-flex flex-column">
-              <v-btn
-                v-if="guest.status === 'pending'"
-                icon
-                variant="flat"
-                color="success"
-                :size="$vuetify.display.xs ? 'large' : 'small'"
-                class="action-btn"
-                :loading="actionLoading && selectedGuest?.id === guest.id"
-                @click.stop="performCheckIn(guest)"
-              >
-                <v-icon>{{ $vuetify.display.xs ? 'mdi-check-circle' : 'mdi-check' }}</v-icon>
-                <v-tooltip activator="parent" location="top">Check-in</v-tooltip>
-              </v-btn>
-              <v-btn
-                v-else-if="guest.status === 'checked-in'"
-                icon
-                variant="text"
-                color="error"
-                size="small"
-                class="action-btn"
-                :loading="actionLoading && selectedGuest?.id === guest.id"
-                @click="undoCheckIn(guest)"
-              >
-                <v-icon>mdi-undo</v-icon>
-                <v-tooltip activator="parent" location="top">Desfazer Check-in</v-tooltip>
-              </v-btn>
-            </div>
-          </div>
-        </v-card>
-
-        <!-- Pagination -->
-        <div class="d-flex justify-center align-center mt-4 pagination-container">
-          <v-pagination
-            v-model="currentPage"
-            :length="totalPages"
-            :total-visible="5"
-            rounded
-            @update:model-value="fetchGuests"
-          />
-          <v-select
-            v-model="itemsPerPage"
-            :items="[10, 25, 50, 100]"
-            label="Por página"
-            variant="outlined"
-            hide-details
-            density="compact"
-            class="items-per-page ms-4"
-            @update:model-value="handleItemsPerPageChange"
-          />
-        </div>
       </template>
     </div>
 
-    <!-- Add Guest Dialog -->
-    <v-dialog v-model="showAddGuestDialog" max-width="500">
-      <v-card>
-        <v-card-title class="text-h5">Adicionar Convidado</v-card-title>
-        <v-card-text>
-          <v-form ref="guestForm" v-model="formValid">
-            <v-text-field
-              v-model="guestForm.name"
-              label="Nome completo"
-              :rules="[(v) => !!v || 'Nome é obrigatório']"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-text-field
-              v-model="guestForm.instagram"
-              label="Instagram"
-              :rules="[(v) => !!v || 'Instagram é obrigatório']"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-text-field
-              v-model="guestForm.email"
-              label="Email"
-              :rules="[(v) => !v || /.+@.+\..+/.test(v) || 'Email inválido']"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-text-field
-              v-model="guestForm.phone"
-              label="Telefone"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-text-field
-              v-model="guestForm.document"
-              label="CPF"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-select
-              v-model="guestForm.list"
-              :items="listOptions"
-              label="Lista"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-checkbox
-              v-model="guestForm.vip"
-              label="Convidado VIP"
-              hide-details
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="grey-darken-1" variant="text" @click="showAddGuestDialog = false">
-            Cancelar
-          </v-btn>
-          <v-btn color="primary" @click="addGuest" :disabled="!formValid" :loading="formSubmitting">
-            Adicionar
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <!-- ADD GUESS DIALOG -->
+    <form-dialog v-model:model="guestForm" :schema="guestSchema" v-model:opened="showAddGuestDialog"
+      @submit="submitNewGuest" :items="{ list: listsItems }">
+    </form-dialog>
 
-    <!-- Edit Guest Dialog -->
-    <v-dialog v-model="showEditGuestDialog" max-width="500">
-      <v-card>
-        <v-card-title class="text-h5">Editar Convidado</v-card-title>
-        <v-card-text>
-          <v-form ref="editForm" v-model="formValid">
-            <v-text-field
-              v-model="guestForm.name"
-              label="Nome completo"
-              :rules="[(v) => !!v || 'Nome é obrigatório']"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-text-field
-              v-model="guestForm.instagram"
-              label="Instagram"
-              :rules="[(v) => !!v || 'Instagram é obrigatório']"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-text-field
-              v-model="guestForm.email"
-              label="Email"
-              :rules="[(v) => !v || /.+@.+\..+/.test(v) || 'Email inválido']"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-text-field
-              v-model="guestForm.phone"
-              label="Telefone"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-text-field
-              v-model="guestForm.document"
-              label="CPF"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-select
-              v-model="guestForm.list"
-              :items="listOptions"
-              label="Lista"
-              variant="outlined"
-              class="mb-2"
-            />
-            <v-checkbox
-              v-model="guestForm.vip"
-              label="Convidado VIP"
-              hide-details
-            />
-            <v-checkbox
-              v-model="guestForm.blacklist"
-              label="Restrição"
-              hide-details
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="grey-darken-1" variant="text" @click="showEditGuestDialog = false">
-            Cancelar
-          </v-btn>
-          <v-btn color="primary" @click="saveGuestEdit" :disabled="!formValid" :loading="formSubmitting">
-            Salvar
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <!-- EDIT GUEST DIALOG -->
+    <form-dialog @submit="updateGuest" v-model:model="guestForm" v-model:opened="showEditDialog" :schema="guestSchema"
+      :items="{ list: listsItems }"></form-dialog>
 
-    <!-- Delete Confirmation Dialog -->
-    <v-dialog v-model="showDeleteDialog" max-width="400">
-      <v-card>
-        <v-card-title class="text-h5">Excluir Convidado</v-card-title>
-        <v-card-text>
-          Tem certeza que deseja excluir <strong>{{ selectedGuest?.name }}</strong>? Esta ação não pode ser desfeita.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="grey-darken-1" variant="text" @click="showDeleteDialog = false">
-            Cancelar
-          </v-btn>
-          <v-btn color="error" @click="deleteGuest" :loading="actionLoading">
-            Excluir
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Check-in Confirmation Dialog -->
-    <v-dialog v-model="showCheckInDialog" max-width="500">
-      <v-card>
-        <v-card-title class="text-h5">Check-in de Convidado</v-card-title>
-        <v-card-text>
-          <div class="d-flex flex-column align-center mb-4">
-            <div class="guest-avatar mb-2">
-              <v-avatar size="80" color="primary">
-                <span class="text-h4 text-white">{{ selectedGuest?.name?.charAt(0) }}</span>
+    <!-- CHECK-IN DIALOG -->
+    <form-dialog cancel="Cancelar" action="Confirmar Check-in" @submit="confirmCheckIn" :loading-btn="actionLoading"
+      v-model:model="guestForm" v-model:opened="showCheckInDialog" title="Check-in de Convidado"
+      :schema="guestCheckinSchema" :items="{ list: listsItems }">
+      <template #prepend-inner>
+        <div class="">
+          <v-list-item :title="guestForm?.name" :subtitle="guestForm?.list?.name">
+            <template #prepend>
+              <v-avatar size="50" color="primary">
+                <span class="text-h4 text-white">{{ guestForm?.name?.charAt(0) }}</span>
               </v-avatar>
-            </div>
-            <div class="text-h6">{{ selectedGuest?.name }}</div>
-            <div class="text-subtitle-2">{{ selectedGuest?.list }}</div>
-          </div>
-          <v-divider class="mb-4" />
-          <v-textarea
-            v-model="checkInForm.notes"
-            label="Observações (opcional)"
-            variant="outlined"
-            rows="2"
-          />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn color="grey-darken-1" variant="text" @click="showCheckInDialog = false">
-            Cancelar
-          </v-btn>
-          <v-btn color="success" @click="confirmCheckIn" :loading="actionLoading">
-            Confirmar Check-in
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+            </template>
+            <template #title>
+              <span class="text-h6 text-white">{{ guestForm?.name }}</span>
+            </template>
+            <template #subtitle>
+              <v-chip class=" text-white" label size="small">{{ guestForm?.list?.name }}</v-chip>
+            </template>
+            <template #append>
+              <v-icon v-if="guestForm.vip" size="30" color="yellow">
+                mdi-star
+              </v-icon>
+              <v-icon v-if="guestForm.blacklist" size="30" color="error">
+                mdi-account-cancel
+              </v-icon>
+            </template>
+          </v-list-item>
+          <v-alert v-if="guestForm.blacklist" class="mt-4" border="top" type="warning" variant="outlined"
+            density="compact" text="Esse convidado está incluido na Lista Negra do evento"></v-alert>
+        </div>
+      </template>
+    </form-dialog>
+
+    <!-- FLOAT ICON -->
+    <v-fab icon="mdi-plus" app location="right bottom" color="primary" rounded="pill"
+      @click="openAddGuestDialog"></v-fab>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, shallowRef } from 'vue';
-import TabFilterComponent from '@/management/components/events/TabFilterComponent.vue';
+// SYSTEM
+import { ref, computed, onMounted, shallowRef, inject, toRefs } from 'vue';
+
+// COMPONENTS
 import {
   statusOptions,
-  listOptions,
-  getStatusColor,
-  getStatusText,
-  generateMockGuests
 } from '@/management/consts/guestsMockData';
+import TabFilterComponent from '@/management/components/events/TabFilterComponent.vue';
+import FormDialog from '@/core/components/form/FormDialog.vue';
+import EventGuestFilterBar from './EventGuestFilterBar.vue';
+import EventGuestItem from './EventGuestItem.vue';
 
-const loading = ref(true);
+// STORE
+import { useEventListStore } from "@/management/store/eventList";
+import { useRoute } from 'vue-router';
+import { useAuthStore } from '@/core/store/auth';
+
+// SCHEMAS
+import guestSchema from '@/management/schemas/guestSchema';
+import guestCheckinSchema from '@/management/schemas/guestCheckinSchema';
+
+// STORES
+const eventListStore = useEventListStore();
+const authStore = useAuthStore();
+const route = useRoute();
+
+// DATA
+const swal = inject(["$swal"]);
+const notify = inject(["$notify"]);
+const loading = ref(false);
 const searchQuery = ref('');
 const statusFilter = ref('all');
 const listFilter = ref('all');
 const currentPage = ref(1);
 const itemsPerPage = ref(25);
-const guests = shallowRef([]);
 const totalItems = ref(0);
 const showAddGuestDialog = ref(false);
-const showEditGuestDialog = ref(false);
-const showDeleteDialog = ref(false);
-const showCheckInDialog = ref(false);
-const formValid = ref(false);
-const formSubmitting = ref(false);
+const guestForm = ref({});
 const actionLoading = ref(false);
-const selectedGuest = shallowRef(null);
+const showCheckInDialog = ref(false);
+const showEditDialog = ref(false);
 
-// Form data
-const guestForm = ref({ name: '', email: '', phone: '', document: '', instagram: '', list: 'VIP', vip: false, blacklist: false, });
-
-// Check-in form data
-const checkInForm = ref({ notes: '' });
-
-// Computed properties for pagination and stats
+// PROPS
+const props = defineProps(["guests", "lists", "event"]);
+const { guests, lists, event } = toRefs(props)
+// COMPUTED
+const eventId = computed(() => {
+  return route.params.eventId
+})
+const listsItems = computed(() => {
+  if (!lists.value || lists.value.length === 0) {
+    return []
+  }
+  return lists.value.map((list) => ({ id: list.id, name: list.name }))
+})
 const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage.value));
 const filteredGuests = computed(() => {
   const search = searchQuery.value.toLowerCase();
@@ -373,7 +168,7 @@ const filteredGuests = computed(() => {
 
   return guests.value.filter((guest) => {
     if (isStatusFiltered && guest.status !== statusFilter.value) return false;
-    if (isListFiltered && guest.list !== listFilter.value) return false;
+    if (isListFiltered && guest.list.id !== listFilter.value) return false;
     if (isSearching) {
       return (
         guest.name?.toLowerCase().includes(search) ||
@@ -391,29 +186,15 @@ const totalCheckIns = computed(() => guests.value.filter((g) => g.status === 'ch
 const totalPending = computed(() => guests.value.filter((g) => g.status === 'pending').length);
 const totalCancelled = computed(() => guests.value.filter((g) => g.status === 'cancelled').length);
 
-// Fetch guests (simulate API call)
-const fetchGuests = async () => {
-  loading.value = true;
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    guests.value = generateMockGuests(currentPage.value, itemsPerPage.value, statusFilter.value, listFilter.value);
-    totalItems.value = 120;
-  } catch (error) {
-    console.error('Error fetching guests:', error);
-  } finally {
-    loading.value = false;
-  }
-};
-
+// METHODS
 // Handler for items per page change
-const handleItemsPerPageChange = (newItems) => {
+function handleItemsPerPageChange(newItems) {
   itemsPerPage.value = newItems;
   currentPage.value = 1;
-  fetchGuests();
-};
 
+};
 // Filter handlers
-const handleFilterChange = (filters) => {
+function handleFilterChange(filters) {
   const newSearch = filters.search;
   const newStatus = filters.filters.find((f) => f.id === "status")?.value || "all";
   const newList = filters.filters.find((f) => f.id === "lista")?.value || "all";
@@ -421,153 +202,177 @@ const handleFilterChange = (filters) => {
     searchQuery.value = newSearch;
     statusFilter.value = newStatus;
     listFilter.value = newList;
-    fetchGuests();
+
   }
 };
-
-const resetFilters = () => {
+function resetFilters() {
   searchQuery.value = "";
   statusFilter.value = "all";
   listFilter.value = "all";
-  fetchGuests();
-};
 
-// Check-in functions
-const performCheckIn = async (guest) => {
-  if (actionLoading.value) return;
-  actionLoading.value = true;
-  selectedGuest.value = guest;
+};
+async function submitNewGuest(guest, close) {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const index = guests.value.findIndex((g) => g.id === guest.id);
-    if (index !== -1) {
-      const updated = { ...guests.value[index], status: 'checked-in', checkInTime: new Date(), checkInBy: 'Hostess Ana' };
-      guests.value.splice(index, 1, updated);
+    const existRequest = await eventListStore.checkIfGuestExistsInServer(guest, eventId.value);
+    const existCustomer = await eventListStore.checkIfCustomerExists(guest);
+    // const exists = eventListStore.checkIfGuestExists(guests.value, guest);
+    console.log({ existRequest });
+    if (existRequest.ok) {
+      console.log("Guest ja existe");
+      await swal.fire({
+        title: "Convidado duplicado",
+        html: `<p>Convidado <strong class="text-success">${existRequest.result[0].name}</strong> ja foi adicionado ao evento</p>`,
+        icon: "error"
+      })
+      return false;
     }
-  } catch (error) {
-    console.error('Error checking in guest:', error);
-  } finally {
-    actionLoading.value = false;
-    selectedGuest.value = null;
-  }
-};
 
-const undoCheckIn = async (guest) => {
-  if (actionLoading.value) return;
-  actionLoading.value = true;
-  selectedGuest.value = guest;
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const index = guests.value.findIndex((g) => g.id === guest.id);
-    if (index !== -1) {
-      const updated = { ...guests.value[index], status: 'pending', checkInTime: null, checkInBy: null };
-      guests.value.splice(index, 1, updated);
+    if (existCustomer.ok) {
+      console.log("Customer encontrado");
+      const firstResult = existCustomer.result[0];
+      const customerCheck = await swal.fire({
+        title: "Convidado identificado",
+        html: `<p>Convidado <strong class="text-success">${firstResult?.name}</strong> ja é um cliente, deseja adicionar-lo?</p>`,
+        showConfirmButton: true,
+        showDenyButton: true,
+        confirmButtonText: "Sim, é ele mesmo",
+        denyButtonText: "Não, é um convidado diferente",
+        icon: "warning"
+      })
+      if (!customerCheck.isConfirmed) {
+        return false;
+      }
+      guest = { ...guest, ...firstResult };
     }
+    console.log(eventId.value)
+    const response = await eventListStore.addGuestToList(eventId.value, guest);
+    console.log({ response });
+    guestForm.value = {}
+    close();
   } catch (error) {
-    console.error('Error undoing check-in:', error);
-  } finally {
-    actionLoading.value = false;
-    selectedGuest.value = null;
+
   }
-};
-
-const cancelGuest = async (guest) => {
-  if (actionLoading.value) return;
-  actionLoading.value = true;
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const index = guests.value.findIndex((g) => g.id === guest.id);
-    if (index !== -1) {
-      const updated = { ...guests.value[index], status: 'cancelled' };
-      guests.value.splice(index, 1, updated);
-    }
-  } catch (error) {
-    console.error('Error cancelling guest:', error);
-  } finally {
-    actionLoading.value = false;
-  }
-};
-
-const restoreGuest = async (guest) => {
-  if (actionLoading.value) return;
-  actionLoading.value = true;
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    const index = guests.value.findIndex((g) => g.id === guest.id);
-    if (index !== -1) {
-      const updated = { ...guests.value[index], status: 'pending' };
-      guests.value.splice(index, 1, updated);
-    }
-  } catch (error) {
-    console.error('Error restoring guest:', error);
-  } finally {
-    actionLoading.value = false;
-  }
-};
-
-const showDeleteConfirm = (guest) => {
-  selectedGuest.value = guest;
-  showDeleteDialog.value = true;
-};
-
-const deleteGuest = async () => {
-  if (!selectedGuest.value || actionLoading.value) return;
-  actionLoading.value = true;
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    guests.value = guests.value.filter((g) => g.id !== selectedGuest.value.id);
-    totalItems.value--;
-    showDeleteDialog.value = false;
-  } catch (error) {
-    console.error('Error deleting guest:', error);
-  } finally {
-    actionLoading.value = false;
-  }
-};
-
-// Edit guest function
-const editGuest = (guest) => {
-  // Fill the form with the guest data and open the edit dialog
+}
+async function updateGuest(guest, type) {
+  console.log({ guest })
   guestForm.value = { ...guest };
-  showEditGuestDialog.value = true;
-  selectedGuest.value = guest; // track which guest is being edited
-};
-
-// Function for adding a new guest from the Add Guest dialog
-const addGuest = async () => {
-  if (!formValid.value) return;
-  formSubmitting.value = true;
-  try {
-    const newGuest = { ...guestForm.value, id: Date.now(), status: 'pending' };
-    guests.value.push(newGuest);
-    totalItems.value++;
-    showAddGuestDialog.value = false;
-    // Reset form
-    guestForm.value = { name: '', email: '', phone: '', document: '', instagram: '', list: 'VIP', vip: false };
-  } catch (error) {
-    console.error('Error adding guest:', error);
-  } finally {
-    formSubmitting.value = false;
+  actionLoading.value = true;
+  let action = "atualizado";
+  switch (type) {
+    case "restore":
+      action = "restaurado"
+      break;
+    case "checkin":
+      action = "checked-in"
+      break;
+    case "cancel":
+      action = "cancelado"
+      break;
+    default:
+      action = "atualizado"
+      break;
   }
-};
-
-// Function to save guest edits from the Edit Guest dialog
-const saveGuestEdit = async () => {
-  if (!formValid.value) return;
-  formSubmitting.value = true;
   try {
-    const index = guests.value.findIndex((g) => g.id === guestForm.value.id);
-    if (index !== -1) {
-      guests.value.splice(index, 1, { ...guestForm.value });
+    const response = await eventListStore.updateGuest(eventId.value, guest);
+    console.log({ response });
+    if (response.ok) {
+      console.log("guest updated");
+      closeDialog();
+      await notify.toast(`<strong class="text-success">${guest.name}</strong> ${action}`, "success");
     }
-    showEditGuestDialog.value = false;
+    else {
+      console.log("response false");
+    }
   } catch (error) {
-    console.error('Error saving guest edit:', error);
-  } finally {
-    formSubmitting.value = false;
+    console.log({ error });
   }
-};
+  finally {
+    actionLoading.value = false;
+  }
+}
+async function confirmCheckIn(guestPayload) {
+  try {
+    actionLoading.value = true;
 
-// Initialization
-onMounted(fetchGuests);
+    const guestDoc = { ...guestForm.value, ...guestPayload }
+    await closeDialog();
+    await eventListStore.checkInGuest(eventId.value, guestDoc);
+    await notify.toast(`${guestDoc.name} checked-in`);
+  } catch (error) {
+    console.log({ error });
+  }
+  finally {
+    actionLoading.value = false;
+  }
+
+
+}
+
+async function confirmCheckIn2(guestPayload) {
+  try {
+    actionLoading.value = true;
+
+    const user = authStore.user
+      ? { uid: authStore.user.uid, email: authStore.user.email }
+      : null;
+    const guestDoc = { ...guestForm.value, ...guestPayload, checkInTime: Date.now(), checkInBy: user, status: "checked-in" }
+    await closeDialog();
+    await updateGuest(guestDoc, "checkin");
+    // await notify.toast(`${guestDoc.name} checked-in`);
+  } catch (error) {
+    console.log({ error })
+  }
+  finally {
+    actionLoading.value = false;
+
+  }
+
+}
+async function deleteGuest(guest) {
+  try {
+    const result = await swal.fire({
+      title: "Deletar " + guest.name + "?",
+      text: "Essa ação é irreversível",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, deletar!"
+    })
+
+    if (result.isConfirmed) {
+      await eventListStore.deleteGuest(eventId.value, guest);
+      await notify.toast("Convidado excluido!", "success");
+    }
+  } catch (error) {
+    console.log({ error });
+  } finally {
+
+  }
+
+
+
+
+}
+async function closeDialog() {
+  showCheckInDialog.value = false;
+  showEditDialog.value = false;
+  return;
+}
+async function performCheckIn(guest) {
+  guestForm.value = { ...guest };
+  showCheckInDialog.value = true;
+}
+async function editGuest(guest) {
+  guestForm.value = { ...guest };
+  showEditDialog.value = true;
+}
+
+async function openAddGuestDialog() {
+  guestForm.value = {};
+  showAddGuestDialog.value = true
+}
+
+
+
 </script>

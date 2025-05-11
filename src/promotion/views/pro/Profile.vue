@@ -1,5 +1,5 @@
 <template>
-  <!-- <form-steps v-if="user" @submit="saveProfile" :schema="userSchema" v-model:model="user" v-model:files="files"
+    <!-- <form-steps v-if="user" @submit="saveProfile" :schema="userSchema" v-model:model="user" v-model:files="files"
         labelType="left" title="Edit Profile" action="Save" :items="{ language: languages, gender: genders }">
 
         <template #prepend>
@@ -8,7 +8,7 @@
         </template>
 </form-steps> -->
 
-  <v-container>
+    <v-container>
         <v-row>
             <!-- FORM -->
             <v-col cols="12">
@@ -89,11 +89,11 @@ import { inject, ref, watch } from "vue";
 import { storeToRefs } from "pinia";
 import { VDateInput } from "vuetify/labs/VDateInput";
 
-import FormCard from "@/promotion/components/form/FormCard.vue";
+import FormCard from "@/core/components/form/FormCard.vue";
 import userSchema from "@/core/schemas/userSchema";
 import { useFirebaseStore } from "@/core/store/firebase";
 import { useUserStore } from "@/promotion/store/user";
-import FormSteps from "@/promotion/components/form/FormSteps.vue";
+import FormSteps from "@/core/components/form/FormSteps.vue";
 import FormBox from "@/core/components/form/FormBox.vue";
 import promoterSchema from "@/core/schemas/promoterSchema";
 
@@ -106,13 +106,13 @@ const userStore = useUserStore();
 const { user } = storeToRefs(userStore);
 const loading = ref(false);
 const languages = ref([
-  { name: "English", value: "en" },
-  { name: "Spanish", value: "es" },
-  { name: "Portuguese", value: "pt" },
-  { name: "Italian", value: "it" },
+    { name: "English", value: "en" },
+    { name: "Spanish", value: "es" },
+    { name: "Portuguese", value: "pt" },
+    { name: "Italian", value: "it" },
 ]);
 const rules = ref({
-  required: (value) => !!value || "Field is required",
+    required: (value) => !!value || "Field is required",
 });
 
 const genders = ref(["Masculino", "Feminino", "Prefiro não dizer"]);
@@ -122,33 +122,33 @@ const files = ref({});
 const firebaseStore = useFirebaseStore();
 
 async function saveProfile(event) {
-  try {
-    loading.value = true;
-    const results = await event;
+    try {
+        loading.value = true;
+        const results = await event;
 
-    // if (!results.valid) {
-    //     document.querySelector("#" + results.errors[0].id).focus();
-    //     return false;
-    // }
-    user.value.completed = true;
-    const response = await firebaseStore.putDocument(
-      "users",
-      user.value.uid,
-      user.value
-    );
+        // if (!results.valid) {
+        //     document.querySelector("#" + results.errors[0].id).focus();
+        //     return false;
+        // }
+        user.value.completed = true;
+        const response = await firebaseStore.putDocument(
+            "users",
+            user.value.uid,
+            user.value
+        );
 
-    if (response.ok) {
-      response.notify("", "Your personal settings is successfully updated");
+        if (response.ok) {
+            response.notify("", "Your personal settings is successfully updated");
+        }
+    } catch (error) {
+    } finally {
+        loading.value = false;
     }
-  } catch (error) {
-  } finally {
-    loading.value = false;
-  }
 }
 </script>
 
 <style lang="scss" scoped>
 .label {
-  width: 75px;
+    width: 75px;
 }
 </style>

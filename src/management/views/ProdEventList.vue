@@ -38,7 +38,7 @@
       <!-- Events list -->
       <div v-else class="events-content">
         <transition-group name="event-list" tag="div" class="event-list">
-          <event-list-item v-for="event in filteredEvents" :key="event.id" :event="event"
+          <event-item v-for="event in filteredEvents" :key="event.id" :event="event"
             @click="navigateToEventDetails(event.id)" @edit="navigateToEditEvent" @duplicate="duplicateEvent"
             @delete="deleteEvent" class="mb-4" />
         </transition-group>
@@ -96,7 +96,7 @@
 import { ref, computed, onMounted, onUnmounted, inject } from "vue";
 import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify/lib/framework.mjs";
-import EventListItem from "@/management/components/events/EventListItem.vue";
+import EventItem from "@/management/components/events/EventItem.vue";
 import FloatingActionButton from "@/management/components/FloatingActionButton.vue";
 import NewEventModal from "@/management/components/events/NewEventModal.vue";
 import { eventsData } from "@/management/consts/eventListMockData";
@@ -163,8 +163,7 @@ async function fetchEvents() {
   loading.value = true;
   events.value = [];
   try {
-    unsubscribe.value = await firebaseStore.watchCollection("eventList", addEventToList, modifyEventInList, removeEventFromList);
-
+    unsubscribe.value = await firebaseStore.watchCollection({ path: "eventList" }, addEventToList, modifyEventInList, removeEventFromList);
     hasMoreEvents.value = false;
   } catch (error) {
     console.error("Error fetching events:", error);

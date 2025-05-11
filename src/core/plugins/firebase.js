@@ -1,8 +1,9 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
-import { getFunctions, httpsCallable } from 'firebase/functions';
-import { getStorage } from 'firebase/storage';
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { getStorage } from "firebase/storage";
+import { getDatabase } from "firebase/database";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -22,22 +23,24 @@ const auth = getAuth(app);
 const firestore = getFirestore(app);
 const storage = getStorage(app);
 const functions = getFunctions(app);
+const database = getDatabase(app);
 
 // Lazy load additional Firebase features when needed
 export const lazyLoadFirebaseFeature = async (feature) => {
   switch (feature) {
-    case 'analytics':
-      const { getAnalytics } = await import('firebase/analytics');
+    case "analytics":
+      const { getAnalytics } = await import("firebase/analytics");
       return getAnalytics(app);
     // Add other features as needed
   }
 };
 
-export { 
-  app as firebase, 
-  auth, 
-  firestore, 
-  functions, 
-  httpsCallable, 
-  storage 
+export {
+  app as firebase,
+  auth,
+  firestore,
+  functions,
+  httpsCallable,
+  storage,
+  database,
 };

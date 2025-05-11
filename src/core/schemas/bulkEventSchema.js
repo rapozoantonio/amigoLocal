@@ -1,4 +1,4 @@
-import eventCategories from "@/assets/eventCategories";
+import eventCategories from "@/core/assets/eventCategories";
 import genres from "@/core/assets/genres";
 
 export default {

@@ -5,13 +5,13 @@
         <template v-slot:activator="{ props: activatorProps }">
             <slot name="activator" v-bind="activatorProps"></slot>
         </template>
-        <!-- FORM -->
 
+        <!-- FORM -->
         <v-form class="form-container" @submit.prevent="submitForm" style="height:100%">
             <v-card max-width="600" class="mx-auto">
-
+                {{ model }}
                 <!-- FORM HEADER -->
-                <v-card-title class="mb-4 bg-primary d-flex">
+                <v-card-title class="bg-primary d-flex">
                     <!-- SLOT HEADER PREPEND -->
                     <slot name="header-prepend"></slot>
                     <!-- FORM NAME -->
@@ -24,14 +24,13 @@
                         <v-icon>mdi-close</v-icon>
                     </v-btn>
                 </v-card-title>
-
                 <!-- SLOT PREPEND -->
                 <v-card-text v-if="$slots.prepend">
                     <slot name="prepend"></slot>
                 </v-card-text>
 
                 <!-- SLOT PREPEND INNER -->
-                <v-card-text v-if="$slots['prepend-inner']">
+                <v-card-text class="pb-0" v-if="$slots['prepend-inner']">
                     <slot name="prepend-inner"></slot>
                 </v-card-text>
 
@@ -42,7 +41,7 @@
                             <template v-for="(section, index) in schema.sections" :key="section.name">
                                 <!-- SECTION -->
                                 <v-card-title v-if="section.name && section.name !== ''"
-                                    class="mb-4 d-flex align-center" :class="[index > 0 ? 'mt-4' : '']">
+                                    class="mb-4 d-flex align-center" :class="[index > 0 ? 'mt-0' : '']">
                                     <!-- SLOT PREPEND HEADER SECTION -->
                                     <slot :name="'prepend-header-section-' + (index + 1)"></slot>
                                     <!-- SECTION NAME -->
@@ -67,12 +66,14 @@
                                                             v-for="child in field.children" :key="child.id"
                                                             :items="items ? items[child.id] : null"
                                                             v-model:files="files" v-model:model="model[field.id]"
-                                                            :field="child.id" v-bind="child"></form-field>
+                                                            :field="child.id" v-bind="child"
+                                                            :fieldParams="schema.fieldParams"></form-field>
                                                     </template>
 
                                                     <form-field :labelType="labelType" :items="items[field.id] || null"
                                                         v-else v-model:files="files" v-model:model="model"
-                                                        :field="field.id" v-bind="field"></form-field>
+                                                        :field="field.id" :fieldParams="schema.fieldParams"
+                                                        v-bind="field"></form-field>
                                                 </template>
                                             </v-row>
                                         </v-col>
@@ -98,13 +99,22 @@
                     <v-row no-gutters>
                         <v-col cols="12">
                             <!-- ACTIONS -->
-                            <v-card-text class="text-right">
+                            <v-card-text class="text-right pt-0">
                                 <!-- SLOT ACTION PREPEND -->
                                 <slot name="action-prepend"></slot>
                                 <!-- ACTION BUTTON -->
+                                <slot v-if="$slots['cancel-button']" name="cancel-button"></slot>
+                                <v-btn class="mr-2" v-else-if="cancel" :variant="schema.buttonVariant || 'elevated'"
+                                    @click="opened = false">{{
+                                        typeof
+                                            cancel ===
+                                            "string" ? cancel : "Cancelar" }}</v-btn>
+
                                 <slot v-if="$slots['action-button']" name="action-button"></slot>
-                                <v-btn v-else type="submit" variant="elevated" color="primary">{{ action ||
-                                    "Enviar" }}</v-btn>
+                                <v-btn v-else type="submit" :variant="schema.buttonVariant || 'elevated'"
+                                    :color="schema.actionColor || 'primary'">{{
+                                        action ||
+                                        "Enviar" }}</v-btn>
                                 <!-- SLOT ACTION APPEND -->
                                 <slot name="action-append"></slot>
                             </v-card-text>
@@ -118,7 +128,10 @@
                 <v-card-text v-if="$slots.append">
                     <slot name="append"></slot>
                 </v-card-text>
+                <!-- <pre>
 
+            {{ model }}
+        </pre> -->
             </v-card>
         </v-form>
 
@@ -137,7 +150,7 @@ const emit = defineEmits(["submit"])
 const loading = ref(false);
 const files = defineModel("files");
 // const { schema, action, title, items } = defineProps(["schema", "action", "title", {"items"}]);
-const { schema, action, title, items, fullscreen } = defineProps({
+const { schema, action, title, items, fullscreen, cancel, loadingBtn } = defineProps({
     schema: { type: Object, required: true },
     action: { type: String, default: "Save" },
     title: { type: String, default: "Edit record" },
@@ -145,7 +158,9 @@ const { schema, action, title, items, fullscreen } = defineProps({
     labelType: {
         type: String, default: "up"  // in out left
     },
-    fullscreen: { type: Boolean, default: false }
+    fullscreen: { type: Boolean, default: false },
+    cancel: { type: [Boolean, String], default: false },
+    loadingBtn: { type: Boolean, default: false },
 });
 
 function closeDialog() {
@@ -162,6 +177,7 @@ async function submitForm(event) {
             return false;
         }
         emit("submit", model.value, closeDialog);
+
     } catch (error) {
 
     } finally {

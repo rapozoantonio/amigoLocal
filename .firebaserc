@@ -1,5 +1,19 @@
 {
   "projects": {
     "default": "jubilos"
-  }
+  },
+  "targets": {
+    "jubilos": {
+      "hosting": {
+        "promotions": [
+          "jubilos"
+        ],
+        "management": [
+          "jubilist"
+        ]
+      }
+    }
+  },
+  "etags": {},
+  "dataconnectEmulatorConfig": {}
 }

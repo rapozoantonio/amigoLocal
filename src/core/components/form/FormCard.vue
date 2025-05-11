@@ -49,16 +49,10 @@
             </v-card-text>
 
             <!-- FORM SECTIONS -->
-            <template
-              v-for="(section, index) in schema.sections"
-              :key="section.name"
-            >
+            <template v-for="(section, index) in schema.sections" :key="section.name">
               <!-- SECTION -->
-              <v-card-title
-                v-if="section.name && section.name !== ''"
-                class="mb-4 d-flex align-center"
-                :class="[index > 0 ? 'mt-4' : '', color ? 'bg-' + color : '']"
-              >
+              <v-card-title v-if="section.name && section.name !== ''" class="mb-4 d-flex align-center"
+                :class="[index > 0 ? 'mt-4' : '', color ? 'bg-' + color : '']">
                 <!-- SLOT PREPEND HEADER SECTION -->
                 <slot :name="'prepend-header-section-' + (index + 1)"></slot>
                 <!-- SECTION NAME -->
@@ -79,27 +73,14 @@
                 <v-row>
                   <template v-for="field in section.fields" :key="field.id">
                     <template v-if="field.type === 'object'">
-                      <form-field
-                        :labelType="labelType"
-                        v-for="child in field.children"
-                        :key="child.id"
-                        :items="items ? items[child.id] : null"
-                        v-model:files="files"
-                        v-model:model="model[field.id]"
-                        :field="child.id"
-                        v-bind="child"
-                      ></form-field>
+                      <form-field :labelType="labelType" v-for="child in field.children" :key="child.id"
+                        :items="items ? items[child.id] : null" v-model:files="files" v-model:model="model[field.id]"
+                        :field="child.id" :variant="schema.fieldVariant || false" v-bind="child"></form-field>
                     </template>
 
-                    <form-field
-                      :labelType="labelType"
-                      :items="items[field.id] || null"
-                      v-else
-                      v-model:files="files"
-                      v-model:model="model"
-                      :field="field.id"
-                      v-bind="field"
-                    ></form-field>
+                    <form-field :labelType="labelType" :items="items[field.id] || null" v-else v-model:files="files"
+                      v-model:model="model" :field="field.id" :variant="schema.fieldVariant || false"
+                      v-bind="field"></form-field>
                   </template>
                 </v-row>
               </v-card-text>

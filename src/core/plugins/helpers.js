@@ -27,6 +27,7 @@ export default {
       color: "white",
       // class: "mt-1",
       hideDetails: "auto",
+      listProps: { bgColor: "grey-darken-4" },
     };
 
     helpers.toDate = (date) => {
@@ -62,6 +63,15 @@ export default {
       lengthMin4: (value) =>
         value.length > 3 || "Must be at least 4 characters",
       lengthMin: (value) => value.length > 0 || "Field is required",
+    };
+
+    helpers.capitalize = (name) => {
+      return name
+        .toLowerCase() // tudo minúsculo primeiro
+        .split(" ") // divide por espaço
+        .filter(Boolean) // remove espaços extras
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // capitaliza
+        .join(" "); // junta de novo
     };
 
     app.provide("$helpers", helpers);

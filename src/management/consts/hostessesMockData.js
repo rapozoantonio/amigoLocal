@@ -94,12 +94,12 @@ export const statusOptions = [
 
 // Area options
 export const areaOptions = [
-  { title: "Todas as áreas", value: "all" },
-  { title: "Entrada", value: "Entrada" },
-  { title: "VIP", value: "VIP" },
-  { title: "Camarote", value: "Camarote" },
-  { title: "Pista", value: "Pista" },
-  { title: "Bar", value: "Bar" },
+  { name: "Todas as áreas", value: "all" },
+  { name: "Entrada", value: "Entrada" },
+  { name: "VIP", value: "VIP" },
+  { name: "Camarote", value: "Camarote" },
+  { name: "Pista", value: "Pista" },
+  { name: "Bar", value: "Bar" },
 ];
 
 // Area color map

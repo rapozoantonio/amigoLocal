@@ -4,26 +4,15 @@
     <div class="promoters-header px-4 py-3">
       <div class="d-flex justify-space-between align-center mb-3">
         <h2 class="text-h6 font-weight-bold mb-0">Equipe de Promotores</h2>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-account-plus"
-          size="small"
-          @click="addPromoter"
-        >
+        <v-btn color="primary" prepend-icon="mdi-account-plus" size="small" @click="openCreateDialog">
           Novo Promotor
         </v-btn>
       </div>
 
       <!-- Search and filter bar -->
-      <TabFilterComponent
-        searchPlaceholder="Buscar promotores..."
-        :searchValue="searchQuery"
-        :filterOptions="[
-          { label: 'Status', options: statusOptions, modelValue: statusFilter },
-        ]"
-        @filter-change="handleFilterChange"
-        @reset="resetFilters"
-      />
+      <TabFilterComponent searchPlaceholder="Buscar promotores..." :searchValue="searchQuery" :filterOptions="[
+        { label: 'Status', options: statusOptions, modelValue: statusFilter },
+      ]" @filter-change="handleFilterChange" @reset="resetFilters" />
 
       <FourStatCards :cards="promoterCards" />
     </div>
@@ -34,26 +23,13 @@
         <v-progress-circular indeterminate color="primary" />
       </div>
 
-      <v-sheet
-        v-else-if="filteredPromoters.length === 0"
-        class="empty-state text-center py-8"
-      >
-        <v-icon
-          icon="mdi-account-search"
-          size="64"
-          color="grey-lighten-1"
-          class="mb-2"
-        />
+      <v-sheet v-else-if="filteredPromoters.length === 0" class="empty-state text-center py-8">
+        <v-icon icon="mdi-account-search" size="64" color="grey-lighten-1" class="mb-2" />
         <h3 class="text-h6 text-grey-darken-1">Nenhum promotor encontrado</h3>
         <p class="text-body-2 text-grey">
           Adicione promotores à sua equipe para começar
         </p>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-account-plus"
-          class="mt-3"
-          @click="addPromoter"
-        >
+        <v-btn color="primary" prepend-icon="mdi-account-plus" class="mt-3" @click="openCreateDialog">
           Adicionar promotor
         </v-btn>
       </v-sheet>
@@ -78,327 +54,99 @@
           <!-- Card view -->
           <v-window-item value="cards">
             <v-row>
-              <v-col
-                v-for="promoter in filteredPromoters"
-                :key="promoter.id"
-                cols="12"
-                sm="6"
-                md="4"
-                lg="3"
-              >
-                <v-card
-                  class="promoter-card"
-                  border="thin"
-                  :class="{ 'promoter-active': promoter.active }"
-                >
-                  <div class="promoter-header d-flex px-4 pt-4 pb-2">
-                    <v-avatar
-                      size="64"
-                      :color="promoter.active ? 'success' : 'grey'"
-                    >
-                      <span v-if="!promoter.avatar" class="text-h5 text-white">
-                        {{ promoter.name.charAt(0) }}
-                      </span>
-                      <v-img v-else :src="promoter.avatar" alt="avatar" />
-                    </v-avatar>
-                    <div class="ml-4 flex-grow-1">
-                      <div class="d-flex justify-space-between align-center">
-                        <div class="text-subtitle-1 font-weight-bold">
-                          {{ promoter.name }}
-                        </div>
-                        <v-menu location="bottom end">
-                          <template v-slot:activator="{ props }">
-                            <v-btn
-                              v-bind="props"
-                              icon
-                              variant="text"
-                              size="small"
-                              class="ma-0"
-                            >
-                              <v-icon>mdi-dots-vertical</v-icon>
-                            </v-btn>
-                          </template>
-                          <v-list density="compact">
-                            <v-list-item
-                              prepend-icon="mdi-pencil"
-                              title="Editar"
-                              @click="editPromoter(promoter)"
-                            />
-                            <v-list-item
-                              :prepend-icon="
-                                promoter.active
-                                  ? 'mdi-account-off'
-                                  : 'mdi-account-check'
-                              "
-                              :title="promoter.active ? 'Desativar' : 'Ativar'"
-                              @click="togglePromoterStatus(promoter)"
-                            />
-                          </v-list>
-                        </v-menu>
-                      </div>
-                      <div class="text-caption text-grey-darken-1">
-                        <v-icon size="14" start>mdi-email</v-icon>
-                        {{ promoter.email }}
-                      </div>
-                      <div class="text-caption text-grey-darken-1">
-                        <v-icon size="14" start>mdi-phone</v-icon>
-                        {{ promoter.phone }}
-                      </div>
-                      <v-chip
-                        size="x-small"
-                        :color="promoter.active ? 'success' : 'grey'"
-                        class="mt-1"
-                      >
-                        {{ promoter.active ? "Ativo" : "Inativo" }}
-                      </v-chip>
-                    </div>
-                  </div>
-                  <v-divider />
-                  <v-card-text class="pa-0">
-                    <div class="performance-stats d-flex text-center">
-                      <div class="stat-block flex-1 pa-2">
-                        <div class="text-body-1 font-weight-bold">
-                          {{ promoter.guests }}
-                        </div>
-                        <div class="text-caption">Convidados</div>
-                      </div>
-                      <v-divider vertical />
-                      <div class="stat-block flex-1 pa-2">
-                        <div class="text-body-1 font-weight-bold">
-                          {{ promoter.checkIns }}
-                        </div>
-                        <div class="text-caption">Check-ins</div>
-                      </div>
-                      <v-divider vertical />
-                      <div class="stat-block flex-1 pa-2">
-                        <div class="text-body-1 font-weight-bold">
-                          {{ formatCurrency(promoter.revenue) }}
-                        </div>
-                        <div class="text-caption">Receita</div>
-                      </div>
-                    </div>
-                  </v-card-text>
-                  <v-divider />
-                  <v-card-actions class="pa-2">
-                    <v-btn
-                      variant="text"
-                      color="primary"
-                      prepend-icon="mdi-pencil"
-                      block
-                      @click="editPromoter(promoter)"
-                    >
-                      Editar
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
+              <v-col v-for="promoter in filteredPromoters" :key="promoter.id" cols="12" sm="6" md="4" lg="3">
+                <event-promoter-item :promoter="promoter" @promoter:edit="editPromoter"
+                  @promoter:delete="deletePromoter" @promoter:update="updatePromoter"></event-promoter-item>
               </v-col>
             </v-row>
           </v-window-item>
 
           <!-- Table view -->
           <v-window-item value="table">
-            <v-card border="thin" flat class="promoters-table">
-              <v-data-table
-                :headers="tableHeaders"
-                :items="filteredPromoters"
-                :items-per-page="10"
-                item-value="id"
-                class="elevation-0"
-              >
-                <template v-slot:item.name="{ item }">
-                  <div class="d-flex align-center">
-                    <v-avatar
-                      size="32"
-                      :color="item.active ? 'success' : 'grey'"
-                      class="me-2"
-                    >
-                      <span class="text-caption text-white">{{
-                        item.name.charAt(0)
-                      }}</span>
-                    </v-avatar>
-                    <span>{{ item.name }}</span>
-                  </div>
-                </template>
-                <template v-slot:item.active="{ item }">
-                  <v-chip
-                    size="small"
-                    :color="item.active ? 'success' : 'grey'"
-                    text-color="white"
-                  >
-                    {{ item.active ? "Ativo" : "Inativo" }}
-                  </v-chip>
-                </template>
-                <template v-slot:item.conversionRate="{ item }">
-                  {{ calculateConversionRate(item) }}%
-                </template>
-                <template v-slot:item.revenue="{ item }">
-                  {{ formatCurrency(item.revenue) }}
-                </template>
-                <template v-slot:item.actions="{ item }">
-                  <div class="d-flex">
-                    <v-btn
-                      icon
-                      variant="text"
-                      size="small"
-                      color="primary"
-                      class="me-1"
-                      @click="editPromoter(item)"
-                    >
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
-                    <v-btn
-                      icon
-                      variant="text"
-                      size="small"
-                      :color="item.active ? 'error' : 'success'"
-                      @click="togglePromoterStatus(item)"
-                    >
-                      <v-icon>
-                        {{
-                          item.active ? "mdi-account-off" : "mdi-account-check"
-                        }}
-                      </v-icon>
-                    </v-btn>
-                  </div>
-                </template>
-              </v-data-table>
-            </v-card>
+            <event-promoter-table :promoters="filteredPromoters" @promoter:edit="editPromoter"
+              @promoter:update="updatePromoter"></event-promoter-table>
           </v-window-item>
 
           <!-- Leaderboard view -->
           <v-window-item value="leaderboard">
-            <v-card border="thin" flat class="leaderboard-card">
-              <v-tabs
-                v-model="leaderboardMetric"
-                color="primary"
-                align-tabs="center"
-                class="mb-2"
-              >
-                <v-tab value="guests">Convidados</v-tab>
-                <v-tab value="checkIns">Check-ins</v-tab>
-                <v-tab value="revenue">Receita</v-tab>
-                <v-tab value="conversion">Conversão</v-tab>
-              </v-tabs>
-              <v-window v-model="leaderboardMetric">
-                <v-window-item
-                  v-for="metric in [
-                    'guests',
-                    'checkIns',
-                    'revenue',
-                    'conversion',
-                  ]"
-                  :key="metric"
-                  :value="metric"
-                >
-                  <div class="leaderboard-list pa-2">
-                    <div
-                      v-for="(promoter, index) in getSortedPromotersByMetric(
-                        filteredPromoters,
-                        metric
-                      )"
-                      :key="promoter.id"
-                      class="leaderboard-item d-flex align-center pa-3 mb-2"
-                      :class="{
-                        'top-1': index === 0,
-                        'top-2': index === 1,
-                        'top-3': index === 2,
-                      }"
-                    >
-                      <div class="rank-badge" :class="`rank-${index + 1}`">
-                        {{ index + 1 }}
-                      </div>
-                      <v-avatar
-                        size="40"
-                        :color="getLeaderboardAvatarColor(index)"
-                        class="ms-2"
-                      >
-                        <span class="text-white">{{
-                          promoter.name.charAt(0)
-                        }}</span>
-                      </v-avatar>
-                      <div class="ms-3 flex-grow-1">
-                        <div class="font-weight-medium">
-                          {{ promoter.name }}
-                        </div>
-                        <div class="text-caption text-grey-darken-1">
-                          {{ promoter.active ? "Ativo" : "Inativo" }} •
-                          {{ promoter.guests }} convidados
-                        </div>
-                      </div>
-                      <div class="metric-value font-weight-bold">
-                        <template v-if="metric === 'guests'">
-                          {{ promoter.guests }}
-                        </template>
-                        <template v-else-if="metric === 'checkIns'">
-                          {{ promoter.checkIns }}
-                        </template>
-                        <template v-else-if="metric === 'revenue'">
-                          {{ formatCurrency(promoter.revenue) }}
-                        </template>
-                        <template v-else-if="metric === 'conversion'">
-                          {{ calculateConversionRate(promoter) }}%
-                        </template>
-                      </div>
-                    </div>
-                  </div>
-                </v-window-item>
-              </v-window>
-            </v-card>
+            <event-promoter-learderboard :promoters="filteredPromoters"></event-promoter-learderboard>
           </v-window-item>
         </v-window>
       </div>
     </div>
 
-    <!-- Generic Modal for Add/Edit Promoter -->
-    <GenericCRUDModal
-      v-model="showPromoterDialog"
-      mode="promoter"
-      :editMode="editMode"
-      @saved="handleSavedPromoter"
-    />
+    <!-- CREATE PROMOTER DIALOG -->
+    <form-dialog :schema="eventPromoterSchema" v-model:model="promoterForm" v-model:opened="showCreateDialog"
+      @submit="submitPromoter">
+      <template #prepend-inner>
+        <field-user-search entity="promoters" @select="selectPromoter"></field-user-search>
+      </template>
+    </form-dialog>
+    <!-- EDIT PROMOTER DIALOG -->
+    <form-dialog :schema="eventPromoterSchema" v-model:model="promoterForm" v-model:opened="showEditDialog"
+      @submit="submitPromoterUpdate">
+    </form-dialog>
+
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, shallowRef } from "vue";
+import { ref, computed, onMounted, watch, shallowRef, toRefs, inject } from "vue";
 import TabFilterComponent from "@/management/components/events/TabFilterComponent.vue";
 import FourStatCards from "@/management/components/events/FourStatCards.vue";
-import GenericCRUDModal from "@/management/components/events/GenericCRUDModal.vue";
-
+import FieldUserSearch from "./FieldUserSearch.vue";
+import FormDialog from "@/core/components/form/FormDialog.vue";
+import EventPromoterTable from "./EventPromoterTable.vue";
 // Import the necessary mock data at the top of the script section
-import { 
-  mockPromoters, 
-  promoterTableHeaders, 
-  statusOptions, 
-  calculateConversionRate, 
-  formatCurrency, 
+import eventPromoterItem from "./eventPromoterItem.vue";
+import EventPromoterLearderboard from "./EventPromoterLearderboard.vue";
+import {
+  mockPromoters,
+  promoterTableHeaders,
+  statusOptions,
+  calculateConversionRate,
+  formatCurrency,
   getLeaderboardAvatarColor,
   getSortedPromotersByMetric
 } from '@/management/consts/promotersMockData';
 
+import eventPromoterSchema from "@/management/schemas/eventPromoterSchema";
+import { useEventListStore } from "@/management/store/eventList";
+import { useRoute } from "vue-router";
+
+const swal = inject("$swal");
 const props = defineProps({
   event: { type: Object, required: true },
+  promoters: { type: Array, required: true }
 });
-const emit = defineEmits(["update:promoters"]);
 
+const { event, promoters } = toRefs(props);
+const emit = defineEmits(["update:promoters"]);
+const eventListStore = useEventListStore();
+const route = useRoute();
 // State variables
-const loading = ref(true);
+const loading = ref(false);
 const viewType = ref("cards");
-const leaderboardMetric = ref("guests");
 const searchQuery = ref("");
 const statusFilter = ref("all");
-const promoters = shallowRef([]);
-const filteredPromoters = shallowRef([]);
+// const promoters = shallowRef([]);
 
 // Remove unused dialogs & details states
-const showPromoterDialog = ref(false);
+const showCreateDialog = ref(false);
+const showEditDialog = ref(false);
 const editMode = ref(false);
 const formSubmitting = ref(false);
+
+const promoterForm = ref({});
 
 // Static table headers & filter options
 const tableHeaders = promoterTableHeaders;
 
 // Computed stats for cards
+
+const eventId = computed(() => {
+  return route.params.eventId;
+})
 const totalPromoters = computed(() => promoters.value.length);
 const activePromoters = computed(
   () => promoters.value.filter((p) => p.active).length
@@ -441,30 +189,14 @@ const promoterCards = ref([
   },
 ]);
 
-// Fetch promoters (simulate API call)
-const fetchPromoters = async () => {
-  if (!loading.value) return;
-  loading.value = true;
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    promoters.value = mockPromoters;
-    filterPromoters();
-  } catch (error) {
-    console.error("Error fetching promoters:", error);
-  } finally {
-    loading.value = false;
-  }
-};
-
 // Filter function
-const filterPromoters = () => {
+const filteredPromoters = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const isStatusFiltered = statusFilter.value !== "all";
   if (!isStatusFiltered && !query) {
-    filteredPromoters.value = [...promoters.value];
-    return;
+    return [...promoters.value];
   }
-  filteredPromoters.value = promoters.value.filter((promoter) => {
+  return promoters.value.filter((promoter) => {
     if (
       isStatusFiltered &&
       promoter.active !== (statusFilter.value === "active")
@@ -480,20 +212,20 @@ const filterPromoters = () => {
     }
     return true;
   });
-};
+});
 
-// Promoter actions using GenericCRUDModal
-const addPromoter = () => {
-  editMode.value = false;
-  showPromoterDialog.value = true;
-};
 
-const editPromoter = (promoter) => {
-  // Pass the promoter data to GenericCRUDModal via event (the modal should handle filling its form)
-  currentEditingPromoter.value = promoter;
-  editMode.value = true;
-  showPromoterDialog.value = true;
-};
+function openCreateDialog() {
+  promoterForm.value = {};
+  showCreateDialog.value = true
+}
+
+// const editPromoter = (promoter) => {
+//   // Pass the promoter data to GenericCRUDModal via event (the modal should handle filling its form)
+//   currentEditingPromoter.value = promoter;
+//   editMode.value = true;
+//   showCreateDialog.value = true;
+// };
 
 const currentEditingPromoter = ref(null);
 const handleSavedPromoter = (savedPromoter) => {
@@ -519,6 +251,10 @@ const handleSavedPromoter = (savedPromoter) => {
   currentEditingPromoter.value = null;
 };
 
+function filterPromoters() {
+
+}
+
 // Filter handlers
 const handleFilterChange = (filters) => {
   const newSearch = filters.search;
@@ -537,5 +273,80 @@ const resetFilters = () => {
   filterPromoters();
 };
 
-onMounted(fetchPromoters);
+function selectPromoter(promoter) {
+  if (promoter.name) promoterForm.value.name = promoter.name;
+  if (promoter.phone) promoterForm.value.phone = promoter.phone;
+  if (promoter.email) promoterForm.value.email = promoter.email;
+  if (promoter.id) promoterForm.value.id = promoter.id;
+}
+
+async function submitPromoter(promoter, close) {
+  try {
+    console.log({ promoter });
+    const result = await eventListStore.createPromoter(eventId.value, promoter);
+    console.log({ result })
+    close();
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+function editPromoter(promoter) {
+  promoterForm.value = { ...promoter };
+  showEditDialog.value = true;
+}
+
+async function submitPromoterUpdate(promoter, close) {
+  try {
+    console.log({ promoter });
+    const result = await eventListStore.updatePromoter(eventId.value, promoter);
+    console.log({ result })
+    close();
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+async function updatePromoter(promoter) {
+  try {
+    console.log({ promoter });
+    const result = await eventListStore.updatePromoter(eventId.value, promoter);
+    console.log({ result })
+    close();
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+async function deletePromoter(promoter) {
+  try {
+    const result = await swal.fire({
+      title: "Deletar " + promoter.name + "?",
+      html: `Deletar promoter <strong>${promoter.name}</strong>? Essa ação é irreversível`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, deletar!"
+    });
+    if (result.isConfirmed) {
+      await eventListStore.deletePromoter(eventId.value, promoter);
+      swal.fire({
+        title: "Promoter excluido!",
+        icon: "success",
+        toast: true,
+        timer: 2000,
+        position: "top-end",
+        showConfirmButton: false,
+        timerProgressBar: true,
+      })
+    }
+    console.log({ result });
+  } catch (error) {
+    console.log({ error })
+  }
+}
+
+onMounted(() => {
+});
 </script>

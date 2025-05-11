@@ -77,6 +77,12 @@
             </v-text-field>
         </template>
 
+        <!-- NUMBER -->
+        <template v-if="['number'].includes(type)">
+            <v-text-field type="number" v-model.number="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            </v-text-field>
+        </template>
+
         <!-- CHECKBOX -->
         <template v-else-if="type === 'checkbox'">
             <v-checkbox v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
@@ -128,8 +134,8 @@
         <!-- AUTOCOMPLETE -->
         <template v-else-if="type === 'autocomplete'">
             <v-autocomplete @update:focused="updateInput" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"
-                :items="items" closable-chips auto-select-first :clear-on-select="true" chips item-title="name" multiple
-                item-value="value">
+                :items="items" closable-chips auto-select-first :clear-on-select="true" chips
+                :item-title="items[0].name ? 'name' : 'title'" :item-value="items[0].value ? 'value' : 'id'" multiple>
             </v-autocomplete>
         </template>
 
@@ -139,12 +145,33 @@
                 v-bind="{ ...fieldAttrs, ...attrs }" :label="label"></field-boolean-flags>
         </template>
 
-        <!-- AUTOCOMPLETE -->
+        <!-- SELECT -->
         <template v-else-if="type === 'select'">
             <v-autocomplete @update:focused="updateInput" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"
-                :items="items" auto-select-first :clear-on-select="true" item-title="name" item-value="value">
+                :items="items" auto-select-first :clear-on-select="true" :item-title="items[0].name ? 'name' : 'title'"
+                :item-value="items[0].value ? 'value' : 'id'">
             </v-autocomplete>
         </template>
+
+
+        <!-- SELECT-IDS-->
+        <template v-else-if="type === 'select-ids'">
+            <v-autocomplete @update:focused="updateInput" @update:model-value="updateSelectedIds" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :items="items" auto-select-first :clear-on-select="true"
+                :item-title="items[0].name ? 'name' : 'title'" :item-value="items[0].value ? 'value' : 'id'"
+                return-object :multiple="true">
+            </v-autocomplete>
+        </template>
+
+        <!-- SELECT-IDS-->
+        <template v-else-if="type === 'select-id'">
+            <v-autocomplete @update:focused="updateInput" @update:model-value="updateSelectedId" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :items="items" auto-select-first :clear-on-select="true"
+                :item-title="items[0].name ? 'name' : 'title'" :item-value="items[0].value ? 'value' : 'id'"
+                return-object :multiple="false">
+            </v-autocomplete>
+        </template>
+
 
         <!-- IMAGE -->
         <template v-else-if="type === 'image'">
@@ -196,6 +223,15 @@
             </field-promoter>
         </template>
 
+        <!-- CUSTOM-CURRENT-USER -->
+        <template v-else-if="type === 'custom-current-user'">
+            <field-current-user v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            </field-current-user>
+        </template>
+
+
+
+
         <!-- CUSTOM-LINKS -->
         <template v-else-if="type === 'custom-links'">
             <field-links v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
@@ -212,6 +248,12 @@
         <template v-else-if="type === 'custom-username'">
             <field-username v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </field-username>
+        </template>
+
+        <!-- CUSTOM-TEXT -->
+        <template v-else-if="/custom-text/.test(type)">
+            <field-custom-text :text-type="type" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            </field-custom-text>
         </template>
 
     </v-col>
@@ -242,6 +284,8 @@ import FieldRegion from '../fields/FieldRegion.vue';
 import FieldUsername from '../fields/FieldUsername.vue';
 import FieldList from '../fields/FieldList.vue';
 import FieldBooleanFlags from '../fields/FieldBooleanFlags.vue';
+import FieldCurrentUser from '../fields/FieldCurrentUser.vue';
+import FieldCustomText from '../fields/FieldCustomText.vue';
 
 const { fieldAttrs, rules: fieldRules } = inject("$helpers");
 const model = defineModel("model");
@@ -256,50 +300,82 @@ const changed = computed(() => {
 })
 
 
-const { id, size, type, rules, label, labelType, messages, action, field, items, initial, icon, multiple, text, prepend, readOnly, placeholder, hint, rows } = defineProps({
+const {
+    action,
+    children,
+    disabled,
+    fieldParams,
+    fieldStyle,
+    hint,
+    icon,
+    id,
+    initial,
+    items,
+    label,
+    labelType,
+    messages,
+    multiple,
+    noGutters,
+    placeholder,
+    prepend,
+    readOnly,
+    returnObject,
+    rows,
+    rules,
+    size,
+    text,
+    type,
+} = defineProps({
     // name: {
     //     type: String, required: true,
     // },
-    type: {
-        type: String, required: true,
-    },
-    size: {
-        type: [String, Number], default: "lg",
-    },
-    id: {
-        type: String, required: true,
-    },
-    rules: {
-        type: Array, default: () => ([])
-    },
-    labelType: {
-        type: String, default: "up"  // in out left
-    },
-    label: {
-        type: String
-    },
-    items: {
-        type: Array, default: () => []
+    action: {
+        type: [String, null]
     },
     children: {
         type: Array, default: () => []
     },
+    disabled: {
+        type: [Boolean],
+        default: false
+    },
+    fieldParams: {
+        type: [Object, null]
+    },
+    fieldStyle: {
+        type: [Object, null]
+    },
+    hint: {
+        type: [String, null]
+    },
+    icon: {
+        type: [String, null]
+    },
+    id: {
+        type: String, required: true,
+    },
     initial: {
         type: null
     },
-    icon: {
+    items: {
+        type: Array, default: () => []
+    },
+    label: {
+        type: String
+    },
+    labelType: {
+        type: String, default: "up"  // in out left
+    },
+    messages: {
         type: [String, null]
     },
     multiple: {
         type: [Boolean, null]
     },
-    text: {
-        type: [String, null]
+    noGutters: {
+        type: [Boolean, null]
     },
-    messages: {
-        type: [String, null]
-    },
-    action: {
+    placeholder: {
         type: [String, null]
     },
     prepend: {
@@ -308,19 +384,25 @@ const { id, size, type, rules, label, labelType, messages, action, field, items,
     readOnly: {
         type: null
     },
-    noGutters: {
+    returnObject: {
         type: [Boolean, null]
-    },
-    placeholder: {
-        type: [String, null]
-    },
-    hint: {
-        type: [String, null]
     },
     rows: {
         type: [Number, null]
     },
-})
+    rules: {
+        type: Array, default: () => ([])
+    },
+    size: {
+        type: [String, Number], default: "lg",
+    },
+    text: {
+        type: [String, null]
+    },
+    type: {
+        type: String, required: true,
+    },
+});
 
 const col = computed(() => {
     if (typeof size === "number") {
@@ -330,10 +412,7 @@ const col = computed(() => {
         return size
     }
     return size === "xs" ? "6" : size === "sm" ? "12" : size === "md" ? "12" : "12"
-})
-
-
-
+});
 const sm = computed(() => {
     if (typeof size === "number") {
         return size
@@ -342,8 +421,7 @@ const sm = computed(() => {
         return size
     }
     return size === "xs" ? "6" : size === "sm" ? "6" : size === "md" ? "9" : "12"
-})
-
+});
 const md = computed(() => {
     if (typeof size === "number") {
         return size
@@ -352,8 +430,7 @@ const md = computed(() => {
         return size
     }
     return size === "xs" ? "6" : size === "sm" ? "6" : size === "md" ? "9" : "12"
-})
-
+});
 const lg = computed(() => {
     if (typeof size === "number") {
         return size
@@ -362,8 +439,7 @@ const lg = computed(() => {
         return size
     }
     return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
-})
-
+});
 const xl = computed(() => {
     if (typeof size === "number") {
         return size
@@ -372,12 +448,20 @@ const xl = computed(() => {
         return size
     }
     return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
-})
+});
 
 
 function updateInput(event) {
-
     dirty.value = true;
+}
+
+function updateSelectedIds(payload) {
+    model.value[id + "Ids"] = payload.map((p) => p.id || p.value);
+}
+
+
+function updateSelectedId(payload) {
+    model.value[id + "Id"] = payload.id || payload.value;
 }
 
 const minDate = computed(() => {
@@ -387,7 +471,7 @@ const minDate = computed(() => {
     minDate.setFullYear(minYear);
     const minDateString = minDate.toISOString().split('T')[0];
     return minDateString;
-})
+});
 
 
 const stateColor = computed(() => {
@@ -423,13 +507,18 @@ const attrs = computed(() => {
         required: rules.find(i => i === 'required'),
         multiple: !!multiple,
         disabled: readOnly ? true : false,
-        baseColor: stateColor.value.base,
-        bgColor: stateColor.value.bg,
-        color: stateColor.value.base || "white",
+        baseColor: stateColor.value.base || fieldAttrs.baseColor,
+        bgColor: stateColor.value.bg || fieldAttrs.bgColor,
+        color: stateColor.value.base || fieldAttrs.color || "white",
         placeholder: placeholder,
         hint: hint,
         messages: messages,
-        action: action
+        action: action,
+        returnObject: returnObject ? true : false,
+        variant: fieldAttrs.variant,
+        disabled: disabled,
+        ...fieldParams,
+        ...fieldStyle
     }
 })
 
@@ -446,11 +535,21 @@ const dirty = ref(false);
 
 onMounted(() => {
     // 
-    if (!model.value[id] && initial) {
+    if (!model.value[id] && initial !== undefined) {
         model.value[id] = initial;
         highlighted.value = true;
         initialValue.value = initial;
         return;
+    }
+    else if (!model.value[id] && !initial) {
+
+        model.value[id] = null
+        if (type === "select-ids") {
+            model.value[id + "Ids"] = null;
+        }
+        if (type === "select-id") {
+            model.value[id + "Id"] = null;
+        }
     }
     initialValue.value = model.value[id];
 })

@@ -32,7 +32,7 @@ const routes = [
         component: () => import("@/management/views/EventCreate.vue"),
       },
       {
-        path: "events/:id",
+        path: "events/:eventId",
         name: "event-detail",
         component: () => import("@/management/views/ProdEventDetail.vue"),
         props: true,
@@ -51,7 +51,7 @@ const routes = [
     component: () => import("@/management/views/ProdEventList.vue"),
     meta: { requiresAuth: true },
   },
-  
+
   // Auth-related routes - use local management views
   {
     path: "/login",
@@ -68,7 +68,7 @@ const routes = [
     name: "reset-password",
     component: Login, // Use Login as placeholder
   },
-  
+
   // Redirects for promotion routes
   {
     path: "/events/:country/:region(.*)",
@@ -84,7 +84,7 @@ const routes = [
   },
   {
     path: "/:pathMatch(.*)*",
-    name: "not-found", 
+    name: "not-found",
     component: PathNotFound,
   },
 ];
@@ -96,15 +96,16 @@ const router = createRouter({
 });
 
 // Make router available globally for debugging
-if (typeof window !== 'undefined') {
+if (typeof window !== "undefined") {
   window.managementRouter = router;
-  
+
   // Log all registered routes
-  console.log('Management Router Routes:', 
-    router.getRoutes().map(r => ({ 
-      name: r.name, 
+  console.log(
+    "Management Router Routes:",
+    router.getRoutes().map((r) => ({
+      name: r.name,
       path: r.path,
-      fullPath: r.path
+      fullPath: r.path,
     }))
   );
 }
@@ -112,9 +113,9 @@ if (typeof window !== 'undefined') {
 // Auth guard for protected routes
 router.beforeEach(async (to, from, next) => {
   console.log(`Management router navigating to: ${to.fullPath}`);
-  
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  
+
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth);
+
   if (!requiresAuth) {
     next();
     return;
@@ -126,24 +127,24 @@ router.beforeEach(async (to, from, next) => {
   if (!user && requiresAuth) {
     // Redirect to login with return path
     next({
-      name: 'login',
-      query: { redirect: btoa(to.fullPath) }
+      name: "login",
+      query: { redirect: btoa(to.fullPath) },
     });
     return;
   }
-  
+
   // Special handler for login redirections
-  if (to.name === 'login' && to.query.redirect) {
-    console.log('Login with redirect detected:', to.query.redirect);
+  if (to.name === "login" && to.query.redirect) {
+    console.log("Login with redirect detected:", to.query.redirect);
   }
-  
+
   // Intercept promotion routes
-  if (to.fullPath.includes('/events/br/')) {
-    console.log('Intercepted promotion redirect');
-    next('/');
+  if (to.fullPath.includes("/events/br/")) {
+    console.log("Intercepted promotion redirect");
+    next("/");
     return;
   }
-  
+
   // Allow all navigation
   next();
 });

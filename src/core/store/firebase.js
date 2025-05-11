@@ -20,11 +20,19 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+
+import {
+  ref as refDatabase,
+  set,
+  update,
+  increment as incrementDatabase,
+} from "firebase/database";
 // Utilities
 import { defineStore } from "pinia";
 import Swal from "sweetalert2";
 
-import { auth, firestore, storage } from "@/core/plugins/firebase";
+import { auth, firestore, storage, database } from "@/core/plugins/firebase";
+import guestSchema from "@/management/schemas/guestSchema";
 
 export const useFirebaseStore = defineStore("firebase", () => {
   // CONVERTERS
@@ -33,7 +41,7 @@ export const useFirebaseStore = defineStore("firebase", () => {
     toFirestore: (document) => {
       const timestamp = serverTimestamp();
       const user = auth.currentUser
-        ? { uid: auth.currentUser.uid, email: auth.currentUser.email }
+        ? { id: auth.currentUser.uid, email: auth.currentUser.email }
         : null;
       const now = Date.now();
 
@@ -56,7 +64,7 @@ export const useFirebaseStore = defineStore("firebase", () => {
     toFirestore: (document) => {
       const timestamp = serverTimestamp();
       const user = auth.currentUser
-        ? { uid: auth.currentUser.uid, email: auth.currentUser.email }
+        ? { id: auth.currentUser.uid, email: auth.currentUser.email }
         : null;
       const now = Date.now();
 
@@ -82,7 +90,7 @@ export const useFirebaseStore = defineStore("firebase", () => {
     toFirestore: (event) => {
       const timestamp = serverTimestamp();
       const user = auth.currentUser
-        ? { uid: auth.currentUser.uid, email: auth.currentUser.email }
+        ? { id: auth.currentUser.uid, email: auth.currentUser.email }
         : null;
       const now = Date.now();
 
@@ -108,7 +116,7 @@ export const useFirebaseStore = defineStore("firebase", () => {
     toFirestore: (promoter) => {
       const timestamp = serverTimestamp();
       const user = auth.currentUser
-        ? { uid: auth.currentUser.uid, email: auth.currentUser.email }
+        ? { id: auth.currentUser.uid, email: auth.currentUser.email }
         : null;
       const now = Date.now();
 
@@ -130,13 +138,13 @@ export const useFirebaseStore = defineStore("firebase", () => {
     },
   };
 
-  const updatedocumentConverter = {
+  const updateDocumentConverter = {
     toFirestore: (document) => {
       const d = { ...document };
       delete d.followers;
       const timestamp = serverTimestamp();
       const user = auth.currentUser
-        ? { uid: auth.currentUser.uid, email: auth.currentUser.email }
+        ? { id: auth.currentUser.uid, email: auth.currentUser.email }
         : null;
       const now = Date.now();
 
@@ -152,13 +160,93 @@ export const useFirebaseStore = defineStore("firebase", () => {
     },
   };
 
+  const createGuestConverter = {
+    toFirestore: (document) => {
+      const timestamp = serverTimestamp();
+      const user = auth.currentUser
+        ? { id: auth.currentUser.uid, email: auth.currentUser.email }
+        : null;
+      const now = Date.now();
+      const keys = ["name", "taxId", "phone", "email", "instagram"];
+      const ids = [];
+      keys.forEach((key) => {
+        if (document[key]) ids.push(document[key]);
+      });
+
+      const initialDocument = createDocumentFromSchema(guestSchema);
+
+      return {
+        ...initialDocument,
+        ...document,
+        created_at: timestamp,
+        created_by: user,
+        createdTime: now,
+        updated_at: timestamp,
+        updated_by: user,
+        updatedTime: now,
+        status: "pending",
+        promoter: document.promoter ? document.promoter : user,
+        promoterId: document.promoter?.id || user?.id,
+        ids: ids,
+      };
+    },
+    fromFirestore: (snapshot, options) => {
+      return snapshot.data(options);
+    },
+  };
+
+  const updateGuestConverter = {
+    toFirestore: (document) => {
+      const timestamp = serverTimestamp();
+      const user = auth.currentUser
+        ? { id: auth.currentUser.uid, email: auth.currentUser.email }
+        : null;
+      const now = Date.now();
+      const keys = ["name", "taxId", "phone", "email", "instagram"];
+      const ids = [];
+      keys.forEach((key) => {
+        if (document[key]) ids.push(document[key]);
+      });
+
+      const returnDocument = {
+        ...document,
+        updated_at: timestamp,
+        updated_by: user,
+        updatedTime: now,
+        ids: ids,
+      };
+
+      if (!document.created_at) returnDocument.created_at = timestamp;
+      if (!document.created_by) returnDocument.created_by = user;
+      if (!document.createdTime) returnDocument.createdTime = now;
+
+      return returnDocument;
+    },
+    fromFirestore: (snapshot, options) => {
+      return snapshot.data(options);
+    },
+  };
+
   const converter = {
     events: createEventConverter,
-    update: updatedocumentConverter,
+    update: updateDocumentConverter,
     create: createDocumentConverter,
     promoterRequest: promoterRequestConverter,
     promoters: createPromoterConverter,
+    guestCreate: createGuestConverter,
+    guestUpdate: updateGuestConverter,
   };
+
+  function createDocumentFromSchema(schema) {
+    const fields = schema.sections.reduce((total, sec) => {
+      total.push(...sec.fields);
+      return total;
+    }, []);
+    return fields.reduce((total, field) => {
+      total[field.id] = field.initial !== undefined ? field.initial : null;
+      return total;
+    }, {});
+  }
 
   // REGISTER USER
   async function registerUser(user) {
@@ -188,13 +276,23 @@ export const useFirebaseStore = defineStore("firebase", () => {
     }
   }
 
-  async function watchCollection(
-    path,
+  function watchDocument(options, setDocument) {
+    const d = doc(firestore, options.path, options.docId);
+    console.log({ d });
+    const unsubscribe = onSnapshot(d, (snapshot) => {
+      console.log("snapshot", snapshot.data());
+      setDocument(snapshot.data());
+    });
+    return unsubscribe;
+  }
+
+  function watchCollection(
+    options,
     addedCallback,
     modifiedCallback,
     removedCallback
   ) {
-    const q = query(collection(firestore, path));
+    const q = query(collection(firestore, options.path));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       snapshot.docChanges().forEach((change) => {
         if (change.type === "added") {
@@ -326,9 +424,9 @@ export const useFirebaseStore = defineStore("firebase", () => {
     }
   }
 
-  async function countDocuments(col, query) {
+  async function countDocuments(col, queryDoc) {
     const coll = collection(firestore, col);
-    const q = query(coll, where(...query));
+    const q = query(coll, where(...queryDoc));
     const snapshot = await getCountFromServer(q);
     return snapshot.data().count;
   }
@@ -432,9 +530,9 @@ export const useFirebaseStore = defineStore("firebase", () => {
   }
 
   // PUT DOCUMENT
-  async function putDocument(col, id, document) {
+  async function putDocument(col, id, document, type = "update") {
     const fireDocument = doc(firestore, `${col}/${id}`).withConverter(
-      updatedocumentConverter
+      converter[type]
     );
     try {
       const docRef = await setDoc(fireDocument, document, {
@@ -468,11 +566,6 @@ export const useFirebaseStore = defineStore("firebase", () => {
 
   // POST DOCUMENT 2
   async function postDocument2(col, document) {
-    // document.created_at = serverTimestamp();
-    // document.updated_at = serverTimestamp();
-    // document.time = Date.now();
-    // document.created_by = auth.currentUser ? { uid: auth.currentUser.uid, email: auth.currentUser.email } : null;
-    // document.updated_by = auth.currentUser ? { uid: auth.currentUser.uid, email: auth.currentUser.email } : null;
     const fireDocument = doc(firestore, col, document.id).withConverter(
       documentConverter
     );
@@ -512,50 +605,79 @@ export const useFirebaseStore = defineStore("firebase", () => {
   // GET COLLECTION
   async function getCollection(data) {
     console.log("getCollection", data);
-    const queries = data.query ? Object.entries(data.query) : [];
-    const pageSize = data.limit || 15;
-    const order = data.orderBy || "created_at";
+    // const queries = data.query ? Object.entries(data.query) : [];
+    // const queries = data.query ? Object.entries(data.query) : [];
+    const pageSize = data.limit || 100;
+    const order = data.orderBy;
     const direction = data.direction || "desc";
 
-    const queryItems = queries.map((q) => {
-      const operator = /\[contains\]/.test(q[0])
-        ? "array-contains"
-        : /\[in\]/.test(q[0])
-        ? "in"
-        : /\[any\]/.test(q[0])
-        ? "array-contains-any"
-        : /\[gt\]/.test(q[0])
-        ? ">"
-        : /\[gte\]/.test(q[0])
-        ? ">="
-        : /\[lt\]/.test(q[0])
-        ? "<"
-        : /\[lte\]/.test(q[0])
-        ? "<="
-        : "==";
-      const key = q[0]
-        .replace(/\[gte\]/, "")
-        .replace(/\[lte\]/, "")
-        .replace(/\[gt\]/, "")
-        .replace(/\[lt\]/, "")
-        .replace(/\[any\]/, "")
-        .replace(/\[in\]/, "")
-        .replace(/\[contains\]/, "");
-      const value = Number(q[1]) ? Number(q[1]) : q[1];
-
-      return where(key, operator, value);
-    });
+    let queries = [];
+    let queryItems = [];
+    // QUERY EM ARRAY
+    if (data.query && Array.isArray(data.query)) {
+      queries = data.query;
+      queryItems = queries.map(([key, operator, value]) => {
+        return where(key, operator, value);
+      });
+    }
+    // QUERY EM OBJETO
+    else {
+      queries = data.query ? Object.entries(data.query) : [];
+      queryItems = queries.map((q) => {
+        const operator = /\[contains\]/.test(q[0])
+          ? "array-contains"
+          : /\[in\]/.test(q[0])
+          ? "in"
+          : /\[any\]/.test(q[0])
+          ? "array-contains-any"
+          : /\[gt\]/.test(q[0])
+          ? ">"
+          : /\[gte\]/.test(q[0])
+          ? ">="
+          : /\[lt\]/.test(q[0])
+          ? "<"
+          : /\[lte\]/.test(q[0])
+          ? "<="
+          : "==";
+        const key = q[0]
+          .replace(/\[gte\]/, "")
+          .replace(/\[lte\]/, "")
+          .replace(/\[gt\]/, "")
+          .replace(/\[lt\]/, "")
+          .replace(/\[any\]/, "")
+          .replace(/\[in\]/, "")
+          .replace(/\[contains\]/, "");
+        const value = Number(q[1]) ? Number(q[1]) : q[1];
+        // console.log({ key, operator, value });
+        return where(key, operator, value);
+      });
+    }
 
     try {
       if (data.collection) {
         // const timestamp = Timestamp.fromDate(new Date('2023-11-25'));
         // const q = query(collection(firestore, "products"), where("created_at", ">", timestamp));
-        let q = query(
-          collection(firestore, data.collection),
-          ...queryItems,
-          limit(pageSize),
-          orderBy(order, direction)
-        );
+        // let q = query(
+        //   collection(firestore, data.collection),
+        //   ...queryItems,
+        //   limit(pageSize),
+        //   orderBy(order, direction)
+        // );
+        let q;
+        if (order) {
+          q = query(
+            collection(firestore, data.collection),
+            ...queryItems,
+            limit(pageSize),
+            orderBy(order, direction)
+          );
+        } else {
+          q = query(
+            collection(firestore, data.collection),
+            ...queryItems,
+            limit(pageSize)
+          );
+        }
 
         const querySnapshot = await getDocs(q);
         const countSnapshot = await getCountFromServer(
@@ -741,8 +863,6 @@ export const useFirebaseStore = defineStore("firebase", () => {
         )
       );
       const document = docRef.data();
-      // document.created_at = new Date(document.created_at.toDate()).toLocaleString("pt-BR", { timeZone: 'Europe/Madrid' });
-      // document.updated_at = new Date(document.updated_at.toDate()).toLocaleString("pt-BR", { timeZone: 'Europe/Madrid' });
 
       return {
         ok: true,
@@ -785,8 +905,6 @@ export const useFirebaseStore = defineStore("firebase", () => {
       );
 
       const document = docRef.data();
-      // document.created_at = new Date(document.created_at.toDate()).toLocaleString("pt-BR", { timeZone: 'Europe/Madrid' });
-      // document.updated_at = new Date(document.updated_at.toDate()).toLocaleString("pt-BR", { timeZone: 'Europe/Madrid' });
 
       return {
         ok: true,
@@ -801,6 +919,18 @@ export const useFirebaseStore = defineStore("firebase", () => {
       };
     }
   }
+
+  // DATABASE
+
+  async function addClickCountToEvent(eventId) {
+    const updateClick = update(refDatabase(database, "events/" + eventId), {
+      clickCount: incrementDatabase(1),
+    });
+    console.log({ updateClick });
+  }
+
+  addClickCountToEvent("25UBJKMC0NmNVYdU5ax1");
+  console.log("firebase Store");
 
   return {
     postDocument,
@@ -821,5 +951,6 @@ export const useFirebaseStore = defineStore("firebase", () => {
     postBulkDocuments,
     watchCollection,
     deleteDocument,
+    watchDocument,
   };
 });

@@ -3,59 +3,36 @@
     <v-row class="ma-0">
       <!-- Search Field: full width on mobile, wider on larger screens -->
       <v-col cols="12" sm="8" md="9" class="pa-2">
-        <v-text-field
-          v-model="searchModel"
-          density="compact"
-          variant="outlined"
-          hide-details
-          :placeholder="searchPlaceholder"
-          prepend-inner-icon="mdi-magnify"
-          class="search-field"
-          single-line
-          @update:model-value="emitFilterChange"
-        ></v-text-field>
+        <v-text-field v-model="searchModel" density="compact" variant="outlined" hide-details
+          :placeholder="searchPlaceholder" prepend-inner-icon="mdi-magnify" class="search-field" single-line
+          @update:model-value="emitFilterChange"></v-text-field>
       </v-col>
 
       <!-- Filters Section: full width on mobile, side by side on larger screens -->
       <v-col cols="12" sm="4" md="3" class="pa-2">
         <div class="d-flex align-center flex-wrap">
           <!-- Primary Filter (always visible) -->
-          <v-select
-            v-if="primaryFilter"
-            v-model="primaryFilterModel"
-            :items="primaryFilter.options"
-            variant="outlined"
-            density="compact"
-            hide-details
-            :label="primaryFilter.label"
-            class="mb-2 me-2 primary-filter"
-            @update:model-value="emitFilterChange"
-          ></v-select>
+          <v-select v-if="primaryFilter" v-model="primaryFilterModel" :items="primaryFilter.options" variant="outlined"
+            density="compact" hide-details :label="primaryFilter.label" class="mb-2 me-2 primary-filter"
+            @update:model-value="emitFilterChange"></v-select>
 
           <!-- Additional Filter(s) -->
           <template v-if="filterOptions.length > 1">
             <!-- If exactly 2 filters and on larger screens, show inline -->
-            <v-select
-              v-if="filterOptions.length === 2 && isDesktop"
-              v-model="filterModels[1]"
-              :items="filterOptions[1].options"
-              variant="outlined"
-              density="compact"
-              hide-details
-              :label="filterOptions[1].label"
-              class="mb-2 secondary-filter"
-              @update:model-value="emitFilterChange"
-            ></v-select>
+            <v-select v-if="filterOptions.length === 2 && isDesktop" v-model="filterModels[1]"
+              :items="filterOptions[1].options" variant="outlined" item-value="id" item-title="name" density="compact"
+              hide-details :label="filterOptions[1].label" class="mb-2 secondary-filter"
+              @update:model-value="emitFilterChange">
+
+              <template #prepend-item>
+                <v-list-item @click="filterModels[1] = 'all'" title="All"></v-list-item>
+              </template>
+            </v-select>
 
             <!-- Otherwise, use a menu for additional filters -->
             <v-menu v-else>
               <template v-slot:activator="{ props }">
-                <v-btn
-                  v-bind="props"
-                  variant="outlined"
-                  density="compact"
-                  class="filter-btn mb-2"
-                >
+                <v-btn v-bind="props" variant="outlined" density="compact" class="filter-btn mb-2">
                   <v-icon size="small" start>mdi-filter-variant</v-icon>
                   Filtros
                 </v-btn>
@@ -63,28 +40,13 @@
               <v-card min-width="300" class="filter-menu pa-2">
                 <v-card-text>
                   <div class="text-subtitle-2 mb-2">Filtrar por</div>
-                  <template
-                    v-for="(filter, index) in additionalFilters"
-                    :key="index"
-                  >
-                    <v-select
-                      v-model="filterModels[filter.modelIndex]"
-                      :items="filter.options"
-                      :label="filter.label"
-                      variant="outlined"
-                      density="compact"
-                      hide-details
-                      class="mb-2"
-                      @update:model-value="emitFilterChange"
-                    ></v-select>
+                  <template v-for="(filter, index) in additionalFilters" :key="index">
+                    <v-select v-model="filterModels[filter.modelIndex]" :items="filter.options" :label="filter.label"
+                      variant="outlined" density="compact" hide-details class="mb-2"
+                      @update:model-value="emitFilterChange"></v-select>
                   </template>
                   <div class="d-flex justify-end mt-2">
-                    <v-btn
-                      variant="text"
-                      size="small"
-                      color="primary"
-                      @click="resetFilters"
-                    >
+                    <v-btn variant="text" size="small" color="primary" @click="resetFilters">
                       Limpar filtros
                     </v-btn>
                   </div>
