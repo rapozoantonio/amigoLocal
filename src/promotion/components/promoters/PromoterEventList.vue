@@ -81,6 +81,7 @@
           <v-col cols="12" class="py-0">
             <event-calendar-divider-toolbar :day="day" />
             <card-horizontal
+              @click="addClickToFirebaseHistory(event.id, event.promoter.id)"
               v-for="(event, index) in events.slice(
                 0,
                 eventDisplayLimits[selectedCategory]
@@ -181,6 +182,8 @@ import CardHorizontal from "@/promotion/components/events/CardHorizontal.vue";
 import WhatsappGroupsModal from "@/promotion/components/promoters/WhatsappGroupsModal.vue";
 import EventCategoryTabs from "@/promotion/components/events/EventCategoryTabs.vue";
 import { useEventsStore } from "@/promotion/store/events";
+import { useFirebaseStore } from "@/core/store/firebase";
+import { firestore } from "@/core/plugins/firebase";
 
 // Props (if any)
 const { id } = defineProps(["id"]);
@@ -418,6 +421,40 @@ const headerText = computed(() =>
 const buttonText = computed(() =>
   showingTodayEvents.value ? "Todos os Eventos" : "Eventos Hoje"
 );
+const firebaseStore = useFirebaseStore();
+async function addClickToFirebaseHistory(eventId, promoterId) {
+  if (!eventId || !promoterId) {
+    console.warn("Missing eventId or promoterId");
+    return;
+  }
+  let clickObject = {
+    eventId,
+    promoterId,
+    source: "promoter_page",
+  };
+  try {
+    const response = await firebaseStore.postDocument(
+      `events/${eventId}/clickHistory`,
+      clickObject
+    );
+    console.log({ responseFromAddingClickHistory: response });
+    if (response.ok) {
+      console.log("it went right");
+      getClicks(eventId);
+    }
+  } catch (error) {
+    console.log({ errorFromAddingClickHistory: error });
+  }
+}
+
+async function getClicks(eventId) {
+  const response = await firebaseStore.countDocuments(
+    `events/${eventId}/clickHistory`,
+    ["eventId", "==", eventId]
+  );
+
+  console.log({ responseCOUNT: response });
+}
 </script>
 
 <style lang="scss" scoped>

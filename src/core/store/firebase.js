@@ -18,6 +18,7 @@ import {
   updateDoc,
   where,
   onSnapshot,
+  collectionGroup,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 // Utilities
@@ -326,9 +327,10 @@ export const useFirebaseStore = defineStore("firebase", () => {
     }
   }
 
-  async function countDocuments(col, query) {
+  async function countDocuments(col, queryDoc) {
     const coll = collection(firestore, col);
-    const q = query(coll, where(...query));
+    console.log({ coll });
+    const q = query(coll, where(...queryDoc));
     const snapshot = await getCountFromServer(q);
     return snapshot.data().count;
   }
@@ -801,6 +803,8 @@ export const useFirebaseStore = defineStore("firebase", () => {
       };
     }
   }
+
+  //click increment saving
 
   return {
     postDocument,
