@@ -81,4 +81,13 @@ export const event = {
         email: "danielalves.ef@gmail.com",
         username: "danielalves"
     },
+
+    clicHistory:[
+        {
+            eventId:'qe23124',
+            promoterId:'234234',
+            source:'promoter_page',
+            timestamp:new Date(),
+        },
+    ]
 }
