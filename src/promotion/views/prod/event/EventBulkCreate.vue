@@ -193,7 +193,7 @@
 import { computed, inject, ref } from "vue";
 
 import { useAppStore } from "@/promotion/store/app";
-import { useChatgptStore } from "@/promotion/store/chatgpt.js";
+import { useChatgptStore } from "@/core/store/chatgpt.js";
 import { useFirebaseStore } from "@/core/store/firebase.js";
 import eventSchema from "@/core/schemas/eventSchema";
 import bulkEventSchema from "@/core/schemas/bulkEventSchema";

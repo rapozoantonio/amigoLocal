@@ -7,6 +7,7 @@
 
     <!-- Real content after loading -->
     <v-sheet v-else class="w-100">
+
       <!-- Filters and search bar - always visible, always sticky -->
       <div ref="filtersContainer" class="filters-container mb-6">
         <v-row>
@@ -26,7 +27,7 @@
       </div>
 
       <!-- Empty state -->
-      <v-sheet v-if="filteredEvents.length === 0"
+      <v-sheet v-if="filteredEvents.length === 0 && itemLoading"
         class="empty-state d-flex flex-column align-center justify-center my-8">
         <v-icon icon="mdi-calendar-remove" size="64" color="grey-lighten-1" class="mb-4"></v-icon>
         <h3 class="text-h6 text-grey-darken-1">Nenhum evento encontrado</h3>
@@ -35,13 +36,21 @@
         </p>
       </v-sheet>
 
+      <v-sheet v-else-if="itemLoading" class="w-100">
+        <v-skeleton-loader v-for="i in 2" :key="i" type="card, divider" class="mb-4"></v-skeleton-loader>
+      </v-sheet>
+
       <!-- Events list -->
       <div v-else class="events-content">
-        <transition-group name="event-list" tag="div" class="event-list">
-          <event-list-item v-for="event in filteredEvents" :key="event.id" :event="event"
-            @click="navigateToEventDetails(event.id)" @edit="navigateToEditEvent" @duplicate="duplicateEvent"
-            @delete="deleteEvent" class="mb-4" />
-        </transition-group>
+        <!-- <transition-group name="event-list" tag="div" class="event-list"> -->
+        <!-- <v-fade-transition mode="out-in" group> -->
+        <event-item v-for="event in filteredEvents" :key="event.id" :event="event"
+          @click="navigateToEventDetails(event.id)" @edit="openEditDialog" @duplicate="duplicateEvent"
+          @refresh="refreshEvent" @delete="deleteEvent" class="mb-4" />
+
+        <!-- </v-fade-transition> -->
+
+        <!-- </transition-group> -->
 
         <!-- Lazy loading indicator -->
         <div v-if="hasMoreEvents" class="text-center my-4 pb-16">
@@ -51,6 +60,9 @@
           </v-btn>
         </div>
       </div>
+
+
+
     </v-sheet>
 
     <!-- Floating Action Button -->
@@ -60,35 +72,20 @@
     <!-- New Event Modal -->
     <!-- <new-event-modal v-model="newEventModalVisible" @saved="handleNewEventSaved" /> -->
 
-    <form-dialog :fullscreen="true" :schema="eventListSchema" v-model:model="newEvent"
-      v-model:opened="newEventModalVisible" @submit="handleNewEventSubmit">
+    <form-dialog :fullscreen="true" :schema="eventListSchema" v-model:model="newEvent" action="Salvar e fechar"
+      title="Criar evento" v-model:opened="newEventModalVisible" @submit="handleNewEventSubmit">
       <template #activator="{ props }">
-        <floating-action-button @click="newEventModalVisible = true" icon="mdi-plus" tooltip="Novo evento" />
+        <v-fab icon="mdi-plus" app location="right bottom" color="primary" rounded="pill" v-bind="props"></v-fab>
       </template>
-      <template #action-append>
-        <v-btn class="ml-2" type="submit">Save and Close</v-btn>
+      <template #action-prepend="{ submit, disabled }">
+        <v-btn :disabled="disabled" @click="submit('open')" size="large">Salvar e abrir
+          evento</v-btn>
       </template>
     </form-dialog>
 
-    <!-- Delete confirmation dialog -->
-    <v-dialog v-model="deleteDialog" max-width="400">
-      <v-card>
-        <v-card-title class="text-h5">Excluir evento</v-card-title>
-        <v-card-text>
-          Tem certeza que deseja excluir este evento? Esta ação não pode ser
-          desfeita.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="grey-darken-1" variant="text" @click="deleteDialog = false">
-            Cancelar
-          </v-btn>
-          <v-btn color="error" variant="flat" @click="deleteEvent">
-            Excluir
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <form-dialog :fullscreen="true" :schema="eventListSchema" v-model:model="eventForm" action="Salvar"
+      title="Editar evento" v-model:opened="showEditDialog" @submit="handleEventUpdate">
+    </form-dialog>
   </v-container>
 </template>
 
@@ -96,7 +93,7 @@
 import { ref, computed, onMounted, onUnmounted, inject } from "vue";
 import { useRouter } from "vue-router";
 import { useDisplay } from "vuetify/lib/framework.mjs";
-import EventListItem from "@/management/components/events/EventListItem.vue";
+import EventItem from "@/management/components/events/EventItem.vue";
 import FloatingActionButton from "@/management/components/FloatingActionButton.vue";
 import NewEventModal from "@/management/components/events/NewEventModal.vue";
 import { eventsData } from "@/management/consts/eventListMockData";
@@ -108,8 +105,11 @@ import { useEventListStore } from "../store/eventList";
 import { useFirebaseStore } from "@/core/store/firebase";
 const firebaseStore = useFirebaseStore();
 const newEvent = ref({ name: "", });
-
+const files = ref({});
+const showEditDialog = ref(false);
 const swal = inject("$swal");
+const notify = inject("$notify");
+const eventForm = ref({});
 
 const router = useRouter();
 const { xs, name: displayName } = useDisplay();
@@ -117,8 +117,6 @@ const { xs, name: displayName } = useDisplay();
 const loading = ref(true);
 const loadingMore = ref(false);
 const hasMoreEvents = ref(true);
-const deleteDialog = ref(false);
-const eventToDelete = ref(null);
 const newEventModalVisible = ref(false);
 const unsubscribe = ref(null);
 
@@ -137,21 +135,26 @@ const eventsPerPage = 10;
 
 // Events data - replace with API calls in production
 const events = ref([]);
-
+const itemLoading = ref(false);
 // Mock API call to fetch events
 
-function addEventToList(event) {
-  events.value.push(event);
+async function addEventToList(event) {
+  itemLoading.value = true
+  const eventInfo = await eventListStore.getEventInfo(event.id);
+  events.value.push({ ...event, ...eventInfo });
+  itemLoading.value = false
+
 }
 
-function modifyEventInList(event) {
+async function modifyEventInList(event) {
   const index = events.value.findIndex((e) => e.id === event.id);
   if (index !== -1) {
-    events.value.splice(index, 1, event);
+    const eventInfo = await eventListStore.getEventInfo(event.id);
+    events.value.splice(index, 1, { ...event, ...eventInfo });
   }
 }
 
-function removeEventFromList(event) {
+async function removeEventFromList(event) {
   const index = events.value.findIndex((e) => e.id === event.id);
   if (index !== -1) {
     events.value.splice(index, 1);
@@ -159,12 +162,15 @@ function removeEventFromList(event) {
 }
 
 
-async function fetchEvents() {
+async function refreshEvent(event) {
+  await modifyEventInList(event);
+}
+
+async function watchEvents() {
   loading.value = true;
   events.value = [];
   try {
-    unsubscribe.value = await firebaseStore.watchCollection("eventList", addEventToList, modifyEventInList, removeEventFromList);
-
+    unsubscribe.value = firebaseStore.watchCollection({ path: "eventList" }, addEventToList, modifyEventInList, removeEventFromList);
     hasMoreEvents.value = false;
   } catch (error) {
     console.error("Error fetching events:", error);
@@ -173,6 +179,25 @@ async function fetchEvents() {
     loading.value = false;
   }
 };
+
+async function fetchEvents() {
+  loading.value = true;
+  events.value = [];
+  try {
+    const request = await eventListStore.getEventsList();
+    if (request.ok) {
+      events.value = request.data;
+      hasMoreEvents.value = false;
+    }
+
+  } catch (error) {
+    console.error("Error fetching events:", error);
+    // Implement error handling (toast notification, etc.)
+  } finally {
+    loading.value = false;
+  }
+};
+
 
 const fetchEvents2 = async () => {
   loading.value = true;
@@ -225,15 +250,15 @@ const filteredEvents = computed(() => {
     result = result.filter(
       (event) =>
         event.name.toLowerCase().includes(query) ||
-        event.location.toLowerCase().includes(query)
+        event.location?.toLowerCase().includes(query)
     );
   }
 
   // Apply status filters
   if (activeFilter.value === "upcoming") {
-    result = result.filter((event) => event.status === "upcoming");
+    result = result.filter((event) => new Date(event.startDate).getTime() >= Date.now());
   } else if (activeFilter.value === "past") {
-    result = result.filter((event) => event.status === "completed");
+    result = result.filter((event) => new Date(event.startDate).getTime() < Date.now());
   }
   // 'all' filter shows everything
 
@@ -266,6 +291,9 @@ const navigateToEditEvent = (eventId) => {
   router.push(`/events/${eventId}/edit`);
 };
 
+
+
+
 // Event actions
 const duplicateEvent = (event) => {
   console.log("Duplicating event:", event);
@@ -276,52 +304,21 @@ const duplicateEvent = (event) => {
   //   });
 };
 
-const confirmDeleteEvent = (eventId) => {
-  eventToDelete.value = eventId;
-  deleteDialog.value = true;
-};
-
-const deleteEvent2 = () => {
-  // Implement deletion logic
-  console.log("Deleting event:", eventToDelete.value);
-
-  // For demo, just remove from the array
-  events.value = events.value.filter(
-    (event) => event.id !== eventToDelete.value
-  );
-  deleteDialog.value = false;
-  eventToDelete.value = null;
-};
 
 
-async function deleteEvent(eventId) {
+async function deleteEvent(event) {
 
   console.log({ swal })
   try {
-    const result = await swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!"
-    })
-
+    const result = await notify.confirmDelete("evento", event.name);
     if (result.isConfirmed) {
-      await eventListStore.deleteEvent(eventId);
-      swal.fire({
-        title: "Deleted!",
-        text: "Your file has been deleted.",
-        icon: "success"
-      })
+      await eventListStore.deleteEvent(event.id);
+      notify.toast("O Evento " + event.name + " foi excluido")
     }
   } catch (error) {
     console.log({ error });
   } finally {
-
   }
-
 }
 
 // Simplified scroll handler that only adds shadow when scrolling
@@ -339,27 +336,54 @@ const handleScroll = () => {
   }
 };
 
-async function handleNewEventSubmit(event, close) {
+async function handleNewEventSubmit(event, close, type) {
   console.log({ event });
   try {
-    const createdEvent = await eventListStore.createEvent(event);
-    if (createdEvent) {
+    console.log("type of submit", type)
+    const { ok, data, id } = await eventListStore.createEvent(event);
+    if (ok) {
       newEvent.value = {};
-      close();
+      if (type === "submit" || type === "close") {
+        close();
+      }
+      if (type === "open") {
+        router.push({ name: "event-id", params: { eventId: id } })
+      }
     }
-    console.log({ createdEvent });
   } catch (error) {
     console.log({ error })
+  } finally {
   }
 }
 
-onUnmounted(() => {
-  unsubscribe.value();
-})
+function openEditDialog(event) {
+  eventForm.value = { ...event };
+  showEditDialog.value = true;
+}
+
+async function handleEventUpdate(event, close, type) {
+  console.log({ event });
+  try {
+    const { ok, data, id } = await eventListStore.updateEvent(event);
+    if (ok) {
+      close();
+    }
+  } catch (error) {
+    console.log({ error })
+  } finally {
+  }
+}
+
+
+
+
+// onUnmounted(() => {
+//   unsubscribe.value();
+// })
 
 // Fetch events on component mount and setup scroll handler
 onMounted(() => {
-  fetchEvents();
+  watchEvents();
 
   // Add scroll event listener
   window.addEventListener("scroll", handleScroll);

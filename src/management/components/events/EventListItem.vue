@@ -1,222 +1,132 @@
 <template>
-  <v-card class="event-card" :class="{ 'event-card--past': isPastEvent }" variant="elevated" elevation="2"
-    :ripple="true" :to="{ name: 'event-detail', params: { id: event.id } }">
-    <!-- Use flex layout with row direction by default for desktop -->
-    <div class="d-flex flex-column flex-md-row">
-      <!-- Event thumbnail with status indicator -->
-      <div class="flex-shrink-0 w-100 w-md-33 w-lg-25">
-        <v-img :src="event.thumbnail"
-          lazy-src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23cccccc'/%3E%3C/svg%3E"
-          height="100%" cover class="event-thumbnail" :aspect-ratio="16 / 9">
-          <template v-slot:placeholder>
-            <v-row class="fill-height ma-0" align="center" justify="center">
-              <v-progress-circular indeterminate color="grey-lighten-3"></v-progress-circular>
-            </v-row>
-          </template>
+    <v-hover v-slot="{ isHovering, props }">
+        <v-card v-bind="props" :elevation="isHovering ? 4 : 1" border="thin" class="h-100 list-card">
+            <v-card-title class="d-flex justify-space-between align-center py-3">
+                <span class="text-subtitle-1 font-weight-medium text-truncate">
+                    <v-icon :color="list.active ? 'success' : 'red'">mdi-circle-medium</v-icon> {{ list.name }}
+                </span>
+                <v-menu location="bottom end">
+                    <template v-slot:activator="{ props: menuProps }">
+                        <v-btn v-bind="menuProps" icon variant="text" size="small" @click.stop>
+                            <v-icon>mdi-dots-vertical</v-icon>
+                        </v-btn>
+                    </template>
+                    <v-list density="compact">
+                        <v-list-item prepend-icon="mdi-pencil" title="Edit list" @click="editList(list)" />
+                        <v-list-item v-if="list.active" prepend-icon="mdi-pause-circle" title="Pause list"
+                            @click="toggleListStatus(list)" />
+                        <v-list-item v-else prepend-icon="mdi-play-circle" title="Activate list"
+                            @click="toggleListStatus(list)" />
+                        <v-list-item prepend-icon="mdi-content-duplicate" title="Duplicate list"
+                            @click="duplicateList(list)" />
+                        <v-divider />
+                        <v-list-item prepend-icon="mdi-delete" title="Delete list" class="text-error"
+                            @click.stop="deleteList(list)" />
+                    </v-list>
+                </v-menu>
+            </v-card-title>
 
-          <div class="status-chip" :class="`status-chip--${event.status}`">
-            {{ statusText }}
-          </div>
-        </v-img>
-      </div>
+            <v-divider />
+            <v-card-text class="py-3">
+                <div class="d-flex justify-space-between mb-3">
+                    <div class="text-center">
+                        <div class="text-h6">{{ totals.guestCount }}</div>
+                        <div class="text-caption">Guests</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-h6">{{ totals.checkIns }}</div>
+                        <div class="text-caption">Check-ins</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-h6">
+                            {{ list.quota > 0 ? list.quota : "∞" }}
+                        </div>
+                        <div class="text-caption">Quota</div>
+                    </div>
+                </div>
+                <!-- Price Display -->
+                <div class="text-center mb-3">
+                    <div class="text-h6">{{ formatPrice(list.price) }}</div>
+                    <div class="text-caption">Price</div>
+                </div>
+                <!-- Cut-off Time Display -->
+                <div class="text-center mb-3">
+                    <div v-if="list.cutoffTime" class="text-h6">
+                        {{ list.cutoffTime }}
+                    </div>
+                    <div v-else class="text-h6 text-grey">No Cut-off Time</div>
+                    <div class="text-caption">Cut-off Time</div>
+                </div>
+                <v-progress-linear v-if="list.quota > 0" :model-value="progressPercentage" :color="progressColor"
+                    height="12" rounded class="mt-2" />
+            </v-card-text>
 
-      <!-- Event details -->
-      <div class="event-details pa-4 d-flex flex-column justify-space-between">
-        <div>
-          <div class="d-flex justify-space-between align-start">
-            <div class="event-header">
-              <h3 class="text-h6 font-weight-bold text-truncate mb-1">{{ event.name }}</h3>
-              <div class="d-flex align-center text-body-2 text-grey-darken-1 mb-2">
-                <v-icon size="small" icon="mdi-calendar" class="mr-1"></v-icon>
-                <span>{{ formatDate(event.date) }}</span>
-                <span class="mx-2">•</span>
-                <v-icon size="small" icon="mdi-clock" class="mr-1"></v-icon>
-                <span>{{ formatTime(event.date) }}</span>
-              </div>
-              <div class="d-flex align-center text-body-2 text-grey-darken-1 mb-3">
-                <v-icon size="small" icon="mdi-map-marker" class="mr-1"></v-icon>
-                <span class="text-truncate">{{ event.location }}</span>
-              </div>
-            </div>
+            <v-divider />
 
-            <v-menu location="bottom end" :close-on-content-click="true">
-              <template v-slot:activator="{ props }">
-                <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" size="small" color="grey"
-                  class="ml-2 menu-button" @click.stop></v-btn>
-              </template>
-              <v-list density="compact">
-                <v-list-item @click.stop="$emit('edit', event.id)">
-                  <template v-slot:prepend>
-                    <v-icon size="small" icon="mdi-pencil"></v-icon>
-                  </template>
-                  <v-list-item-title>Editar</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click.stop="$emit('duplicate', event)">
-                  <template v-slot:prepend>
-                    <v-icon size="small" icon="mdi-content-copy"></v-icon>
-                  </template>
-                  <v-list-item-title>Duplicar</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click.stop="$emit('delete', event.id)">
-                  <template v-slot:prepend>
-                    <v-icon size="small" icon="mdi-delete"></v-icon>
-                  </template>
-                  <v-list-item-title class="text-error">Excluir</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
+            <v-card-actions class="pa-3">
+                <v-btn variant="outlined" color="primary" prepend-icon="mdi-account-plus" rounded="pill"
+                    @click.stop="openBulkGuestModal(list)" block>
+                    Add Guest
+                </v-btn>
+            </v-card-actions>
 
-          <v-divider class="my-3"></v-divider>
-        </div>
-
-        <!-- Event stats -->
-        <div class="event-stats">
-          <div class="stat-item">
-            <div class="text-grey text-caption">Check-ins</div>
-            <div class="d-flex align-center">
-              <span class="text-body-1 font-weight-medium">{{ event.checkInCount }}</span>
-              <span class="text-caption text-grey ml-1">/ {{ event.totalGuests }}</span>
-            </div>
-          </div>
-
-          <v-divider vertical class="mx-3 my-0 stat-divider"></v-divider>
-
-          <div class="stat-item">
-            <div class="text-grey text-caption">Listas</div>
-            <div class="text-body-1 font-weight-medium">{{ event.vipListsCount }}</div>
-          </div>
-
-          <v-divider vertical class="mx-3 my-0 stat-divider"></v-divider>
-
-          <div class="stat-item">
-            <div class="text-grey text-caption">Promotores</div>
-            <div class="text-body-1 font-weight-medium">{{ event.promotersCount }}</div>
-          </div>
-
-          <v-divider vertical class="mx-3 my-0 stat-divider"></v-divider>
-
-          <div class="stat-item revenue-stat">
-            <div class="text-grey text-caption">Receita</div>
-            <div class="d-flex align-center">
-              <span class="text-body-1 font-weight-medium">{{ formatCurrency(event.revenue) }}</span>
-              <v-tooltip v-if="isPastEvent && event.status !== 'cancelled'" location="top">
-                <template v-slot:activator="{ props }">
-                  <v-icon v-bind="props" size="x-small" :color="revenueIndicatorColor" :icon="revenueIndicatorIcon"
-                    class="ml-1">
-                  </v-icon>
-                </template>
-                <span>{{ revenuePerformanceText }}</span>
-              </v-tooltip>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </v-card>
+        </v-card>
+    </v-hover>
 </template>
 
 <script setup>
-import { computed } from 'vue';
-import { useDisplay } from 'vuetify/lib/framework.mjs';
+import { computed, toRefs } from 'vue';
+import { useRoute } from 'vue-router';
 
-// Component props
-const props = defineProps({
-  event: {
-    type: Object,
-    required: true
-  }
+
+const route = useRoute();
+// PARAMS
+const props = defineProps(["list", "totals"]);
+const { list, totals } = toRefs(props);
+
+// COMPUTED PROPERTIES
+const progressColor = computed(() => {
+    return progressPercentage.value >= 100
+        ? "error"
+        : progressPercentage.value >= 75
+            ? "warning"
+            : "success";
 });
-
-// Get display breakpoints
-const { xs, sm, md } = useDisplay();
-
-// Component emits
-defineEmits(['edit', 'duplicate', 'delete', 'click']);
-
-// Computed properties
-const isPastEvent = computed(() => {
-  return props.event.status === 'completed';
+const progressPercentage = computed(() => {
+    return Math.min((totals.value.checkIns / list.value.quota) * 100, 100) || 0;
 });
+const formatPrice = computed(() => {
+    return (price) => {
+        return new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
 
-const statusText = computed(() => {
-  switch (props.event.status) {
-    case 'upcoming':
-      return 'Em breve';
-    case 'completed':
-      return 'Realizado';
-    case 'live':
-      return 'Ao vivo';
-    case 'cancelled':
-      return 'Cancelado';
-    default:
-      return 'Em breve';
-  }
-});
+        }).format(price);
+    }
+})
+const eventId = computed(() => {
+    return route.params.eventId
+})
 
-// Revenue indicator computed properties
-const revenueIndicatorColor = computed(() => {
-  if (!props.event.revenuePrediction) return 'grey';
+const emit = defineEmits(["list:duplicate", "list:update", "list:delete", "list:edit", "list:addGuest"])
 
-  const ratio = props.event.revenue / props.event.revenuePrediction;
-  if (ratio >= 1) return 'success';
-  if (ratio >= 0.8) return 'warning';
-  return 'error';
-});
+// METHODS
+async function openBulkGuestModal(list) {
+    emit("list:addGuest", list);
+}
+async function deleteList(list) {
+    emit("list:delete", list)
+}
+async function duplicateList(list) {
+    emit("list:duplicate", list);
+}
+async function toggleListStatus(list) {
+    const isActive = list.active;
+    emit("list:update", { ...list, active: !list.active }, "status");
+}
+async function editList(list) {
+    emit("list:edit", list);
+}
 
-const revenueIndicatorIcon = computed(() => {
-  if (!props.event.revenuePrediction) return '';
 
-  const ratio = props.event.revenue / props.event.revenuePrediction;
-  if (ratio >= 1) return 'mdi-arrow-up';
-  if (ratio >= 0.8) return 'mdi-arrow-right';
-  return 'mdi-arrow-down';
-});
-
-const revenuePerformanceText = computed(() => {
-  if (!props.event.revenuePrediction) return 'Sem previsão de receita';
-
-  const ratio = props.event.revenue / props.event.revenuePrediction;
-  const percentage = Math.round((ratio - 1) * 100);
-
-  if (ratio >= 1) return `${percentage}% acima da previsão`;
-  if (ratio >= 0.8) return `${Math.round((1 - ratio) * 100)}% abaixo da previsão`;
-  return `${Math.round((1 - ratio) * 100)}% abaixo da previsão`;
-});
-
-// Helper functions for formatting date and time
-const formatDate = (date) => {
-  return new Date(date).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric'
-  });
-};
-
-const formatTime = (date) => {
-  return new Date(date).toLocaleTimeString('pt-BR', {
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-};
-
-// Format currency in compact format
-const formatCurrency = (value) => {
-  if (!value && value !== 0) return 'R$ 0';
-
-  // Convert to number if it's not already
-  const numValue = typeof value === 'number' ? value : Number(value);
-
-  // Handle invalid values
-  if (isNaN(numValue)) return 'R$ 0';
-
-  // Format based on value range
-  if (numValue >= 1000000) {
-    return `R$ ${(numValue / 1000000).toFixed(1)}M`;
-  } else if (numValue >= 1000) {
-    return `R$ ${(numValue / 1000).toFixed(1)}k`;
-  } else {
-    return `R$ ${numValue}`;
-  }
-};
 </script>

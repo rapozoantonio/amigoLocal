@@ -1,6 +1,7 @@
 {
-  "hosting": {
-    "public": "dist",
+  "hosting": [{
+    "target": "promotions",
+    "public": "dist/promotions",
     "ignore": [
       "firebase.json",
       "**/.*",
@@ -24,6 +25,32 @@
       }
     ]
   },
+  {
+    "target": "management",
+    "public": "dist/management",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          {
+            "key": "Cross-Origin-Opener-Policy",
+            "value": "same-origin-allow-popups"
+          }
+        ]
+      }
+    ]
+  }],
   "storage": {
     "rules": "storage.rules"
   },

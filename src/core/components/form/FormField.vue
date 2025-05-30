@@ -15,7 +15,7 @@
         <v-divider opacity="0.8" thickness="2" color="grey" v-else> </v-divider>
     </v-col>
 
-    <v-col v-else-if="readOnly" :cols="col" :md="md" :sm="sm" :lg="lg" :xl="xl" class="pt-1"
+    <v-col v-else-if="readOnly && false" :cols="col" :md="md" :sm="sm" :lg="lg" :xl="xl" class="pt-1"
         :class="{ 'd-flex': labelType === 'left', required: rules.find(i => i === 'required') }">
         <!-- <p v-if="prepend" class="text-body-2">{{ prepend }}</p>
 
@@ -46,6 +46,7 @@
         </template> -->
     </v-col>
 
+
     <v-col v-else :cols="col" :md="md" :sm="sm" :lg="lg" :xl="xl" class="pt-1"
         :class="{ 'd-flex': labelType === 'left', required: rules.find(i => i === 'required') }">
         <p v-if="prepend" class="text-body-2">{{ prepend }}</p>
@@ -58,9 +59,9 @@
             <span class="ml-1" v-if="rules.find(i => i === 'required')">*</span>
             <span class="ml-1" v-else><small>(opcional)</small></span>
         </p>
-        <p v-else-if="labelType === 'left'" class="mt-3 text-caption  text-right mr-3 field-label" :for="id"> <v-icon
-                start v-if="icon">{{
-                    icon }}</v-icon><span v-if="showLabelLeft">
+        <p v-else-if="labelType === 'left'" class="mt-3 text-caption  text-right mr-3 field-label" :for="id">
+            <v-icon start v-if="icon">{{
+                icon }}</v-icon><span v-if="showLabelLeft">
                 {{ label || name
                     || id }}
             </span>
@@ -68,12 +69,36 @@
             <span class="ml-1" v-else> (opcional)</span>
         </p>
 
-
+        <!-- TEXT, DATE, TIME -->
+        <template v-if="['datetime'].includes(type)">
+            <field-date v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"></field-date>
+        </template>
 
         <!-- TEXT, DATE, TIME -->
-        <template v-if="['text', 'date', 'time', 'date+18'].includes(type)">
-            <v-text-field :type="type === 'date+18' ? 'date' : type" v-model="model[id]"
+        <template v-if="['text', 'time', 'date', 'datetime-local'].includes(type)">
+            <v-text-field :type="type === 'date+18' ? 'date' : type" v-model.trim="model[id]"
                 v-bind="{ ...fieldAttrs, ...attrs }" :max="type === 'date+18' ? minDate : null">
+            </v-text-field>
+        </template>
+
+
+        <!-- 
+        <template v-if="['time'].includes(type)">
+            <v-text-field v-model="model[id]" label="Picker in menu" type="time" @click="menu2 = true"
+                prepend-icon="mdi-clock-time-four-outline" v-bind="{ ...fieldAttrs, ...attrs }">
+                <v-menu v-model="menu2" :close-on-content-click="false" activator="parent"
+                    transition="scale-transition">
+                    <v-card>
+                        <v-time-picker format="24hr" v-if="menu2" v-model="model[id]" full-width></v-time-picker>
+                        <v-btn color="primary"> Close</v-btn>
+                    </v-card>
+                </v-menu>
+            </v-text-field>
+        </template> -->
+
+        <!-- NUMBER -->
+        <template v-if="['number'].includes(type)">
+            <v-text-field type="number" v-model.number="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </v-text-field>
         </template>
 
@@ -83,6 +108,8 @@
                 <template #label>
                     <span class="ml-2" v-html="label || id">
                     </span>
+                    <span class="ml-1" v-if="rules.find(i => i === 'required')">*</span>
+                    <span class="ml-1" v-else><small>(opcional)</small></span>
                 </template>
             </v-checkbox>
         </template>
@@ -90,7 +117,7 @@
 
         <!-- EMAIL -->
         <template v-else-if="type === 'email'">
-            <v-text-field type="email" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            <v-text-field type="email" v-model.trim="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </v-text-field>
         </template>
 
@@ -104,12 +131,12 @@
                     : 'mdi-eye-off'
                     " @click:append-inner="
                         showPassword = !showPassword
-                        " v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"></v-text-field>
+                        " v-model.trim="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"></v-text-field>
         </template>
 
         <!-- SWITCH -->
         <template v-else-if="type === 'switch'">
-            <v-switch class="ml-2" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            <v-switch class="ml-2" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }" color="primary">
                 <template #label>
                     <span class="ml-2" v-html="label || id">
                     </span>
@@ -121,15 +148,15 @@
 
         <!-- TEXTAREA -->
         <template v-else-if="type === 'textarea'">
-            <v-textarea auto-grow rows="2" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            <v-textarea auto-grow rows="2" v-model.trim="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </v-textarea>
         </template>
 
         <!-- AUTOCOMPLETE -->
         <template v-else-if="type === 'autocomplete'">
             <v-autocomplete @update:focused="updateInput" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"
-                :items="items" closable-chips auto-select-first :clear-on-select="true" chips item-title="name" multiple
-                item-value="value">
+                :items="items" closable-chips auto-select-first :clear-on-select="true" chips
+                :item-title="items[0]?.name ? 'name' : 'title'" :item-value="items[0]?.value ? 'value' : 'id'" multiple>
             </v-autocomplete>
         </template>
 
@@ -139,18 +166,45 @@
                 v-bind="{ ...fieldAttrs, ...attrs }" :label="label"></field-boolean-flags>
         </template>
 
-        <!-- AUTOCOMPLETE -->
+        <!-- SELECT -->
         <template v-else-if="type === 'select'">
             <v-autocomplete @update:focused="updateInput" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"
-                :items="items" auto-select-first :clear-on-select="true" item-title="name" item-value="value">
+                :items="items" auto-select-first :clear-on-select="true" :item-title="items[0]?.name ? 'name' : 'title'"
+                :item-value="items[0]?.value ? 'value' : 'id'">
             </v-autocomplete>
         </template>
 
+
+        <!-- SELECT-IDS-->
+        <template v-else-if="type === 'select-ids'">
+            <v-autocomplete @update:focused="updateInput" @update:model-value="updateSelectedIds" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :items="items" auto-select-first :clear-on-select="true"
+                :item-title="items[0]?.name ? 'name' : 'title'" :item-value="items[0]?.value ? 'value' : 'id'"
+                return-object :multiple="true">
+            </v-autocomplete>
+        </template>
+
+        <!-- SELECT-IDS-->
+        <template v-else-if="type === 'select-id'">
+            <v-autocomplete @update:focused="updateInput" @update:model-value="updateSelectedId" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :items="items" auto-select-first :clear-on-select="true"
+                :item-title="items[0]?.name ? 'name' : 'title'" :item-value="items[0]?.value ? 'value' : 'id'"
+                return-object :multiple="false">
+            </v-autocomplete>
+        </template>
+
+
         <!-- IMAGE -->
         <template v-else-if="type === 'image'">
-            <field-image v-model:model="model[id]" v-model:files="files"
+            <field-single-image v-model:model="model[id]" v-model:files="files"
                 v-bind="{ ...fieldAttrs, ...attrs, ...$attrs }">
-            </field-image>
+            </field-single-image>
+        </template>
+
+        <!-- GALLERY -->
+        <template v-else-if="type === 'gallery'">
+            <field-gallery v-model:model="model[id]" v-bind="{ ...fieldAttrs, ...attrs, ...$attrs }">
+            </field-gallery>
         </template>
 
         <!-- CUSTOM-COUNTRY -->
@@ -196,6 +250,19 @@
             </field-promoter>
         </template>
 
+        <!-- CUSTOM-CURRENT-USER -->
+        <template v-else-if="type === 'custom-current-user'">
+            <field-current-user v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            </field-current-user>
+        </template>
+
+        <!-- PHONE  -->
+        <template v-else-if="type === 'phone'">
+            <field-phone v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"></field-phone>
+        </template>
+
+
+
         <!-- CUSTOM-LINKS -->
         <template v-else-if="type === 'custom-links'">
             <field-links v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
@@ -204,9 +271,15 @@
 
         <!-- LIST -->
         <template v-else-if="type === 'list'">
-            <field-list :labelType="labelType" :children="children" v-model="model[id]"
-                v-bind="{ ...fieldAttrs, ...attrs }" :label="label"></field-list>
+            <field-list :labelType="labelType" v-bind="{ ...fieldAttrs, ...attrs }" :label="label" :children="children"
+                v-model="model[id]"></field-list>
         </template>
+
+        <!-- MATRIX -->
+        <!-- <template v-else-if="type === 'boolean-matrix'">
+            <field-matriz :labelType="labelType" :children="children" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :label="label"></field-matriz>
+        </template> -->
 
         <!-- CUSTOM-USERNAME -->
         <template v-else-if="type === 'custom-username'">
@@ -214,6 +287,25 @@
             </field-username>
         </template>
 
+        <!-- COLOR -->
+        <template v-else-if="type === 'color' || type === 'color-mini'">
+            <field-color :items="items" :type="type" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            </field-color>
+        </template>
+
+        <!--ICON -->
+        <template v-else-if="type === 'icon'">
+            <field-icon :items="items" :type="type" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            </field-icon>
+        </template>
+
+
+
+        <!-- CUSTOM-TEXT -->
+        <template v-else-if="/custom-text/.test(type)">
+            <field-custom-text :text-type="type" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            </field-custom-text>
+        </template>
     </v-col>
 
 </template>
@@ -222,6 +314,7 @@
 import {
     computed,
     inject,
+    onBeforeMount,
     onMounted,
     onUpdated,
     readonly,
@@ -242,6 +335,15 @@ import FieldRegion from '../fields/FieldRegion.vue';
 import FieldUsername from '../fields/FieldUsername.vue';
 import FieldList from '../fields/FieldList.vue';
 import FieldBooleanFlags from '../fields/FieldBooleanFlags.vue';
+import FieldCurrentUser from '../fields/FieldCurrentUser.vue';
+import FieldCustomText from '../fields/FieldCustomText.vue';
+import FieldPhone from '../fields/FieldPhone.vue';
+import FieldSingleImage from '../fields/FieldSingleImage.vue';
+import FieldGallery from '../fields/FieldGallery.vue';
+import FieldColor from '../fields/FieldColor.vue';
+import FieldIcon from '../fields/FieldIcon.vue';
+import FieldDate from '../fields/FieldDate.vue';
+import FieldMatriz from '../fields/FieldMatriz.vue';
 
 const { fieldAttrs, rules: fieldRules } = inject("$helpers");
 const model = defineModel("model");
@@ -256,50 +358,90 @@ const changed = computed(() => {
 })
 
 
-const { id, size, type, rules, label, labelType, messages, action, field, items, initial, icon, multiple, text, prepend, readOnly, placeholder, hint, rows } = defineProps({
+const {
+    action,
+    children,
+    disabled,
+    fieldParams,
+    fieldStyle,
+    hint,
+    icon,
+    id,
+    initial,
+    items,
+    label,
+    labelType,
+    max,
+    min,
+    messages,
+    multiple,
+    noGutters,
+    placeholder,
+    prepend,
+    readOnly,
+    returnObject,
+    rows,
+    rules,
+    size,
+    text,
+    type,
+} = defineProps({
     // name: {
     //     type: String, required: true,
     // },
-    type: {
-        type: String, required: true,
-    },
-    size: {
-        type: [String, Number], default: "lg",
-    },
-    id: {
-        type: String, required: true,
-    },
-    rules: {
-        type: Array, default: () => ([])
-    },
-    labelType: {
-        type: String, default: "up"  // in out left
-    },
-    label: {
-        type: String
-    },
-    items: {
-        type: Array, default: () => []
+    action: {
+        type: [String, null]
     },
     children: {
         type: Array, default: () => []
     },
+    disabled: {
+        type: [Boolean],
+        default: false
+    },
+    fieldParams: {
+        type: [Object, null]
+    },
+    fieldStyle: {
+        type: [Object, null]
+    },
+    hint: {
+        type: [String, null]
+    },
+    icon: {
+        type: [String, null]
+    },
+    id: {
+        type: String, required: true,
+    },
     initial: {
         type: null
     },
-    icon: {
+    items: {
+        type: Array, default: () => []
+    },
+    label: {
+        type: String
+    },
+    labelType: {
+        type: String, default: "up"  // in out left
+    },
+    max: {
+        type: [Number, String, null], default: null,
+    },
+    min: {
+        type: [Number, String, null], default: null,
+    },
+    messages: {
         type: [String, null]
     },
     multiple: {
         type: [Boolean, null]
     },
-    text: {
-        type: [String, null]
+    noGutters: {
+        type: [Boolean, null]
     },
-    messages: {
-        type: [String, null]
-    },
-    action: {
+    placeholder: {
         type: [String, null]
     },
     prepend: {
@@ -308,19 +450,26 @@ const { id, size, type, rules, label, labelType, messages, action, field, items,
     readOnly: {
         type: null
     },
-    noGutters: {
+    returnObject: {
         type: [Boolean, null]
-    },
-    placeholder: {
-        type: [String, null]
-    },
-    hint: {
-        type: [String, null]
     },
     rows: {
         type: [Number, null]
     },
-})
+    rules: {
+        type: Array, default: () => ([])
+    },
+    size: {
+        type: [String, Number], default: "lg",
+    },
+    text: {
+        type: [String, null]
+    },
+    type: {
+        type: String, required: true,
+    },
+
+});
 
 const col = computed(() => {
     if (typeof size === "number") {
@@ -329,11 +478,11 @@ const col = computed(() => {
     if (size === "auto") {
         return size
     }
+    if (size === "fill") {
+        return false
+    }
     return size === "xs" ? "6" : size === "sm" ? "12" : size === "md" ? "12" : "12"
-})
-
-
-
+});
 const sm = computed(() => {
     if (typeof size === "number") {
         return size
@@ -341,9 +490,11 @@ const sm = computed(() => {
     if (size === "auto") {
         return size
     }
+    if (size === "fill") {
+        return false
+    }
     return size === "xs" ? "6" : size === "sm" ? "6" : size === "md" ? "9" : "12"
-})
-
+});
 const md = computed(() => {
     if (typeof size === "number") {
         return size
@@ -351,9 +502,11 @@ const md = computed(() => {
     if (size === "auto") {
         return size
     }
+    if (size === "fill") {
+        return false
+    }
     return size === "xs" ? "6" : size === "sm" ? "6" : size === "md" ? "9" : "12"
-})
-
+});
 const lg = computed(() => {
     if (typeof size === "number") {
         return size
@@ -361,9 +514,11 @@ const lg = computed(() => {
     if (size === "auto") {
         return size
     }
+    if (size === "fill") {
+        return false
+    }
     return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
-})
-
+});
 const xl = computed(() => {
     if (typeof size === "number") {
         return size
@@ -371,13 +526,24 @@ const xl = computed(() => {
     if (size === "auto") {
         return size
     }
+    if (size === "fill") {
+        return false
+    }
     return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
-})
+});
 
 
 function updateInput(event) {
-
     dirty.value = true;
+}
+
+function updateSelectedIds(payload) {
+    model.value[id + "Ids"] = payload.map((p) => p.id || p.value);
+}
+
+
+function updateSelectedId(payload) {
+    model.value[id + "Id"] = payload.id || payload.value;
 }
 
 const minDate = computed(() => {
@@ -387,7 +553,7 @@ const minDate = computed(() => {
     minDate.setFullYear(minYear);
     const minDateString = minDate.toISOString().split('T')[0];
     return minDateString;
-})
+});
 
 
 const stateColor = computed(() => {
@@ -411,6 +577,7 @@ const stateColor = computed(() => {
 })
 
 const attrs = computed(() => {
+    console.log("fieldParams", fieldParams);
     return {
         rules: [...rules.map(r => fieldRules[r])],
         label: labelType === 'in' ? label ? `${label}${rules.find(i => i === 'required') ? ' *' : ' (opcional)'}` : `${id}${rules.find(i => i === 'required') ? '*' : ' (opcional)'}` : null,
@@ -422,14 +589,24 @@ const attrs = computed(() => {
         rows: rows ? rows : type === "textarea" ? 2 : 1,
         required: rules.find(i => i === 'required'),
         multiple: !!multiple,
-        disabled: readOnly ? true : false,
-        baseColor: stateColor.value.base,
-        bgColor: stateColor.value.bg,
-        color: stateColor.value.base || "white",
+        // disabled: readOnly ? true : false,
+        baseColor: stateColor.value.base || fieldAttrs.baseColor,
+        bgColor: stateColor.value.bg || fieldAttrs.bgColor,
+        color: stateColor.value.base || fieldAttrs.color || "white",
         placeholder: placeholder,
         hint: hint,
         messages: messages,
-        action: action
+        action: action,
+        returnObject: returnObject ? true : false,
+        variant: fieldAttrs.variant,
+        disabled: disabled,
+        max: max,
+        readonly: readOnly ? true : false,
+        min: min && min.includes("field") ? model.value[min.split(":")[1]] : min,
+        ...fieldParams,
+        ...fieldStyle,
+        fieldParams,
+        fieldStyle
     }
 })
 
@@ -446,11 +623,24 @@ const dirty = ref(false);
 
 onMounted(() => {
     // 
-    if (!model.value[id] && initial) {
+    if (!model.value[id] && initial !== undefined) {
         model.value[id] = initial;
         highlighted.value = true;
         initialValue.value = initial;
         return;
+    }
+    else if (!model.value[id] && !initial) {
+
+        model.value[id] = null
+        if (type === "select-ids") {
+            model.value[id + "Ids"] = null;
+        }
+        if (type === "select-id") {
+            model.value[id + "Id"] = null;
+        }
+        if (type === "boolean-matrix") {
+            model.value[id] = {};
+        }
     }
     initialValue.value = model.value[id];
 })

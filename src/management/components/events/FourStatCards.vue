@@ -1,20 +1,11 @@
 <template>
   <v-row class="px-4 mt-2">
-    <v-col v-for="(card, index) in gridCards" :key="index" cols="6" sm="3">
+    <v-col v-for="(card, index) in gridCards" :key="index" cols="12" sm="3">
       <v-card flat border="thin" class="kpi-card">
-        <div
-          class="kpi-accent"
-          :style="{ backgroundColor: card.accentColor || 'transparent' }"
-        ></div>
+        <div class="kpi-accent" :style="{ backgroundColor: card.accentColor || 'transparent' }"></div>
         <div class="pa-3">
           <div class="d-flex align-center mb-1">
-            <v-icon
-              v-if="card.icon"
-              :icon="card.icon"
-              size="18"
-              :color="card.iconColor"
-              class="mr-2"
-            ></v-icon>
+            <v-icon v-if="card.icon" :icon="card.icon" size="18" :color="card.iconColor" class="mr-2"></v-icon>
             <div class="kpi-title" v-if="card.title">{{ card.title }}</div>
           </div>
           <div class="kpi-value" v-if="card.value !== undefined">
@@ -22,17 +13,36 @@
           </div>
           <div v-else class="kpi-value">-</div>
           <div v-if="card.trend" class="kpi-trend">
-            <v-icon
-              :icon="card.trend.icon"
-              :color="card.trend.color"
-              size="14"
-            ></v-icon>
+            <v-icon :icon="card.trend.icon" :color="card.trend.color" size="14"></v-icon>
             <span :class="['trend-text', card.trend.color + '--text']">
               {{ card.trend.value }}%
             </span>
           </div>
         </div>
       </v-card>
+
+
+    </v-col>
+  </v-row>
+  <v-row v-if="false">
+    <v-col cols="12 px-7">
+      <v-chip-group>
+        <v-chip v-for="(card, index) in gridCards" :key="index" size="large" label>
+          <span class="ml-2">
+            {{ card?.title }}
+
+          </span>
+          <template #append>
+            <span class="text-h6 ml-4">
+              {{ card?.value }}
+
+            </span>
+          </template>
+          <template #prepend>
+            <v-icon :color="card?.iconColor">{{ card?.icon }}</v-icon>
+          </template>
+        </v-chip>
+      </v-chip-group>
     </v-col>
   </v-row>
 </template>

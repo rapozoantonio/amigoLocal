@@ -1,27 +1,17 @@
 <template>
   <div class="event-dashboard">
     <!-- Loading state -->
-    <div
-      v-if="loading"
-      class="pa-4 d-flex justify-center align-center loading-container"
-    >
-      <v-progress-circular
-        indeterminate
-        color="primary"
-        size="64"
-      ></v-progress-circular>
+    <div v-if="loading" class="pa-4 d-flex justify-center align-center loading-container">
+      <v-progress-circular indeterminate color="primary" size="64"></v-progress-circular>
     </div>
+
 
     <div v-else>
       <!-- Event Health Score -->
       <div class="health-score-container pa-4 border mt-2 mr-4 ml-4">
         <div class="d-flex justify-space-between align-center mb-4">
           <h2 class="text-h6 font-weight-bold">Visão Geral</h2>
-          <v-chip
-            :color="getHealthScoreColor()"
-            size="small"
-            class="health-score-chip"
-          >
+          <v-chip :color="getHealthScoreColor()" size="small" class="health-score-chip">
             Saúde do Evento: {{ eventHealthScore }}%
           </v-chip>
         </div>
@@ -38,22 +28,13 @@
 
             <!-- Progress indicator -->
             <div class="score-progress">
-              <div
-                class="score-progress-fill"
-                :style="{ width: `${eventHealthScore}%` }"
-                :class="getHealthScoreColor()"
-              ></div>
+              <div class="score-progress-fill" :style="{ width: `${eventHealthScore}%` }"
+                :class="getHealthScoreColor()"></div>
             </div>
 
             <!-- Indicator dot and label -->
-            <div
-              class="score-indicator"
-              :style="{ left: `${eventHealthScore}%` }"
-            >
-              <div
-                class="score-indicator-dot"
-                :class="getHealthScoreColor()"
-              ></div>
+            <div class="score-indicator" :style="{ left: `${eventHealthScore}%` }">
+              <div class="score-indicator-dot" :class="getHealthScoreColor()"></div>
               <div class="score-indicator-label" :class="getHealthScoreColor()">
                 {{ eventHealthScore }}%
               </div>
@@ -85,20 +66,24 @@
 
       <!-- Charts Section -->
       <v-row class="px-4 mt-3">
+        <event-dashboard-check-in-line :guests="guests" :promoters="promoters" :hostesses="hostesses"
+          :lists="lists"></event-dashboard-check-in-line>
+        <event-dashboard-guests-count-pie :guests="guests" :promoters="promoters" :hostesses="hostesses"
+          :lists="lists"></event-dashboard-guests-count-pie>
+        <!-- Revenue Tracking -->
+        <event-dashboard-list-revenue :listRevenue="listRevenue" :totalRevenue="totalRevenue"
+          :revenuePrediction="revenuePrediction"></event-dashboard-list-revenue>
+
+
         <!-- Check-in Activity with Sparkline -->
-        <v-col cols="12" md="6">
+        <v-col v-if="false" cols="12" md="6">
           <v-card flat border="thin" class="chart-card">
             <v-card-title class="chart-title">
               <div class="d-flex justify-space-between align-center w-100">
                 <div class="text-subtitle-1 font-weight-bold">
                   Check-ins por Hora
                 </div>
-                <v-chip
-                  variant="text"
-                  color="primary"
-                  size="small"
-                  prepend-icon="mdi-clock-outline"
-                >
+                <v-chip variant="text" color="primary" size="small" prepend-icon="mdi-clock-outline">
                   Atualizado {{ lastUpdateTime }}
                 </v-chip>
               </div>
@@ -106,117 +91,23 @@
 
             <v-card-text class="chart-content">
               <div class="pa-2 sparkline-container">
-                <v-sparkline
-                  :model-value="checkInValues"
-                  :labels="checkInLabels"
-                  :gradient="sparklineGradient"
-                  :padding="sparklinePadding"
-                  :line-width="sparklineLineWidth"
-                  :smooth="sparklineSmooth"
-                  :fill="true"
-                  auto-draw
-                  show-labels
-                  label-size="10"
-                  height="68"
-                ></v-sparkline>
+                <v-sparkline :model-value="checkInValues" :labels="checkInLabels" :gradient="sparklineGradient"
+                  :padding="sparklinePadding" :line-width="sparklineLineWidth" :smooth="sparklineSmooth" :fill="true"
+                  auto-draw show-labels label-size="10" height="68"></v-sparkline>
               </div>
 
               <div class="d-flex justify-center mt-3">
-                <v-chip
-                  variant="outlined"
-                  color="primary"
-                  size="small"
-                  class="mr-2"
-                >
-                  <span class="font-weight-medium"
-                    >Total: {{ totalCheckIns }}</span
-                  >
+                <v-chip variant="outlined" color="primary" size="small" class="mr-2">
+                  <span class="font-weight-medium">Total: {{ totalCheckIns }}</span>
                 </v-chip>
                 <v-chip variant="outlined" color="success" size="small">
-                  <span class="font-weight-medium"
-                    >Esperados: {{ expectedCheckIns }}</span
-                  >
+                  <span class="font-weight-medium">Esperados: {{ expectedCheckIns }}</span>
                 </v-chip>
               </div>
             </v-card-text>
           </v-card>
         </v-col>
 
-        <!-- Revenue Tracking -->
-        <v-col cols="12" md="6">
-          <v-card flat border="thin" class="chart-card">
-            <v-card-title class="chart-title">
-              <div class="d-flex justify-space-between align-center w-100">
-                <div class="text-subtitle-1 font-weight-bold">
-                  Receita por Lista
-                </div>
-                <v-chip
-                  variant="text"
-                  color="primary"
-                  size="small"
-                  prepend-icon="mdi-cash"
-                >
-                  {{ formatCurrency(totalRevenue) }}
-                </v-chip>
-              </div>
-            </v-card-title>
-
-            <v-card-text class="chart-content">
-              <div class="revenue-chart-container">
-                <div
-                  v-for="(list, index) in revenueData"
-                  :key="index"
-                  class="list-revenue-item mb-3"
-                >
-                  <div class="d-flex justify-space-between align-center mb-1">
-                    <div class="d-flex align-center">
-                      <div
-                        class="list-icon mr-2"
-                        :style="{ backgroundColor: list.color }"
-                      >
-                        <v-icon size="12" color="white">{{ list.icon }}</v-icon>
-                      </div>
-                      <span class="text-body-2">{{ list.name }}</span>
-                    </div>
-                    <span class="text-body-2 font-weight-medium">{{
-                      formatCurrency(list.value)
-                    }}</span>
-                  </div>
-
-                  <div class="revenue-bar-container">
-                    <div
-                      class="revenue-bar"
-                      :style="{
-                        width: `${(list.value / totalRevenue) * 100}%`,
-                        backgroundColor: list.color,
-                      }"
-                    ></div>
-                  </div>
-
-                  <div
-                    class="d-flex justify-space-between text-caption text-grey mt-1"
-                  >
-                    <span>{{ list.checkIns }} check-ins</span>
-                    <span
-                      >{{
-                        Math.round((list.value / totalRevenue) * 100)
-                      }}%</span
-                    >
-                  </div>
-                </div>
-              </div>
-
-              <div class="text-center mt-2">
-                <v-chip :color="revenueProgress.color" size="small">
-                  {{ revenueProgress.text }}
-                </v-chip>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-
-      <v-row class="px-4 mt-2">
         <!-- Guest Distribution -->
         <v-col cols="12" md="6" lg="4">
           <v-card flat border="thin" class="chart-card">
@@ -231,65 +122,30 @@
                 <div class="donut-chart-container">
                   <!-- SVG Donut Chart -->
                   <svg viewBox="0 0 120 120" class="donut-chart">
-                    <circle
-                      cx="60"
-                      cy="60"
-                      r="50"
-                      fill="transparent"
-                      stroke="var(--v-grey-lighten4)"
-                      stroke-width="12"
-                    />
+                    <circle cx="60" cy="60" r="50" fill="transparent" stroke="var(--v-grey-lighten4)"
+                      stroke-width="12" />
 
                     <!-- Dynamic segments -->
-                    <circle
-                      v-for="(segment, index) in distributionSegments"
-                      :key="index"
-                      cx="60"
-                      cy="60"
-                      r="50"
-                      fill="transparent"
-                      :stroke="segment.color"
-                      stroke-width="12"
-                      :stroke-dasharray="`${segment.percentage * 3.14} ${
-                        314 - segment.percentage * 3.14
-                      }`"
-                      :stroke-dashoffset="segment.offset"
-                      class="donut-segment"
-                    />
+                    <circle v-for="(segment, index) in distributionSegments" :key="index" cx="60" cy="60" r="50"
+                      fill="transparent" :stroke="segment.color" stroke-width="12" :stroke-dasharray="`${segment.percentage * 3.14} ${314 - segment.percentage * 3.14
+                        }`" :stroke-dashoffset="segment.offset" class="donut-segment" />
 
                     <!-- Inner circle -->
                     <circle cx="60" cy="60" r="40" fill="white" />
 
                     <!-- Center text -->
-                    <text
-                      x="60"
-                      y="55"
-                      text-anchor="middle"
-                      class="donut-number font-weight-bold"
-                    >
+                    <text x="60" y="55" text-anchor="middle" class="donut-number font-weight-bold">
                       {{ event.totalGuests }}
                     </text>
-                    <text
-                      x="60"
-                      y="70"
-                      text-anchor="middle"
-                      class="donut-label"
-                    >
+                    <text x="60" y="70" text-anchor="middle" class="donut-label">
                       Convidados
                     </text>
                   </svg>
                 </div>
 
                 <div class="distribution-legend">
-                  <div
-                    v-for="(type, index) in guestTypes"
-                    :key="index"
-                    class="legend-item"
-                  >
-                    <div
-                      class="legend-color"
-                      :style="{ backgroundColor: type.color }"
-                    ></div>
+                  <div v-for="(type, index) in guestTypes" :key="index" class="legend-item">
+                    <div class="legend-color" :style="{ backgroundColor: type.color }"></div>
                     <div class="legend-details">
                       <div class="legend-label">{{ type.name }}</div>
                       <div class="legend-value">
@@ -302,84 +158,13 @@
             </v-card-text>
           </v-card>
         </v-col>
-
-        <!-- Promoter Performance -->
-        <v-col cols="12" md="6" lg="4">
-          <v-card flat border="thin" class="chart-card">
-            <v-card-title class="chart-title">
-              <div class="d-flex justify-space-between align-center w-100">
-                <div class="text-subtitle-1 font-weight-bold">
-                  Desempenho de Promotores
-                </div>
-                <v-btn
-                  variant="text"
-                  color="primary"
-                  size="small"
-                  rounded
-                  class="text-none px-2"
-                  @click="showAllPromoters = !showAllPromoters"
-                >
-                  {{ showAllPromoters ? "Top 3" : "Ver todos" }}
-                </v-btn>
-              </div>
-            </v-card-title>
-
-            <v-card-text class="chart-content">
-              <div class="promoter-list">
-                <div
-                  v-for="(promoter, index) in displayedPromoters"
-                  :key="promoter.id"
-                  class="promoter-item"
-                  :class="{ 'top-promoter': index < 3 }"
-                >
-                  <div class="d-flex align-center">
-                    <div
-                      class="promoter-rank"
-                      :class="{ 'top-rank': index < 3 }"
-                    >
-                      {{ index + 1 }}
-                    </div>
-                    <div class="promoter-avatar">
-                      <v-avatar size="32" :color="getPromoterColor(index)">
-                        <span class="text-white">{{
-                          promoter.name.charAt(0)
-                        }}</span>
-                      </v-avatar>
-                    </div>
-                    <div class="promoter-details ml-2">
-                      <div class="promoter-name">{{ promoter.name }}</div>
-                      <div class="promoter-stats text-caption">
-                        {{ promoter.guests }} convidados •
-                        {{ formatCurrency(promoter.revenue) }}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="promoter-progress">
-                    <div
-                      class="progress-bar"
-                      :style="{
-                        width: `${(promoter.guests / maxGuests) * 100}%`,
-                        backgroundColor: getPromoterColor(index),
-                      }"
-                    ></div>
-                  </div>
-                </div>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-col>
-
+        <event-dashboard-promoter-list :guests="guests" :promoters="promoters"></event-dashboard-promoter-list>
         <!-- AI Insights -->
         <v-col cols="12" lg="4">
           <v-card flat border="thin" class="chart-card insight-card">
             <v-card-title class="chart-title">
               <div class="d-flex align-center">
-                <v-icon
-                  icon="mdi-lightbulb"
-                  color="warning"
-                  class="mr-2"
-                ></v-icon>
+                <v-icon icon="mdi-lightbulb" color="warning" class="mr-2"></v-icon>
                 <div class="text-subtitle-1 font-weight-bold">
                   Insights Inteligentes
                 </div>
@@ -388,19 +173,10 @@
 
             <v-card-text class="insights-content pa-0">
               <v-expansion-panels variant="accordion" class="insights-panels">
-                <v-expansion-panel
-                  v-for="(insight, index) in aiInsights"
-                  :key="index"
-                  class="insight-panel"
-                >
+                <v-expansion-panel v-for="(insight, index) in aiInsights" :key="index" class="insight-panel">
                   <template v-slot:title>
                     <div class="d-flex align-center">
-                      <v-icon
-                        :icon="insight.icon"
-                        :color="insight.color"
-                        size="18"
-                        class="mr-2"
-                      ></v-icon>
+                      <v-icon :icon="insight.icon" :color="insight.color" size="18" class="mr-2"></v-icon>
                       <span class="text-body-2 font-weight-medium">{{
                         insight.title
                       }}</span>
@@ -409,14 +185,8 @@
 
                   <v-expansion-panel-text>
                     <p class="text-body-2 mb-3">{{ insight.description }}</p>
-                    <v-btn
-                      v-if="insight.action"
-                      :color="insight.color"
-                      variant="text"
-                      size="small"
-                      class="text-none mt-2"
-                      density="compact"
-                    >
+                    <v-btn v-if="insight.action" :color="insight.color" variant="text" size="small"
+                      class="text-none mt-2" density="compact">
                       {{ insight.action }}
                       <v-icon icon="mdi-arrow-right" size="16" end></v-icon>
                     </v-btn>
@@ -434,16 +204,18 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from "vue";
 import FourStatCards from "@/management/components/events/FourStatCards.vue";
+import EventDashboardListRevenue from "./EventDashboardListRevenue.vue";
+import EventDashboardGuestsCountPie from "./EventDashboardGuestsCountPie.vue";
 import HealthScore from "@/management/components/events/HealthScore.vue";
+import EventDashboardCheckInLine from "./EventDashboardCheckInLine.vue";
+import EventDashboardPromoterList from "./EventDashboardPromoterList.vue";
+import { toRefs } from "vue";
 
-const props = defineProps({
-  event: {
-    type: Object,
-    required: true,
-  },
-});
+const props = defineProps(["event", "guests", "lists", "promoters", "hostesses"]);
 
 const emit = defineEmits(["refresh"]);
+
+const { event, guests, lists, hostesses, promoters } = toRefs(props);
 
 // Component state
 const loading = ref(true);
@@ -452,11 +224,10 @@ const conversionRate = ref(65);
 const averageTicket = ref(120);
 const guestExpectation = ref(85);
 const performanceScore = ref(72);
-const showAllPromoters = ref(false);
 const lastUpdateTime = ref("há 2 minutos");
 const totalCheckIns = ref(42);
 const expectedCheckIns = ref(250);
-const totalRevenue = ref(15500);
+// const totalRevenue = ref(15500);
 const maxGuests = ref(150);
 
 // Sparkline options
@@ -495,42 +266,9 @@ const maxCheckInValue = computed(() => {
   return Math.max(...checkInData.value.map((h) => h.value), 20); // Minimum of 20 for scale
 });
 
-// Revenue by list data
-const revenueData = ref([
-  {
-    name: "Lista VIP",
-    value: 8200,
-    checkIns: 20,
-    color: "#1E88E5",
-    icon: "mdi-star",
-  },
-  {
-    name: "Pré-venda",
-    value: 4300,
-    checkIns: 12,
-    color: "#43A047",
-    icon: "mdi-ticket",
-  },
-  {
-    name: "Promotor João",
-    value: 1800,
-    checkIns: 6,
-    color: "#FB8C00",
-    icon: "mdi-account",
-  },
-  {
-    name: "Promotor Maria",
-    value: 1200,
-    checkIns: 4,
-    color: "#8E24AA",
-    icon: "mdi-account",
-  },
-]);
-
-// Revenue progress status
 const revenueProgress = computed(() => {
   const percentage = Math.round(
-    (totalRevenue.value / props.event.revenuePrediction) * 100
+    (totalRevenue.value / revenuePrediction.value) * 100
   );
 
   if (percentage >= 100) {
@@ -543,6 +281,91 @@ const revenueProgress = computed(() => {
     return { text: `${percentage}% da meta`, color: "error" };
   }
 });
+// Revenue by list data
+// const revenueData = ref([
+//   {
+//     name: "Lista VIP",
+//     value: 8200,
+//     checkIns: 20,
+//     color: "#1E88E5",
+//     icon: "mdi-star",
+//   },
+//   {
+//     name: "Pré-venda",
+//     value: 4300,
+//     checkIns: 12,
+//     color: "#43A047",
+//     icon: "mdi-ticket",
+//   },
+//   {
+//     name: "Promotor João",
+//     value: 1800,
+//     checkIns: 6,
+//     color: "#FB8C00",
+//     icon: "mdi-account",
+//   },
+//   {
+//     name: "Promotor Maria",
+//     value: 1200,
+//     checkIns: 4,
+//     color: "#8E24AA",
+//     icon: "mdi-account",
+//   },
+// ]);
+
+const totalRevenue = computed(() => {
+  return guests.value.reduce((totalRevenue, guest) => {
+    if (guest.status === "checked-in") {
+      totalRevenue = totalRevenue + (guest.price ? guest.price : 0);
+    }
+    return totalRevenue;
+  }, 0)
+})
+
+const listRevenue = computed(() => {
+  if (!lists.value) return [];
+  return lists.value.map(list => {
+
+    const listRevenue = guests.value.reduce((totalRevenue, guest) => {
+      if (guest.list?.id === list.id && guest.status === "checked-in") {
+        totalRevenue = totalRevenue + (guest.price ? guest.price : 0);
+      }
+      return totalRevenue;
+    }, 0)
+
+
+    const checkInCount = guests.value.filter((guest) => {
+      if (guest.list?.id === list.id && guest.status === "checked-in") {
+        return true;
+      }
+      return false;
+    })
+
+    return {
+      name: list.name,
+      icon: "mdi-ticket",
+      color: "#FB8C00",
+      revenue: listRevenue,
+      checkIns: checkInCount.length
+    }
+
+
+  })
+})
+
+const revenuePrediction = computed(() => {
+  const listPriceObj = lists.value.reduce((obj, list) => {
+    obj[list.id] = list.price;
+    return obj;
+  }, {})
+  return guests.value.reduce((total, guest) => {
+    total = total + listPriceObj[guest.list.id];
+    return total
+  }, 0)
+})
+
+
+
 
 // Guest distribution data
 const guestTypes = ref([
@@ -570,18 +393,18 @@ const distributionSegments = computed(() => {
 });
 
 // Promoter performance data
-const promoters = ref([
-  { id: 1, name: "Carlos", guests: 75, revenue: 4500 },
-  { id: 2, name: "Aline", guests: 68, revenue: 4080 },
-  { id: 3, name: "Rafael", guests: 50, revenue: 3000 },
-  { id: 4, name: "Julia", guests: 32, revenue: 1920 },
-  { id: 5, name: "Pedro", guests: 25, revenue: 1500 },
-]);
+// const promoters = ref([
+//   { id: 1, name: "Carlos", guests: 75, revenue: 4500 },
+//   { id: 2, name: "Aline", guests: 68, revenue: 4080 },
+//   { id: 3, name: "Rafael", guests: 50, revenue: 3000 },
+//   { id: 4, name: "Julia", guests: 32, revenue: 1920 },
+//   { id: 5, name: "Pedro", guests: 25, revenue: 1500 },
+// ]);
 
-// Filter promoters based on showAll toggle
-const displayedPromoters = computed(() => {
-  return showAllPromoters.value ? promoters.value : promoters.value.slice(0, 3);
-});
+
+
+
+
 
 // AI-powered insights
 const aiInsights = ref([
@@ -1002,6 +825,12 @@ const dashboardKpiCards = computed(() => [
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   height: 100%;
   overflow: hidden;
+}
+
+.dashboard-card {
+  overflow: auto;
+  scrollbar-color: rgb(var(--v-theme-surface-light)) rgb(var(--v-theme-surface));
+  scrollbar-width: thin;
 }
 
 .chart-title {

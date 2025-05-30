@@ -11,11 +11,12 @@
               <template v-if="field.type === 'object'">
                 <form-field :labelType="labelType" v-for="child in field.children" :key="child.id"
                   :items="items[child.id] || child.items || null" v-model:files="files" v-model:model="model[field.id]"
-                  :field="child.id" v-bind="child"></form-field>
+                  :field="child.id" :variant="schema.fieldVariant || false" v-bind="child"></form-field>
               </template>
 
               <form-field :labelType="labelType" :items="items[field.id] || field.items || null" v-else
-                v-model:files="files" v-model:model="model" :field="field.id" v-bind="field"></form-field>
+                v-model:files="files" v-model:model="model" :field="field.id" :variant="schema.fieldVariant || false"
+                v-bind="field"></form-field>
             </template>
           </v-row>
         </v-card-text>
@@ -29,7 +30,7 @@
           </v-col>
           <v-col cols="12" :class="['text-' + buttonPosition]">
             <v-btn :block="block" class="my-2" type="submit" variant="elevated" color="primary">{{ action || "Enviar"
-              }}</v-btn>
+            }}</v-btn>
           </v-col>
         </v-row>
         <slot name="append">

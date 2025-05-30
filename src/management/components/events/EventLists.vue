@@ -4,156 +4,25 @@
     <div class="list-header px-4 py-3">
       <div class="d-flex flex-wrap justify-space-between align-center mb-3">
         <h2 class="text-h6 font-weight-bold mb-0">Lista</h2>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-playlist-plus"
-          size="small"
-          @click="openAddListDialog"
-          aria-label="Add new list"
-        >
+        <v-btn color="primary" prepend-icon="mdi-playlist-plus" size="small" @click="openAddListDialog"
+          aria-label="Add new list">
           Nova Lista
         </v-btn>
-      </div>
-      <TabFilterComponent
-        searchPlaceholder="Search lists..."
-        :searchValue="searchQuery"
-        :filterOptions="statusOptionsFilter"
-        @filter-change="handleFilterChange"
-        @reset="resetFilters"
-      />
-    </div>
 
+      </div>
+      <TabFilterComponent searchPlaceholder="Search lists..." :searchValue="searchQuery"
+        :filterOptions="statusOptionsFilter" @filter-change="handleFilterChange" @reset="resetFilters" />
+    </div>
     <!-- 4-Stat Grid for Lists Summary -->
     <FourStatCards :cards="listCards" />
 
     <!-- Lists Container -->
     <div class="lists-container px-4 pb-4">
       <v-row v-if="!loading && filteredAndSortedLists.length > 0">
-        <v-col
-          v-for="list in filteredAndSortedLists"
-          :key="list.id"
-          cols="12"
-          sm="6"
-          md="4"
-          lg="3"
-        >
-          <v-hover v-slot="{ isHovering, props }">
-            <v-card
-              v-bind="props"
-              :elevation="isHovering ? 4 : 1"
-              border="thin"
-              class="h-100 list-card"
-            >
-              <v-card-title
-                class="d-flex justify-space-between align-center py-3"
-              >
-                <span class="text-subtitle-1 font-weight-medium text-truncate">
-                  {{ list.name }}
-                </span>
-                <v-menu location="bottom end">
-                  <template v-slot:activator="{ props: menuProps }">
-                    <v-btn
-                      v-bind="menuProps"
-                      icon
-                      variant="text"
-                      size="small"
-                      @click.stop
-                    >
-                      <v-icon>mdi-dots-vertical</v-icon>
-                    </v-btn>
-                  </template>
-                  <v-list density="compact">
-                    <v-list-item
-                      prepend-icon="mdi-pencil"
-                      title="Edit list"
-                      @click="editList(list)"
-                    />
-                    <v-list-item
-                      v-if="list.active"
-                      prepend-icon="mdi-pause-circle"
-                      title="Pause list"
-                      @click="toggleListStatus(list)"
-                    />
-                    <v-list-item
-                      v-else
-                      prepend-icon="mdi-play-circle"
-                      title="Activate list"
-                      @click="toggleListStatus(list)"
-                    />
-                    <v-list-item
-                      prepend-icon="mdi-content-duplicate"
-                      title="Duplicate list"
-                      @click="duplicateList(list)"
-                    />
-                    <v-divider />
-                    <v-list-item
-                      prepend-icon="mdi-delete"
-                      title="Delete list"
-                      class="text-error"
-                      @click.stop="confirmDeleteList(list)"
-                    />
-                  </v-list>
-                </v-menu>
-              </v-card-title>
-
-              <v-divider />
-
-              <v-card-text class="py-3">
-                <div class="d-flex justify-space-between mb-3">
-                  <div class="text-center">
-                    <div class="text-h6">{{ list.guestCount }}</div>
-                    <div class="text-caption">Guests</div>
-                  </div>
-                  <div class="text-center">
-                    <div class="text-h6">{{ list.checkIns }}</div>
-                    <div class="text-caption">Check-ins</div>
-                  </div>
-                  <div class="text-center">
-                    <div class="text-h6">
-                      {{ list.quota > 0 ? list.quota : "∞" }}
-                    </div>
-                    <div class="text-caption">Quota</div>
-                  </div>
-                </div>
-                <!-- Price Display -->
-                <div class="text-center mb-3">
-                  <div class="text-h6">{{ formatPrice(list.price) }}</div>
-                  <div class="text-caption">Price</div>
-                </div>
-                <!-- Cut-off Time Display -->
-                <div class="text-center mb-3">
-                  <div v-if="list.cutoffTime" class="text-h6">
-                    {{ list.cutoffTime }}
-                  </div>
-                  <div v-else class="text-h6 text-grey">No Cut-off Time</div>
-                  <div class="text-caption">Cut-off Time</div>
-                </div>
-                <v-progress-linear
-                  v-if="list.quota > 0"
-                  :model-value="getProgressPercentage(list)"
-                  :color="getProgressColor(list)"
-                  height="12"
-                  rounded
-                  class="mt-2"
-                />
-              </v-card-text>
-
-              <v-divider />
-
-              <v-card-actions class="pa-3">
-                <v-btn
-                  variant="outlined"
-                  color="primary"
-                  prepend-icon="mdi-account-plus"
-                  rounded="pill"
-                  @click.stop="openBulkGuestModal(list)"
-                  block
-                >
-                  Add Guest
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-hover>
+        <v-col v-for="list in filteredAndSortedLists" :key="list.id" cols="12" sm="6" md="4" lg="3">
+          <event-list-item :list="list" :key="list.id" @list:edit="editList" @list:update="updateList"
+            @list:delete="deleteList" @list:addGuest="openBulkGuestModal" :totals="totals[list.id]"
+            @list:duplicate="duplicateList"></event-list-item>
         </v-col>
       </v-row>
 
@@ -163,13 +32,7 @@
         <h3 class="text-h6">
           {{ searchQuery ? "No matches found" : "Create your first list" }}
         </h3>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-playlist-plus"
-          class="mt-3"
-          rounded="pill"
-          @click="openAddListDialog"
-        >
+        <v-btn color="primary" prepend-icon="mdi-playlist-plus" class="mt-3" rounded="pill" @click="openAddListDialog">
           New List
         </v-btn>
       </v-sheet>
@@ -181,76 +44,87 @@
       </div>
     </div>
 
-    <!-- Replace the original Add/Edit Dialog with GenericCRUDModal for List mode -->
-    <GenericCRUDModal
-      v-model="modalVisible"
-      :mode="modalMode"
-      :editMode="modalEditMode"
-      @saved="handleSaved"
-    />
-
-    <!-- Delete Confirmation -->
-    <v-dialog v-model="showDeleteDialog" max-width="450">
-      <v-card>
-        <v-card-title class="pa-4"> Confirm Deletion </v-card-title>
-        <v-card-text class="pa-4">
-          Delete list <strong>"{{ selectedList?.name }}"</strong> permanently?
-        </v-card-text>
-        <v-card-actions class="pa-4">
-          <v-spacer />
-          <v-btn @click="showDeleteDialog = false" class="me-2"> Cancel </v-btn>
-          <v-btn color="error" @click="deleteList"> Delete </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <!-- Snackbar -->
     <v-snackbar v-model="snackbar" :timeout="3000" location="bottom">
       {{ snackbarText }}
     </v-snackbar>
 
-    <BulkAddGuestsModal
-    v-model="showBulkGuestModal"
-    :defaultList="selectedList"
-    :existingGuests="guests"
-    :listOptions="listOptions"
-    @guestsAdded="handleGuestsAdded"
-  />
+    <!--  EDIT LIST -->
+    <form-dialog :items="{ promoters: promoters.map(p => ({ name: p.name, id: p.id })) }"
+      v-model:opened="showEditListDialog" cancel title="Editar lista" action="Salvar" @submit="submitUpdateList"
+      v-model:model="listForm" :schema="listSchema"></form-dialog>
+
+    <!-- ADD LIST -->
+    <form-dialog :items="{ promoters: promoters.map(p => ({ name: p.name, id: p.id })) }"
+      v-model:opened="showAddListDialog" @submit="submitList" title="Criar lista
+      " action="Criar lista" cancel v-model:model="listForm" :schema="listSchema">
+
+      <!-- <template #activator="props">
+       
+      </template> -->
+    </form-dialog>
+
+    <v-fab icon="mdi-plus" app location="right bottom" :color="fabMenu ? 'grey' : 'primary'" rounded="pill">
+      <v-icon>{{ fabMenu ? 'mdi-close' : 'mdi-plus' }}</v-icon>
+      <v-speed-dial v-model="fabMenu" location="top center" activator="parent">
+        <v-btn @click="openAddListDialog" size="default" variant="flat" key="1" color="primary">
+          <v-icon start size="20">mdi-playlist-plus</v-icon>
+          <span>Criar nova lista</span>
+        </v-btn>
+        <v-btn @click="openBulkGuestModal(null)" size="default" variant="flat" key="1" color="primary">
+          <v-icon start size="20">mdi-account-group</v-icon>
+          <span>Add convidados</span>
+        </v-btn>
+      </v-speed-dial>
+    </v-fab>
+
+
+    <BulkAddGuestsModal v-model="showBulkGuestModal" :eventId="eventId" :defaultList="selectedList"
+      :existingGuests="guests" :listOptions="lists" @guestsAdded="handleGuestsAdded" />
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, inject, toRefs } from "vue";
 import TabFilterComponent from "@/management/components/events/TabFilterComponent.vue";
 import FourStatCards from "@/management/components/events/FourStatCards.vue";
 import GenericCRUDModal from "@/management/components/events/GenericCRUDModal.vue";
 import BulkAddGuestsModal from "@/management/components/events/BulkAddGuestsModal.vue";
+import EventListItem from "./EventListItem.vue";
+
+import { useRoute } from "vue-router";
+
+import listSchema from "@/management/schemas/listSchema";
+import FormDialog from "@/core/components/form/FormDialog.vue";
+import { useEventListStore } from "@/management/store/eventList";
 
 // State
-const loading = ref(true);
+const eventListStore = useEventListStore();
+const props = defineProps(["lists", "event", "eventId", "guests", "promoters"]);
+const { lists, event, eventId, guests, promoters } = toRefs(props);
+const route = useRoute();
+const loading = ref(false);
 const searchQuery = ref("");
-const lists = ref([]);
+const swal = inject("$swal");
+const notify = inject("$notify");
+// const lists = ref([]);
 const filteredLists = ref([]);
 const showDeleteDialog = ref(false);
 const snackbar = ref(false);
 const snackbarText = ref("");
 const statusFilter = ref("all");
 const showBulkGuestModal = ref(false);
-const guests = ref([]);
 
 // For GenericCRUDModal (List mode)
 const modalVisible = ref(false);
+const showAddListDialog = ref(false);
+const showEditListDialog = ref(false);
 const modalMode = ref("list");
 const modalEditMode = ref(false);
 const selectedList = ref(null);
-const listForm = ref({
-  name: "",
-  quota: 0,
-  owner: "",
-  active: true,
-  price: 0,
-  cutoffTime: "",
-});
+const listForm = ref({});
+
+const fabMenu = ref(false);
 
 // Filter options for TabFilterComponent
 const statusOptions = [
@@ -266,9 +140,23 @@ const statusOptionsFilter = [
   },
 ];
 
-// Computed property for filtering and sorting lists
+
+const totals = computed(() => {
+  return lists.value.reduce((total, list) => {
+    const listGuests = guests.value.filter(guest => guest.list?.id === list.id);
+    const checkIns = listGuests.filter(guest => guest.status === "checked-in");
+
+    total[list.id] = {
+      guestCount: listGuests.length,
+      checkIns: checkIns.length,
+    }
+    return total
+  }, {});
+});
+
 const filteredAndSortedLists = computed(() => {
-  let result = filteredLists.value;
+  let result = lists.value;
+  console.log(lists.value);
   if (statusFilter.value === "active") {
     result = result.filter((list) => list.active);
   } else if (statusFilter.value === "inactive") {
@@ -281,50 +169,6 @@ const filteredAndSortedLists = computed(() => {
   );
 });
 
-// When bulk guests are added, update your guest list.
-const updateGuests = (mergedGuests) => {
-  guests.value = mergedGuests;
-};
-
-const openBulkGuestModal = (list) => {
-  selectedList.value = list.name || list.value; // adjust according to your list structure
-  showBulkGuestModal.value = true;
-};
-
-// Dummy data for demonstration
-const dummyLists = [
-  {
-    id: 1,
-    name: "VIP List",
-    guestCount: 10,
-    checkIns: 5,
-    quota: 20,
-    owner: "Manager",
-    active: true,
-    price: 100,
-    cutoffTime: "22:00",
-  },
-  {
-    id: 2,
-    name: "General",
-    guestCount: 50,
-    checkIns: 30,
-    quota: 100,
-    owner: "Promoter",
-    active: true,
-    price: 50,
-    cutoffTime: "",
-  },
-];
-
-const fetchLists = async () => {
-  loading.value = true;
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  lists.value = dummyLists;
-  filteredLists.value = dummyLists;
-  loading.value = false;
-};
-
 const handleFilterChange = (filters) => {
   searchQuery.value = filters.search;
   statusFilter.value =
@@ -336,95 +180,9 @@ const resetFilters = () => {
   statusFilter.value = "all";
 };
 
-const openAddListDialog = () => {
-  modalEditMode.value = false;
-  listForm.value = {
-    name: "",
-    quota: 0,
-    owner: "",
-    active: true,
-    price: 0,
-    cutoffTime: "",
-  };
-  modalVisible.value = true;
-};
-
-const editList = (list) => {
-  modalEditMode.value = true;
-  listForm.value = { ...list };
-  selectedList.value = list;
-  modalVisible.value = true;
-};
-
-const handleSaved = (savedEntity) => {
-  // savedEntity should contain the list data from GenericCRUDModal (mode 'list')
-  const newList = {
-    ...savedEntity,
-    id:
-      modalEditMode.value && selectedList.value
-        ? selectedList.value.id
-        : lists.value.length + 1,
-    guestCount:
-      modalEditMode.value && selectedList.value
-        ? selectedList.value.guestCount
-        : 0,
-    checkIns:
-      modalEditMode.value && selectedList.value
-        ? selectedList.value.checkIns
-        : 0,
-  };
-
-  if (modalEditMode.value && selectedList.value) {
-    const index = lists.value.findIndex((l) => l.id === selectedList.value.id);
-    if (index !== -1) {
-      lists.value[index] = newList;
-    }
-  } else {
-    lists.value.push(newList);
-  }
-  filteredLists.value = lists.value;
-};
-
-const confirmDeleteList = (list) => {
-  selectedList.value = list;
-  showDeleteDialog.value = true;
-};
-
-const deleteList = async () => {
-  lists.value = lists.value.filter((l) => l.id !== selectedList.value.id);
-  showDeleteDialog.value = false;
-  showSnackbar("List deleted");
-};
-
 const toggleListStatus = (list) => {
   list.active = !list.active;
   showSnackbar(`List ${list.active ? "activated" : "paused"}`);
-};
-
-const duplicateList = (list) => {
-  lists.value.push({
-    ...list,
-    id: lists.value.length + 1,
-    name: `${list.name} Copy`,
-  });
-  showSnackbar("List duplicated");
-};
-
-const getProgressPercentage = (list) =>
-  Math.min((list.checkIns / list.quota) * 100, 100) || 0;
-
-const getProgressColor = (list) =>
-  getProgressPercentage(list) >= 100
-    ? "error"
-    : getProgressPercentage(list) >= 75
-    ? "warning"
-    : "success";
-
-const formatPrice = (price) => {
-  return new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "USD",
-  }).format(price);
 };
 
 const showSnackbar = (text) => {
@@ -437,10 +195,10 @@ const showSnackbar = (text) => {
 // -------------------------
 const totalLists = computed(() => lists.value.length);
 const totalGuests = computed(() =>
-  lists.value.reduce((sum, list) => sum + list.guestCount, 0)
+  guests.value.length
 );
 const totalCheckIns = computed(() =>
-  lists.value.reduce((sum, list) => sum + list.checkIns, 0)
+  guests.value.filter(guest => guest.status === "checked-in").length
 );
 const totalRevenue = computed(() =>
   lists.value.reduce((sum, list) => sum + list.price * list.guestCount, 0)
@@ -474,9 +232,9 @@ const listCards = computed(() => [
     value:
       totalGuests.value > 0
         ? (
-            Math.ceil((totalCheckIns.value / totalGuests.value) * 100 * 100) /
-            100
-          ).toFixed(0) + "%"
+          Math.ceil((totalCheckIns.value / totalGuests.value) * 100 * 100) /
+          100
+        ).toFixed(0) + "%"
         : "N/A",
     icon: "mdi-chart-line",
     iconColor: "warning",
@@ -484,5 +242,117 @@ const listCards = computed(() => [
   },
 ]);
 
-onMounted(fetchLists);
+
+function openAddListDialog() {
+  listForm.value = {};
+  showAddListDialog.value = true;
+};
+
+async function submitList(list, close) {
+  console.log({ list });
+  const id = route.params.eventId;
+  console.log("eventID: ", id);
+  try {
+    const response = await eventListStore.createList(id, list);
+    close();
+    notify.toast(`Lista <strong class="text-success">${list.name}</strong> criada`)
+    console.log({ response });
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+async function handleGuestsAdded(guestsPayload) {
+  console.log({ guestsPayload })
+  const id = route.params.eventId;
+  const responseArray = guestsPayload.map(g => {
+    return eventListStore.addGuestToList(id, g);
+  });
+  try {
+    const response = await Promise.all(responseArray);
+    console.log({ response });
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+
+async function openBulkGuestModal(list) {
+  selectedList.value = list || null; // adjust according to your list structure
+  showBulkGuestModal.value = true;
+}
+
+async function deleteList(list) {
+  try {
+    const result = await swal.fire({
+      title: "Deletar " + list.name + "?",
+      html: `Deletar lista <strong>${list.name}</strong>? Essa ação é irreversível`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, deletar!"
+    });
+    if (result.isConfirmed) {
+      await eventListStore.deleteList(eventId.value, list);
+      swal.fire({
+        title: "Lista excluida!",
+        icon: "success",
+        toast: true,
+        timer: 2000,
+        position: "top-end",
+        showConfirmButton: false,
+        timerProgressBar: true,
+      })
+    }
+    console.log({ result });
+  } catch (error) {
+    console.log({ error })
+  }
+}
+async function duplicateList(list) {
+  // TODO
+
+}
+
+async function submitUpdateList(list, close) {
+  console.log("list", listForm.value);
+  try {
+    delete list.guestCount;
+    delete list.checkIns;
+    const response = await eventListStore.updateList(eventId.value, list);
+    close();
+    await notify.toast(`Lista <strong class="text-success">${list.name}</strong> atualizada`);
+    console.log({ response });
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+async function updateList(list, type) {
+  console.log("list", listForm.value);
+  try {
+    delete list.guestCount;
+    delete list.checkIns;
+    const response = await eventListStore.updateList(eventId.value, list);
+    close();
+    let action = "atualizada";
+    if (type === "status") {
+      action = list.active ? "activada" : "pausada";
+    }
+    await notify.toast(`Lista <strong class="text-success">${list.name}</strong> ${action}`);
+
+    console.log({ response });
+  } catch (error) {
+    console.log({ error });
+
+  }
+}
+
+async function editList(list) {
+  listForm.value = { ...list };
+  showEditListDialog.value = true;
+}
+
+
 </script>

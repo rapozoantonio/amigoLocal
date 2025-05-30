@@ -131,5 +131,48 @@ export const useChatgptStore = defineStore("chatgpt", () => {
     }
   }
 
-  return { fetchEventAssistente, getBulkEventList };
+  async function getGuestList(text) {
+    try {
+      const myHeaders = new Headers();
+      myHeaders.append("Content-Type", "application/json");
+      myHeaders.append(
+        "Authorization",
+        "Bearer " + import.meta.env.VITE_CHATGPT_KEY
+      );
+
+      const payload = {
+        model: import.meta.env.VITE_CHATGPT_MODEL,
+        messages: [
+          {
+            role: "system",
+            content: `Atue como um especialista de eventos, receberá um listado de convidados, deve interpretar cada linha para extrair a informação de cada convidado e preencher os seguintes campos quando possivel: name, phone, instagram, email, taxId. Com base nos nomes tente identificar o genero do convidado e coloque essa info no campo 'gender' (possiveis valores "Male", "Female", null). Deve retornar uma JSON List`,
+          },
+
+          {
+            role: "user",
+            content: `TEXTO: ${text}`,
+          },
+        ],
+      };
+
+      const raw = JSON.stringify(payload);
+      const requestOptions = {
+        method: "POST",
+        headers: myHeaders,
+        body: raw,
+        redirect: "follow",
+      };
+      const response = await fetch(
+        import.meta.env.VITE_CHATGPT_URL,
+        requestOptions
+      );
+      const result = await response.json();
+
+      return result;
+    } catch (error) {
+      return error;
+    }
+  }
+
+  return { fetchEventAssistente, getBulkEventList, getGuestList };
 });

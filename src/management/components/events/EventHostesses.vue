@@ -4,27 +4,16 @@
     <div class="hostesses-header px-4 py-3">
       <div class="d-flex justify-space-between align-center mb-3">
         <h2 class="text-h6 font-weight-bold mb-0">Equipe de Recepção</h2>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-account-plus"
-          size="small"
-          @click="addHostess"
-        >
+        <v-btn color="primary" prepend-icon="mdi-account-plus" size="small" @click="addHostess">
           Nova Hostess
         </v-btn>
       </div>
 
       <!-- Search and filter bar -->
-      <TabFilterComponent
-        searchPlaceholder="Buscar hostess..."
-        :searchValue="searchQuery"
-        :filterOptions="[
-          { label: 'Status', options: statusOptions, modelValue: statusFilter },
-          { label: 'Área', options: areaOptions, modelValue: areaFilter },
-        ]"
-        @filter-change="handleFilterChange"
-        @reset="resetFilters"
-      />
+      <TabFilterComponent searchPlaceholder="Buscar hostess..." :searchValue="searchQuery" :filterOptions="[
+        { label: 'Status', options: statusOptions, modelValue: statusFilter },
+        { label: 'Área', options: areaOptions, modelValue: areaFilter },
+      ]" @filter-change="handleFilterChange" @reset="resetFilters" />
 
       <!-- Summary stats cards -->
       <FourStatCards :cards="hostessCards" />
@@ -36,26 +25,13 @@
         <v-progress-circular indeterminate color="primary" />
       </div>
 
-      <v-sheet
-        v-else-if="filteredHostesses.length === 0"
-        class="empty-state text-center py-8"
-      >
-        <v-icon
-          icon="mdi-account-search"
-          size="64"
-          color="grey-lighten-1"
-          class="mb-2"
-        />
+      <v-sheet v-else-if="filteredHostesses.length === 0" class="empty-state text-center py-8">
+        <v-icon icon="mdi-account-search" size="64" color="grey-lighten-1" class="mb-2" />
         <h3 class="text-h6 text-grey-darken-1">Nenhuma hostess encontrada</h3>
         <p class="text-body-2 text-grey">
           Adicione hostess à sua equipe para começar
         </p>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-account-plus"
-          class="mt-3"
-          @click="addHostess"
-        >
+        <v-btn color="primary" prepend-icon="mdi-account-plus" class="mt-3" @click="addHostess">
           Adicionar hostess
         </v-btn>
       </v-sheet>
@@ -75,210 +51,17 @@
           <!-- Card view -->
           <v-window-item value="cards">
             <v-row>
-              <v-col
-                v-for="hostess in filteredHostesses"
-                :key="hostess.id"
-                cols="12"
-                sm="6"
-                md="4"
-                lg="3"
-              >
-                <v-card
-                  class="hostess-card"
-                  border="thin"
-                  :class="{ 'hostess-confirmed': hostess.confirmed }"
-                >
-                  <div class="hostess-header d-flex px-4 pt-4 pb-2">
-                    <v-avatar size="64" :color="getAreaColor(hostess.area)">
-                      <span v-if="!hostess.avatar" class="text-h5 text-white">
-                        {{ hostess.name.charAt(0) }}
-                      </span>
-                      <v-img v-else :src="hostess.avatar" alt="avatar" />
-                    </v-avatar>
-                    <div class="ms-4 flex-grow-1">
-                      <div class="d-flex justify-space-between align-center">
-                        <div class="text-subtitle-1 font-weight-bold">
-                          {{ hostess.name }}
-                        </div>
-                        <v-menu location="bottom end">
-                          <template v-slot:activator="{ props }">
-                            <v-btn
-                              v-bind="props"
-                              icon
-                              variant="text"
-                              size="small"
-                              class="ma-0"
-                            >
-                              <v-icon>mdi-dots-vertical</v-icon>
-                            </v-btn>
-                          </template>
-                          <v-list density="compact">
-                            <v-list-item
-                              prepend-icon="mdi-pencil"
-                              title="Editar"
-                              @click="editHostess(hostess)"
-                            />
-                            <v-list-item
-                              :prepend-icon="
-                                hostess.confirmed
-                                  ? 'mdi-close-circle'
-                                  : 'mdi-check-circle'
-                              "
-                              :title="
-                                hostess.confirmed
-                                  ? 'Remover confirmação'
-                                  : 'Confirmar presença'
-                              "
-                              @click="toggleHostessStatus(hostess)"
-                            />
-                          </v-list>
-                        </v-menu>
-                      </div>
-                      <div class="text-caption text-grey-darken-1">
-                        <v-icon size="14" start>mdi-phone</v-icon>
-                        {{ hostess.phone }}
-                      </div>
-                      <div
-                        class="text-caption text-grey-darken-1 mt-1 d-flex align-center"
-                      >
-                        <v-icon size="14" class="me-1">mdi-map-marker</v-icon>
-                        <v-chip
-                          size="x-small"
-                          :color="getAreaColor(hostess.area)"
-                          class="area-chip"
-                        >
-                          {{ hostess.area }}
-                        </v-chip>
-                      </div>
-                      <div class="mt-1">
-                        <v-chip
-                          size="x-small"
-                          :color="hostess.confirmed ? 'success' : 'grey'"
-                          class="status-chip"
-                        >
-                          {{ hostess.confirmed ? "Confirmada" : "Pendente" }}
-                        </v-chip>
-                      </div>
-                    </div>
-                  </div>
-                  <v-divider />
-                  <v-card-text class="pa-0">
-                    <div class="schedule-info d-flex text-center">
-                      <div class="schedule-block flex-1 pa-2">
-                        <div class="text-caption text-grey">Entrada</div>
-                        <div class="text-body-1 font-weight-bold">
-                          {{ hostess.startTime }}
-                        </div>
-                      </div>
-                      <v-divider vertical />
-                      <div class="schedule-block flex-1 pa-2">
-                        <div class="text-caption text-grey">Saída</div>
-                        <div class="text-body-1 font-weight-bold">
-                          {{ hostess.endTime }}
-                        </div>
-                      </div>
-                      <v-divider vertical />
-                      <div class="schedule-block flex-1 pa-2">
-                        <div class="text-caption text-grey">Horas</div>
-                        <div class="text-body-1 font-weight-bold">
-                          {{ calculateHours(hostess) }}
-                        </div>
-                      </div>
-                    </div>
-                  </v-card-text>
-                  <v-divider />
-                  <v-card-actions class="pa-2">
-                    <v-btn
-                      variant="text"
-                      color="primary"
-                      prepend-icon="mdi-pencil"
-                      block
-                      @click="editHostess(hostess)"
-                    >
-                      Editar
-                    </v-btn>
-                  </v-card-actions>
-                </v-card>
+              <v-col v-for="hostess in filteredHostesses" :key="hostess.id" cols="12" sm="6" md="4" lg="3">
+                <event-hostess-item :hostess="hostess" @hostess:edit="editHostess" @hostess:delete="deleteHostess"
+                  @hostess:update="updateHostess"></event-hostess-item>
               </v-col>
             </v-row>
           </v-window-item>
 
           <!-- Table view -->
           <v-window-item value="table">
-            <v-card border="thin" flat class="hostesses-table">
-              <v-data-table
-                :headers="tableHeaders"
-                :items="filteredHostesses"
-                :items-per-page="10"
-                item-value="id"
-                class="elevation-0"
-              >
-                <template v-slot:item.name="{ item }">
-                  <div class="d-flex align-center">
-                    <v-avatar
-                      size="32"
-                      :color="getAreaColor(item.area)"
-                      class="me-2"
-                    >
-                      <span class="text-caption text-white">
-                        {{ item.name.charAt(0) }}
-                      </span>
-                    </v-avatar>
-                    <span>{{ item.name }}</span>
-                  </div>
-                </template>
-                <template v-slot:item.confirmed="{ item }">
-                  <v-chip
-                    size="small"
-                    :color="item.confirmed ? 'success' : 'grey'"
-                    text-color="white"
-                  >
-                    {{ item.confirmed ? "Confirmada" : "Pendente" }}
-                  </v-chip>
-                </template>
-                <template v-slot:item.area="{ item }">
-                  <v-chip
-                    size="small"
-                    :color="getAreaColor(item.area)"
-                    text-color="white"
-                  >
-                    {{ item.area }}
-                  </v-chip>
-                </template>
-                <template v-slot:item.hours="{ item }">
-                  {{ calculateHours(item) }}h
-                </template>
-                <template v-slot:item.actions="{ item }">
-                  <div class="d-flex">
-                    <v-btn
-                      icon
-                      variant="text"
-                      size="small"
-                      color="primary"
-                      class="me-1"
-                      @click="editHostess(item)"
-                    >
-                      <v-icon>mdi-pencil</v-icon>
-                    </v-btn>
-                    <v-btn
-                      icon
-                      variant="text"
-                      size="small"
-                      :color="item.confirmed ? 'error' : 'success'"
-                      @click="toggleHostessStatus(item)"
-                    >
-                      <v-icon>
-                        {{
-                          item.confirmed
-                            ? "mdi-close-circle"
-                            : "mdi-check-circle"
-                        }}
-                      </v-icon>
-                    </v-btn>
-                  </div>
-                </template>
-              </v-data-table>
-            </v-card>
+            <event-hostess-table :hostesses="filteredHostesses" @hostess:edit="editHostess"
+              @hostess:delete="deleteHostess" @hostess:update="updateHostess"></event-hostess-table>
           </v-window-item>
 
           <!-- Schedule view -->
@@ -290,31 +73,16 @@
                 </div>
                 <div class="timeline-container flex-grow-1 overflow-x-auto">
                   <div class="d-flex align-center">
-                    <div
-                      v-for="hour in timelineHours"
-                      :key="hour"
-                      class="time-block text-caption text-center"
-                    >
+                    <div v-for="hour in timelineHours" :key="hour" class="time-block text-caption text-center">
                       {{ hour }}:00
                     </div>
                   </div>
                 </div>
               </div>
               <div class="schedule-body">
-                <div
-                  v-for="hostess in filteredHostesses"
-                  :key="hostess.id"
-                  class="schedule-row d-flex mb-3"
-                >
-                  <div
-                    class="hostess-label flex-shrink-0 d-flex align-center me-2"
-                    style="width: 80px"
-                  >
-                    <v-avatar
-                      size="24"
-                      :color="getAreaColor(hostess.area)"
-                      class="me-1"
-                    >
+                <div v-for="hostess in filteredHostesses" :key="hostess.id" class="schedule-row d-flex mb-3">
+                  <div class="hostess-label flex-shrink-0 d-flex align-center me-2" style="width: 80px">
+                    <v-avatar size="24" :color="getAreaColor(hostess.area)" class="me-1">
                       <span class="text-caption text-white">
                         {{ hostess.name.charAt(0) }}
                       </span>
@@ -323,27 +91,15 @@
                       {{ hostess.name }}
                     </div>
                   </div>
-                  <div
-                    class="timeline-container flex-grow-1 position-relative"
-                    style="height: 40px"
-                  >
+                  <div class="timeline-container flex-grow-1 position-relative" style="height: 40px">
                     <div class="timeline-bg d-flex">
-                      <div
-                        v-for="hour in timelineHours"
-                        :key="hour"
-                        class="time-block"
-                      >
+                      <div v-for="hour in timelineHours" :key="hour" class="time-block">
                         <div class="time-block-inner"></div>
                       </div>
                     </div>
-                    <div
-                      class="schedule-bar position-absolute"
-                      :class="{ 'confirmed-bar': hostess.confirmed }"
-                      :style="getScheduleBarStyle(hostess)"
-                    >
-                      <div
-                        class="schedule-bar-content d-flex justify-center align-center text-caption"
-                      >
+                    <div class="schedule-bar position-absolute" :class="{ 'confirmed-bar': hostess.confirmed }"
+                      :style="getScheduleBarStyle(hostess)">
+                      <div class="schedule-bar-content d-flex justify-center align-center text-caption">
                         {{ hostess.startTime }} - {{ hostess.endTime }}
                       </div>
                     </div>
@@ -356,55 +112,85 @@
       </div>
     </div>
 
-    <!-- Generic Modal for Add/Edit Hostess -->
-    <GenericCRUDModal
-      v-model="modalVisible"
-      :mode="modalMode"
-      :editMode="modalEditMode"
-      :areaOptions="areaOptions"
-      :promotersOptions="promotersOptions"
-      @saved="handleSaved"
-    />
+    <form-dialog :items="{ area: areaOptions }" v-model:opened="showCreateDialog" v-model:model="hostessForm"
+      @submit="submitHostess" :schema="eventHostessesSchema" title="Adicionar Hostess">
+      <template #prepend-inner>
+        <field-user-search entity="promoters" @select="selectHostesses"
+          placeholder="Selecione a hostess"></field-user-search>
+      </template>
+
+      <template #activator="props">
+        <v-fab @click="addHostess" v-bind="props" icon="mdi-plus" app location="right bottom" color="primary"
+          rounded="pill"></v-fab>
+      </template>
+    </form-dialog>
+
+    <form-dialog :items="{ area: areaOptions }" v-model:opened="showEditDialog" v-model:model="hostessForm"
+      title="Editar Hostess" @submit="submitHostessUpdate" :schema="eventHostessesSchema"></form-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch, shallowRef } from "vue";
+import { ref, computed, onMounted, watch, shallowRef, toRefs, inject } from "vue";
 import TabFilterComponent from "@/management/components/events/TabFilterComponent.vue";
 import FourStatCards from "@/management/components/events/FourStatCards.vue";
-import GenericCRUDModal from "@/management/components/events/GenericCRUDModal.vue";
-import { 
-  mockHostesses, 
+import eventHostessesSchema from "@/management/schemas/eventHostessesSchema";
+import FormDialog from "@/core/components/form/FormDialog.vue";
+import EventHostessItem from "./EventHostessItem.vue";
+import FieldUserSearch from "./FieldUserSearch.vue";
+import { useEventListStore } from "@/management/store/eventList";
+import { useRoute } from "vue-router";
+import EventHostessTable from "./EventHostessTable.vue";
+import {
+  mockHostesses,
   hostessTableHeaders,
-  statusOptions, 
-  areaOptions, 
+  statusOptions,
+  areaOptions,
   timelineHours,
   hourLabels,
   getAreaColor
 } from '@/management/consts/hostessesMockData';
 
+const swal = inject("$swal");
+
 const props = defineProps({
   event: { type: Object, required: true },
+  hostesses: { type: Array, required: true },
+  guests: { type: Array, required: true },
 });
 const emit = defineEmits(["update:hostesses"]);
+const eventListStore = useEventListStore();
+const { hostesses, guests } = toRefs(props);
+const route = useRoute();
+
+const eventId = computed(() => {
+  return route.params.eventId;
+})
+
+const showCreateDialog = ref(false);
+const showEditDialog = ref(false);
+
+const hostessesGrouped = computed(() => {
+  return hostesses.value.map((h) => {
+    return {
+      ...h,
+      checkIns: guests.value.filter(g => g.checkInBy?.id === h.id).length
+    }
+  })
+})
 
 // State variables (using shallowRef for complex objects)
-const loading = ref(true);
+const loading = ref(false);
 const viewType = ref("cards");
 const searchQuery = ref("");
 const statusFilter = ref("all");
 const areaFilter = ref("all");
-const hostesses = shallowRef([]);
-const filteredHostesses = shallowRef([]);
+// const hostesses = shallowRef([]);
 
-// Use imported table headers
-const tableHeaders = hostessTableHeaders;
 
-// GenericCRUDModal reactive variables
-const modalVisible = ref(false);
-const modalMode = ref("hostess");
-const modalEditMode = ref(false);
-const promotersOptions = ref([]); // Not used for Hostess but required by the component
+// const filteredHostesses = shallowRef([]);
+
+const hostessForm = ref({});
 
 // Utility functions
 const parseTimeToMinutes = (timeString) => {
@@ -445,31 +231,23 @@ const getScheduleBarStyle = (hostess) => {
 
 const getHourLabel = (index) => hourLabels[index] || `${index}h`;
 
-// Fetch and filter functions
-const fetchHostesses = async () => {
-  if (!loading.value) return;
-  loading.value = true;
-  try {
-    await new Promise((resolve) => setTimeout(resolve, 500));
-    hostesses.value = mockHostesses;
-    filterHostesses();
-  } catch (error) {
-    console.error("Error fetching hostesses:", error);
-  } finally {
-    loading.value = false;
-  }
-};
+function selectHostesses(hostess) {
+  if (hostess.name) hostessForm.value.name = hostess.name;
+  if (hostess.phone) hostessForm.value.phone = hostess.phone;
+  if (hostess.email) hostessForm.value.email = hostess.email;
+  if (hostess.id) hostessForm.value.id = hostess.id;
 
-const filterHostesses = () => {
+}
+
+const filteredHostesses = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const isStatusFiltered = statusFilter.value !== "all";
   const isAreaFiltered = areaFilter.value !== "all";
   const isSearchFiltered = query.length > 0;
   if (!isStatusFiltered && !isAreaFiltered && !isSearchFiltered) {
-    filteredHostesses.value = [...hostesses.value];
-    return;
+    return [...hostessesGrouped.value];
   }
-  filteredHostesses.value = hostesses.value.filter((hostess) => {
+  return hostessesGrouped.value.filter((hostess) => {
     if (isStatusFiltered) {
       const isConfirmed = statusFilter.value === "confirmed";
       if (hostess.confirmed !== isConfirmed) return false;
@@ -484,7 +262,7 @@ const filterHostesses = () => {
     }
     return true;
   });
-};
+});
 
 // Filter handlers
 const handleFilterChange = (filters) => {
@@ -511,38 +289,6 @@ const resetFilters = () => {
   filterHostesses();
 };
 
-// Hostess actions using GenericCRUDModal
-const addHostess = () => {
-  modalMode.value = "hostess";
-  modalEditMode.value = false;
-  modalVisible.value = true;
-};
-
-const editHostess = (hostess) => {
-  selectedHostess.value = hostess;
-  modalMode.value = "hostess";
-  modalEditMode.value = true;
-  modalVisible.value = true;
-};
-
-const selectedHostess = ref(null);
-const handleSaved = (savedEntity) => {
-  if (modalEditMode.value && selectedHostess.value) {
-    const index = hostesses.value.findIndex(
-      (h) => h.id === selectedHostess.value.id
-    );
-    if (index !== -1) {
-      const updated = { ...hostesses.value[index], ...savedEntity };
-      hostesses.value.splice(index, 1, updated);
-    }
-  } else {
-    hostesses.value.push({ id: Date.now(), checkIns: 0, ...savedEntity });
-  }
-  filterHostesses();
-  emit("update:hostesses", hostesses.value.length);
-  selectedHostess.value = null;
-};
-
 const toggleHostessStatus = async (hostess) => {
   if (actionLoading.value) return;
   actionLoading.value = true;
@@ -566,14 +312,12 @@ const toggleHostessStatus = async (hostess) => {
 
 const actionLoading = ref(false);
 
-onMounted(fetchHostesses);
-
 const totalHostesses = computed(() => hostesses.value.length);
 const confirmedHostesses = computed(
   () => hostesses.value.filter((h) => h.confirmed).length
 );
 const totalCheckIns = computed(() =>
-  hostesses.value.reduce((sum, h) => sum + (h.checkIns || 0), 0)
+  guests.value.filter(g => g.status === "checked-in").length
 );
 const totalHours = computed(() =>
   hostesses.value.reduce(
@@ -612,4 +356,81 @@ const hostessCards = ref([
     accentColor: "#fbc02d",
   },
 ]);
+
+
+// REFACTORE
+
+function addHostess() {
+  hostessForm.value = {};
+  showCreateDialog.value = true;
+}
+
+function editHostess(hostess) {
+  hostessForm.value = { ...hostess };
+  showEditDialog.value = true
+}
+
+
+async function submitHostess(hostess, close) {
+  try {
+    console.log({ hostess });
+    const result = await eventListStore.createHostess(eventId.value, hostess);
+    console.log({ result })
+    close();
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+async function submitHostessUpdate(hostess, close) {
+  try {
+    console.log({ hostess });
+    const result = await eventListStore.updateHostess(eventId.value, hostess);
+    console.log({ result })
+    close();
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+async function updateHostess(hostess) {
+  try {
+    console.log({ hostess });
+    const result = await eventListStore.updateHostess(eventId.value, hostess);
+    console.log({ result })
+  } catch (error) {
+    console.log({ error });
+  }
+}
+
+async function deleteHostess(hostess) {
+  try {
+    const result = await swal.fire({
+      title: "Deletar " + hostess.name + "?",
+      html: `Deletar hostess <strong>${hostess.name}</strong>? Essa ação é irreversível`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Sim, deletar!"
+    });
+    if (result.isConfirmed) {
+      await eventListStore.deleteHostess(eventId.value, hostess);
+      swal.fire({
+        title: "Hostess excluido!",
+        icon: "success",
+        toast: true,
+        timer: 2000,
+        position: "top-end",
+        showConfirmButton: false,
+        timerProgressBar: true,
+      })
+    }
+    console.log({ result });
+  } catch (error) {
+    console.log({ error })
+  }
+}
+
+
 </script>

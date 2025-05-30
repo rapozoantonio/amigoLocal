@@ -15,115 +15,76 @@
       </v-toolbar>
 
       <v-card-text class="bulk-modal-content">
-        <!-- Input Step -->
-        <div v-if="step === 'input'">
-          <v-form ref="bulkForm" v-model="formValid">
-            <v-select
-              v-model="selectedList"
-              :items="listOptions"
-              label="Lista"
-              variant="outlined"
-              hide-details
-              class="mb-4"
-            />
-            <v-textarea
-              v-model="inputText"
-              label="Convidados (cole os nomes ou dados em formato livre)"
-              variant="outlined"
-              rows="10"
-              hide-details
-            />
-          </v-form>
-        </div>
+        <v-row dense>
+          <!-- Input Step  -->
+          <template v-if="step === 'input'">
+            <v-col cols="12">
+              <v-autocomplete v-model="selectedList" clearable return-object item-value="id" item-title="name"
+                :items="listOptions" label="Lista" variant="outlined" hide-details class="mb-1" />
+            </v-col>
+            <v-col cols=" 12">
+              <v-textarea v-model="inputText" label="Convidados (cole os nomes ou dados em formato livre)"
+                variant="outlined" rows="10" hide-details />
+            </v-col>
+          </template>
 
-        <!-- Preview Step -->
-        <div v-else>
-          <p class="preview-info mb-3">
-            Confira os convidados abaixo. Use o ícone de lápis ao lado do nome
-            para editar e toque no botão de gênero para alternar entre masculino
-            e feminino.
-          </p>
-          <v-simple-table dense class="preview-table">
-            <thead>
-              <tr>
-                <th class="num-col text-center">#</th>
-                <th class="name-col">Nome</th>
-                <th class="gender-col text-center">Gênero</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(guest, index) in parsedGuests" :key="index">
-                <td class="num-col text-center">{{ index + 1 }}</td>
-                <td class="name-col">
-                  <div class="editable-row">
-                    <div v-if="editingIndex === index" class="edit-input">
-                      <v-text-field
-                        v-model="guest.name"
-                        dense
-                        hide-details
-                        solo
-                        autofocus
-                        @blur="disableEditing"
-                        @keyup.enter="disableEditing"
-                      />
-                    </div>
-                    <div v-else class="editable-content">
-                      <span>{{ guest.name }}</span>
-                      <v-btn
-                        icon
-                        small
-                        class="edit-icon"
-                        @click.stop="enableEditing(index)"
-                      >
-                        <v-icon>mdi-pencil</v-icon>
-                      </v-btn>
-                    </div>
+          <!-- Preview Step -->
+          <v-col v-else cols="12">
+            <div>
+              <v-row>
+                <v-col cols="12">
+                  <p class="preview-info mb-3">
+                    Confira os convidados abaixo. Use o ícone de lápis ao lado do nome
+                    para editar e toque no botão de gênero para alternar entre masculino
+                    e feminino.
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <div v-if="xs || sm">
+                    <bulk-add-guest-card v-model:guest="finalGuests[index]" v-for="(guest, index) in finalGuests"
+                      :eventId="eventId" :key="guest.name" :index="index" v-model:status="statusOkGuests[index]"
+                      @guest:remove="removeGuest"></bulk-add-guest-card>
                   </div>
-                </td>
-                <td class="gender-col text-center">
-                  <v-btn
-                    icon
-                    @click="toggleGender(index)"
-                    :color="
-                      guest.gender === 'Feminino'
-                        ? 'pink'
-                        : guest.gender === 'Masculino'
-                        ? 'blue'
-                        : 'grey'
-                    "
-                  >
-                    <v-icon>
-                      {{
-                        guest.gender === "Feminino"
-                          ? "mdi-gender-female"
-                          : "mdi-gender-male"
-                      }}
-                    </v-icon>
-                  </v-btn>
-                </td>
-              </tr>
-            </tbody>
-          </v-simple-table>
-        </div>
-      </v-card-text>
+                  <v-table v-else dense class="preview-table">
+                    <thead>
+                      <tr>
+                        <th class="num-col text-center">#</th>
+                        <th class="name-col">Nome</th>
+                        <th class="gender-col text-center">Gênero</th>
+                        <th class="gender-col text-center">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <bulk-add-guest-item v-model:guest="finalGuests[index]" v-for="(guest, index) in finalGuests"
+                        :eventId="eventId" :key="guest.name" :index="index" v-model:status="statusOkGuests[index]"
+                        @guest:remove="removeGuest"></bulk-add-guest-item>
+                    </tbody>
 
+                  </v-table>
+                </v-col>
+              </v-row>
+            </div>
+          </v-col>
+          <v-col cols="12" v-if="errors">
+            <v-alert type="error" density="compact" variant="tonal">{{ !errors ? "" : errors }}</v-alert>
+          </v-col>
+        </v-row>
+      </v-card-text>
       <v-card-actions>
         <v-spacer />
         <template v-if="step === 'preview'">
           <v-btn text color="grey-darken-1" @click="backToInput">Voltar</v-btn>
-          <v-btn color="primary" :disabled="processing" @click="confirmImport">
-            <v-icon left v-if="processing" spin>mdi-loading</v-icon>
+          <v-btn color="primary" :disabled="!statusOkGuests.every(g => g) || !formValid" :loading="processing"
+            :variant="formValid ? 'elevated' : 'tonal'" @click="confirmImport">
             Confirmar Importação
           </v-btn>
         </template>
         <template v-else>
-          <v-btn text color="grey-darken-1" @click="closeModal">Cancelar</v-btn>
-          <v-btn
-            color="primary"
-            :disabled="!formValid || processing"
-            @click="processInput"
-          >
-            <v-icon left v-if="processing" spin>mdi-loading</v-icon>
+          <v-btn color="grey-darken-1" @click="closeModal">Cancelar</v-btn>
+          <v-btn color="primary" :disabled="!formValid" :loading="processing" @click="processInput"
+            :variant="formValid ? 'elevated' : 'tonal'">
             Adicionar
           </v-btn>
         </template>
@@ -134,16 +95,26 @@
 
 <script setup>
 import { ref, computed, watch } from "vue";
-
+import { useChatgptStore } from "@/core/store/chatgpt";
+import { useEventListStore } from "@/management/store/eventList";
+import BulkAddGuestItem from "./BulkAddGuestItem.vue";
+import BulkAddGuestCard from "./BulkAddGuestCard.vue";
+import { toRefs } from "vue";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
   listOptions: { type: Array, default: () => [] },
   existingGuests: { type: Array, default: () => [] },
-  defaultList: { type: String, default: "" },
+  defaultList: { type: [String, Object], default: "" },
+  eventId: { type: String, default: "" }
 });
 
-const emit = defineEmits(["update:modelValue", "guestsAdded"]);
+const { existingGuests } = toRefs(props);
 
+const emit = defineEmits(["update:modelValue", "guestsAdded"]);
+const chatgptStore = useChatgptStore();
+const eventListStore = useEventListStore();
+const { xs, sm } = useDisplay();
 const isVisible = computed({
   get: () => props.modelValue,
   set: (val) => emit("update:modelValue", val),
@@ -163,7 +134,31 @@ watch(
 
 const inputText = ref("");
 const processing = ref(false);
-const formValid = ref(false);
+// const formValid = ref(false);
+const finalGuests = ref([]);
+const statusOkGuests = ref([]);
+
+const errors = computed(() => {
+  if (!selectedList.value) {
+    return "Selecione uma lista";
+  }
+  // parsedGuests
+  const guestsFromSelectedList = existingGuests.value.filter((guest) => guest.list?.id === selectedList.value.id);
+  const quota = selectedList.value.quota;
+
+  if (!quota || quota === 0) {
+    return false;
+  }
+  if (guestsFromSelectedList.length >= quota) {
+    return "Essa lista ja atingiu a quota estabelecida";
+  }
+  if ((guestsFromSelectedList.length + parsedGuests.value.length) > quota) {
+    const spareGuests = (guestsFromSelectedList.length + parsedGuests.value.length) - quota;
+    const stayGuests = parsedGuests.value.length - spareGuests;
+    return "Não cabem todos esses convidados na lista, somente podem entrar " + stayGuests
+  }
+  return false;
+})
 
 // Array for preview: parsed guests with extra 'gender' field.
 const parsedGuests = ref([]);
@@ -171,14 +166,23 @@ const parsedGuests = ref([]);
 // For inline editing – store currently editing row index.
 const editingIndex = ref(null);
 
-// Validate: require nonempty input and selected list.
-watch([inputText, selectedList], () => {
-  formValid.value = inputText.value.trim().length > 0 && !!selectedList.value;
+
+// // Validate: require nonempty input and selected list.
+// watch([inputText, selectedList], () => {
+//   formValid.value = inputText.value.trim().length > 0 && !!selectedList.value;
+// });
+
+const formValid = computed(() => {
+  if (errors.value || inputText.value.trim().length <= 0) {
+    return false;
+  }
+  return true;
+
 });
 
 /**
  * Parses a single line of input into a guest object.
- * Expected fields: name, instagram, email, phone, cpf.
+ * Expected fields: name, instagram, email, phone, taxId.
  * Returns an object with an extra 'gender' property (initially blank).
  */
 const parseLineToGuest = (line) => {
@@ -190,7 +194,7 @@ const parseLineToGuest = (line) => {
       instagram: "",
       email: "",
       phone: "",
-      cpf: "",
+      taxId: "",
       list: selectedList.value,
       gender: "",
     };
@@ -201,7 +205,7 @@ const parseLineToGuest = (line) => {
     instagram: "",
     email: "",
     phone: "",
-    cpf: "",
+    taxId: "",
     list: selectedList.value,
     gender: "",
   };
@@ -222,14 +226,14 @@ const parseLineToGuest = (line) => {
   if (insta) guest.instagram = insta;
   const email = tokens.find((t) => /.+@.+\..+/.test(t));
   if (email) guest.email = email;
-  const cpf = tokens.find((t) => /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(t));
-  if (cpf) guest.cpf = cpf;
+  const taxId = tokens.find((t) => /^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(t));
+  if (taxId) guest.taxId = taxId;
   const phone = tokens.find((t) => /^\(?\d{2,}\)?[-.\s]?\d+/.test(t));
   if (phone) guest.phone = phone;
   return guest;
 };
 
-const processInput = () => {
+const processInput2 = () => {
   processing.value = true;
   const lines = inputText.value
     .split(/\n|,/)
@@ -258,6 +262,7 @@ const processInput = () => {
   step.value = "preview";
 };
 
+
 const toggleGender = (index) => {
   const current = parsedGuests.value[index].gender;
   parsedGuests.value[index].gender =
@@ -265,9 +270,10 @@ const toggleGender = (index) => {
 };
 
 const confirmImport = () => {
+  const newGuests = parsedGuests.value.map((g) => ({ ...g, list: { name: selectedList.value?.name, id: selectedList.value?.id } }))
   processing.value = true;
-  console.log("Final Guests:", parsedGuests.value);
-  emit("guestsAdded", parsedGuests.value);
+  console.log("Final Guests:", newGuests);
+  emit("guestsAdded", newGuests);
   inputText.value = "";
   parsedGuests.value = [];
   processing.value = false;
@@ -295,4 +301,67 @@ const enableEditing = (index) => {
 const disableEditing = () => {
   editingIndex.value = null;
 };
+
+function removeGuest(index) {
+  parsedGuests.value.splice(index, 1);
+  statusOkGuests.value.splice(index, 1);
+}
+
+async function processInput() {
+
+  try {
+    processing.value = true;
+    const response = await chatgptStore.getGuestList(inputText.value);
+    console.log("chatgpt", { response });
+    if (response.choices && response.choices.length > 0) {
+      const content = JSON.parse(response.choices[0].message.content);
+      console.log({ content });
+
+      parsedGuests.value = Array.isArray(content) ? content : [content];
+      processing.value = false;
+      step.value = "preview";
+
+      // const promisesExistInEvent = parsedGuests.value.map(async (g) => {
+      //   return await eventListStore.checkIfGuestExistsInServer(g, props.eventId)
+      // })
+
+      // const promisesExistCustomer = parsedGuests.value.map(async (g) => {
+      //   return await eventListStore.checkIfCustomerExists(g)
+      // })
+
+
+      // const resultExistInEvent = await Promise.all(promisesExistInEvent);
+      // const resultExistCustomer = await Promise.all(promisesExistCustomer);
+
+      // finalGuests.value = parsedGuests.value.map((g, i) => {
+
+
+      //   return {
+      //     guest: g,
+      //     existingGuest: resultExistInEvent[i].result,
+      //     existingCustomer: resultExistCustomer[i].result
+      //   }
+      // })
+
+
+      finalGuests.value = parsedGuests.value;
+      statusOkGuests.value = parsedGuests.value.map(() => (false));
+
+    }
+  } catch (error) {
+    console.log({ error })
+  }
+  finally {
+    processing.value = false;
+  }
+
+
+
+
+}
+
+
+
+
+
 </script>

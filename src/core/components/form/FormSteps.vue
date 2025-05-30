@@ -54,12 +54,13 @@
                                                     <form-field :labelType="labelType" v-for="child in field.children"
                                                         :key="child.id" :items="items ? items[child.id] : null"
                                                         v-model:files="files" v-model:model="model[field.id]"
-                                                        :field="child.id" v-bind="child"></form-field>
+                                                        :field="child.id" :variant="schema.fieldVariant || false"
+                                                        v-bind="child"></form-field>
                                                 </template>
 
                                                 <form-field :labelType="labelType" :items="items[field.id] || null"
                                                     v-else v-model:files="files" v-model:model="model" :field="field.id"
-                                                    v-bind="field"></form-field>
+                                                    :variant="schema.fieldVariant || false" v-bind="field"></form-field>
                                             </template>
                                         </v-row>
 

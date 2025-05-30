@@ -25,33 +25,17 @@
     <v-row v-else justify="center">
       <!-- Login Form -->
       <v-col cols="12" md="6">
-        <form-box
-          :error="errors"
-          @submit="loginEmail"
-          :schema="loginSchema"
-          action="Entrar"
-          button-position="center"
-          title="Login"
-          labelType="up"
-          v-model:model="login"
-        >
+        <form-box :error="errors" @submit="loginEmail" :schema="loginSchema" action="Entrar" button-position="center"
+          title="Login" labelType="up" v-model:model="login">
           <template #append>
             <div class="d-flex my-4 align-center">
               <v-divider />
-              <span class="flex-shrink-0 mx-2 text-caption text-grey"
-                >Ou entre com</span
-              >
+              <span class="flex-shrink-0 mx-2 text-caption text-grey">Ou entre com</span>
               <v-divider />
             </div>
 
             <div class="text-center">
-              <v-btn
-                color="white"
-                rounded="lg"
-                class="text-capitalize mt-2"
-                @click="loginGoogle"
-                block
-              >
+              <v-btn color="white" rounded="lg" class="text-capitalize mt-2" @click="loginGoogle" block>
                 <v-icon class="mr-2">
                   <icon-google />
                 </v-icon>
@@ -66,16 +50,12 @@
         <v-card color="transparent" flat>
           <v-card-text>
             <p class="text-h5 mb-4">Novo por aqui?</p>
-            <v-btn
-              color="primary"
-              rounded="lg"
-              class="text-capitalize"
-              :to="{ name: 'register' }"
-              block
-            >
+            <v-btn color="primary" rounded="lg" class="text-capitalize" :to="{ name: 'register' }" block>
               Inscrever-se
             </v-btn>
           </v-card-text>
+
+          <pre>{{ errors }}</pre>
         </v-card>
       </v-col>
     </v-row>
@@ -103,6 +83,7 @@ const login = ref({
 const errors = ref(null);
 
 async function loginEmail() {
+  console.log("loginWithEmail")
   if (login.value.email && login.value.password) {
     try {
       errors.value = null;
@@ -115,6 +96,7 @@ async function loginEmail() {
         emit("success");
       }
     } catch (error) {
+      alert(error)
       errors.value = error.message;
     }
   }
@@ -123,6 +105,8 @@ async function loginEmail() {
 async function loginGoogle() {
   try {
     const response = await auth.loginWithGoogle();
+    errors.value = response.error.message;
+
     if (response.ok) {
       console.log("emit success");
       emit("success");

@@ -17,13 +17,13 @@ const isAdminSubdomain = ref(false)
 // Detect if we're on the admin subdomain
 function detectAdminSubdomain() {
   // Check if we're on the admin subdomain
-  isAdminSubdomain.value = window.location.hostname.startsWith('admin.') || 
-                          window.location.pathname.startsWith('/admin') ||
-                          (typeof window !== 'undefined' && window.ENTRY_POINT === 'management');
-  
+  isAdminSubdomain.value = window.location.hostname.startsWith('admin.') ||
+    window.location.pathname.startsWith('/admin') ||
+    (typeof window !== 'undefined' && window.ENTRY_POINT === 'management');
+
   // Provide this information to child components
   provide('isAdminSubdomain', isAdminSubdomain.value)
-  
+
   console.log('App mounted on subdomain:', window.location.hostname)
   console.log('Is admin subdomain:', isAdminSubdomain.value)
 }
@@ -93,6 +93,7 @@ label.required:after {
   0% {
     background-position: 100% 0%;
   }
+
   100% {
     background-position: 50% 0%;
   }
@@ -103,37 +104,29 @@ label.required:after {
 }
 
 .pattern-black-red-bg {
-  position: relative;  
+  position: relative;
   width: 100%;
-  min-height: 300px;   
+  min-height: 300px;
   filter: blur(30px) brightness(0.3);
   background-color: #0a0a0a;
   background-image:
-    repeating-radial-gradient(
-      circle at 50% 50%, 
+    repeating-radial-gradient(circle at 50% 50%,
       rgba(255, 255, 255, 0.02),
       rgba(255, 255, 255, 0.02) 2px,
       transparent 3px,
-      transparent 30px
-    ),
-    radial-gradient(
-      circle at 20% 30%, 
-      rgba(60, 0, 0, 0.3), 
-      transparent 60%
-    ),
-    radial-gradient(
-      circle at 80% 70%, 
-      rgba(100, 0, 0, 0.2), 
-      transparent 70%
-    ),
-    linear-gradient(
-      to bottom right,
+      transparent 30px),
+    radial-gradient(circle at 20% 30%,
+      rgba(60, 0, 0, 0.3),
+      transparent 60%),
+    radial-gradient(circle at 80% 70%,
+      rgba(100, 0, 0, 0.2),
+      transparent 70%),
+    linear-gradient(to bottom right,
       #000 0%,
       #1a1a1a 25%,
       #2c0202 50%,
       #1c0101 75%,
-      #000 100%
-    );
+      #000 100%);
   background-blend-mode: overlay, screen, screen, normal;
   background-size: cover;
   background-position: center;

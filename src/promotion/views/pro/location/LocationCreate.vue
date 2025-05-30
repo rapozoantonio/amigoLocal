@@ -208,9 +208,9 @@ import { useDisplay } from 'vuetify/lib/framework.mjs';
 // VARIABLES
 import Allcountries from '@/core/assets/countries.js';
 import regions from '@/core/assets/regions.js';
-import FieldCountry from '@/promotion/components/fields/FieldCountry.vue';
-import FieldLinks from '@/promotion/components/fields/FieldLinks.vue';
-import FieldRegion from '@/promotion/components/fields/FieldRegion.vue';
+import FieldCountry from '@/core/components/fields/FieldCountry.vue';
+import FieldLinks from '@/core/components/fields/FieldLinks.vue';
+import FieldRegion from '@/core/components/fields/FieldRegion.vue';
 // FIREBASE
 import { useFirebaseStore } from '@/core/store/firebase';
 import { useLocationStore } from '@/promotion/store/location';
@@ -238,9 +238,9 @@ const { location } = storeToRefs(locationStore);
 
 
 function handleChangePosition(pos) {
-    
-    
-    
+
+
+
 }
 
 function handlePositionChange({ latLng }) {
@@ -253,11 +253,11 @@ function handlePositionChange({ latLng }) {
 
 async function createLocation(event) {
     const { valid, errors } = await event
-    
+
 
     if (valid) {
         const response = await locationStore.createLocation();
-        
+
     }
     else {
         document.querySelector("#" + errors[0].id).focus();
@@ -275,14 +275,14 @@ async function initGoogleMaps() {
         apiKey: import.meta.env.VITE_GOOGLE_MAPS_KEY,
         version: "weekly",
     });
-    
+
     // 
     const input = document.querySelector("#address");
-    
+
     const Places = await loader.importLibrary('places');
-    
+
     const autocomplete = new Places.Autocomplete(input);
-    
+
 
     function returnAddressComponent(components, include, type = "long_name") {
         const comp = components.find(c => c.types.includes(include));
@@ -296,13 +296,13 @@ async function initGoogleMaps() {
 
     autocomplete.addListener('place_changed', () => {
         const place = autocomplete.getPlace();
-        
+
 
         const lat = place.geometry.location.lat();
         const lng = place.geometry.location.lng();
         center.value.lat = lat;
         center.value.lng = lng;
-        
+
         mapRef.value.map.panTo({ lat, lng });
         location.value.name = place.name;
         location.value.address = returnAddressComponent(place.address_components, "route") + " " + returnAddressComponent(place.address_components, "street_number");
