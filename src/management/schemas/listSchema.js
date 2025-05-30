@@ -7,10 +7,21 @@ export default {
       type: "section",
       fields: [
         {
+          id: "icon",
+          label: "Icone",
+          type: "icon",
+          size: "auto",
+          items: ["mdi-list-status", "mdi-star", "mdi-ticket"],
+          initial: "mdi-ticket",
+          fieldParams: {
+            allowCustom: false,
+          },
+        },
+        {
           id: "name", // Keep id unchanged
           label: "Nome",
           type: "text",
-          size: "lg",
+          size: "fill",
           rules: ["required"],
         },
         {

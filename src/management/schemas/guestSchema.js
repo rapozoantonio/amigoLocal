@@ -1,5 +1,8 @@
 export default {
   name: "guest",
+  fieldParams: {
+    // labelType: "in",
+  },
   sections: [
     {
       name: "Informações básicas",
@@ -17,13 +20,13 @@ export default {
           id: "taxId",
           label: "CPF",
           type: "text",
-          size: "xs",
+          size: "sm",
         },
         {
           id: "phone",
           label: "Telefone",
-          type: "text",
-          size: "xs",
+          type: "phone",
+          size: "sm",
         },
         {
           id: "email",
@@ -44,6 +47,12 @@ export default {
           type: "select-id",
           size: "lg",
           rules: ["required"],
+        },
+        {
+          id: "price",
+          label: "Preço",
+          type: "number",
+          size: "lg",
         },
         {
           id: "vip",

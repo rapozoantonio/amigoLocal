@@ -74,7 +74,7 @@ export const useAuthStore = defineStore("auth", () => {
 
       if (result.user) {
         // Remove the problematic fetch attempt for birthday data
-        
+
         const { claims } = await getIdTokenResult(result.user);
         updateUserState(result.user, claims);
 
@@ -88,7 +88,10 @@ export const useAuthStore = defineStore("auth", () => {
     } catch (err) {
       console.error("Google sign-in error:", err);
       error.value = {
-        message: ERROR_MESSAGES[err.code] || "Erro durante o login com Google",
+        message:
+          ERROR_MESSAGES[err.code] ||
+          err.message ||
+          "Erro durante o login com Google",
         code: err.code,
       };
       return { ok: false, error: error.value };

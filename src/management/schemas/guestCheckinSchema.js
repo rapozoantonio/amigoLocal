@@ -46,6 +46,12 @@ export default {
           type: "divider",
         },
         {
+          id: "price",
+          label: "Preço",
+          type: "number",
+          size: "lg",
+        },
+        {
           id: "checkInNotes",
           label: "Observações",
           type: "textarea",

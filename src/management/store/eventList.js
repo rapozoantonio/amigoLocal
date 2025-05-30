@@ -1,10 +1,7 @@
 // Utilities
 import { defineStore } from "pinia";
 import { useFirebaseStore } from "@/core/store/firebase";
-import Swal from "sweetalert2";
 import { ref } from "vue";
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { firestore } from "@/core/plugins/firebase";
 import { useAuthStore } from "@/core/store/auth";
 
 export const useEventListStore = defineStore("eventList", () => {
@@ -20,14 +17,65 @@ export const useEventListStore = defineStore("eventList", () => {
   // CREATE EVENT TO HOLD THE LISTS
   async function createEvent(event) {
     try {
-      const result = await firebaseStore.postDocument("eventList", event);
+      const result = await firebaseStore.postDocumentWithFile(
+        "eventList",
+        event
+      );
       if (!result.ok) {
         return false;
       }
-      return true;
+      return { ok: true, data: result.data?.document, id: result.data?.id };
     } catch (error) {
       console.log({ error });
       return false;
+    }
+  }
+  async function duplicateEvent(modules) {
+    try {
+      const event = modules.event;
+      const promoters = modules.promoters || [];
+      const lists = modules.lists || [];
+      const hostesses = modules.hostesses || [];
+
+      delete event.id;
+      console.log({ event });
+      const eventRequest = await firebaseStore.postDocument("eventList", event);
+      if (eventRequest.ok) {
+        const eventId = eventRequest.data.id;
+
+        const promotersRequest = promoters.map((promoter) => {
+          console.log({ promoter });
+          return firebaseStore.postDocument(
+            `eventList/${eventId}/promoters`,
+            promoter
+          );
+        });
+
+        const hostessesRequest = hostesses.map((hostess) => {
+          return firebaseStore.postDocument(
+            `eventList/${eventId}/hostesses`,
+            hostess
+          );
+        });
+
+        const listsRequest = lists.map((list) => {
+          delete list.id;
+
+          return firebaseStore.postDocument(`eventList/${eventId}/lists`, list);
+        });
+
+        const result = await Promise.all([
+          ...promotersRequest,
+          ...hostessesRequest,
+          ...listsRequest,
+        ]);
+        console.log({ result });
+        return { ok: true, data: { id: eventId, data: result } };
+      }
+      return { ok: false, error: "No eventId" };
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, error: error };
     }
   }
   //   GET EVENT BY ID
@@ -53,6 +101,81 @@ export const useEventListStore = defineStore("eventList", () => {
       if (response.ok) {
         events = [...response.data];
         return events;
+      }
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, error: error };
+    }
+  }
+  async function getEventInfo(eventId) {
+    try {
+      const response = {};
+      const requestCheckInCount = await firebaseStore.getCount({
+        collection: `eventList/${eventId}/guests`,
+        query: { status: "checked-in" },
+      });
+      if (requestCheckInCount.ok) {
+        response.totalCheckIn = requestCheckInCount.data;
+      }
+
+      const requestGuestCount = await firebaseStore.getCount({
+        collection: `eventList/${eventId}/guests`,
+      });
+      if (requestGuestCount.ok) {
+        response.totalGuests = requestGuestCount.data;
+      }
+      const requestRevenue = await firebaseStore.getSum({
+        collection: `eventList/${eventId}/guests`,
+        query: { status: "checked-in" },
+        field: "price",
+      });
+      if (requestRevenue.ok) {
+        response.revenue = requestRevenue.data;
+      }
+      return response;
+    } catch (error) {
+      console.log({ error });
+    }
+  }
+  async function getEventsList() {
+    let events = [];
+    try {
+      const response = await firebaseStore.getCollection({
+        collection: "eventList",
+      });
+      console.log({ response });
+      if (response.ok) {
+        events = [...response.data];
+
+        const promises = events.map(async (event) => {
+          const response = { ...event };
+          const requestCheckInCount = await firebaseStore.getCount({
+            collection: `eventList/${eventId}/guests`,
+            query: { status: "checked-in" },
+          });
+          if (requestCheckInCount.ok) {
+            response.totalCheckIn = requestCheckInCount.data;
+          }
+
+          const requestGuestCount = await firebaseStore.getCount({
+            collection: `eventList/${event.id}/guests`,
+          });
+          if (requestGuestCount.ok) {
+            response.totalGuests = requestGuestCount.data;
+          }
+          const requestRevenue = await firebaseStore.getSum({
+            collection: `eventList/${event.id}/guests`,
+            query: { status: "checked-in" },
+            field: "price",
+          });
+          if (requestRevenue.ok) {
+            response.revenue = requestRevenue.data;
+          }
+          return response;
+        });
+
+        events = await Promise.all(promises);
+        return { ok: true, data: events };
       }
     } catch (error) {
       console.log({ error });
@@ -107,6 +230,13 @@ export const useEventListStore = defineStore("eventList", () => {
       if (!result.ok) {
         return false;
       }
+      const listId = result.data.id;
+      const registerInEvent = await firebaseStore.addItemToArrayField(
+        `eventList/${eventId}`,
+        "lists",
+        listId
+      );
+      console.log({ registerInEvent });
       return true;
     } catch (error) {
       console.log({ error });
@@ -142,6 +272,12 @@ export const useEventListStore = defineStore("eventList", () => {
   async function deleteList(eventId, list) {
     try {
       await firebaseStore.deleteDocument(`eventList/${eventId}/lists`, list.id);
+      const registerInEvent = await firebaseStore.removeItemToArrayField(
+        `eventList/${eventId}`,
+        "lists",
+        list.id
+      );
+      console.log({ registerInEvent });
       return { ok: true };
     } catch (error) {
       console.log({ error });
@@ -226,7 +362,6 @@ export const useEventListStore = defineStore("eventList", () => {
       return { ok: false, exists: false, result: [] };
     }
   }
-
   async function checkIfCustomerExists(guest) {
     console.log("checkIfCustomerExists");
     console.log(guest);
@@ -314,11 +449,25 @@ export const useEventListStore = defineStore("eventList", () => {
       return { ok: false, error };
     }
   }
-
+  async function getEventGuestById(eventId, guestId) {
+    try {
+      const response = await firebaseStore.getDocumentById(
+        `eventList/${eventId}/guests`,
+        guestId
+      );
+      if (response.ok) {
+        return { ok: true, data: response.data };
+      }
+      return { ok: false, data: null };
+    } catch (error) {
+      console.log({ error });
+      return { ok: false, error: error };
+    }
+  }
   async function checkInGuest(eventId, guest) {
     try {
       const user = authStore.user
-        ? { uid: authStore.user.uid, email: authStore.user.email }
+        ? { id: authStore.user.uid, email: authStore.user.email }
         : nul;
       const guestDoc = {
         ...guest,
@@ -333,7 +482,6 @@ export const useEventListStore = defineStore("eventList", () => {
       console.log({ error });
     }
   }
-
   async function addIdentifiedGuest(eventId, guest) {
     try {
       console.log({ guest });
@@ -386,6 +534,13 @@ export const useEventListStore = defineStore("eventList", () => {
       if (!result.ok) {
         return false;
       }
+      const promoterId = result.data.id;
+      const registerInEvent = await firebaseStore.addItemToArrayField(
+        `eventList/${eventId}`,
+        "promoters",
+        promoterId
+      );
+      console.log({ registerInEvent });
       return true;
     } catch (error) {
       console.log({ error });
@@ -423,6 +578,12 @@ export const useEventListStore = defineStore("eventList", () => {
         `eventList/${eventId}/promoters`,
         promoter.id
       );
+      const registerInEvent = await firebaseStore.removeItemToArrayField(
+        `eventList/${eventId}`,
+        "promoters",
+        promoter.id
+      );
+      console.log({ registerInEvent });
       return { ok: true };
     } catch (error) {
       console.log({ error });
@@ -463,6 +624,14 @@ export const useEventListStore = defineStore("eventList", () => {
       if (!result.ok) {
         return false;
       }
+
+      const hostessId = result.data.id;
+      const registerInEvent = await firebaseStore.addItemToArrayField(
+        `eventList/${eventId}`,
+        "hostesses",
+        hostessId
+      );
+      console.log({ registerInEvent });
       return true;
     } catch (error) {
       console.log({ error });
@@ -500,6 +669,13 @@ export const useEventListStore = defineStore("eventList", () => {
         `eventList/${eventId}/hostesses`,
         hostess.id
       );
+
+      const registerInEvent = await firebaseStore.removeItemToArrayField(
+        `eventList/${eventId}`,
+        "hostesses",
+        hostess.id
+      );
+      console.log({ registerInEvent });
       return { ok: true };
     } catch (error) {
       console.log({ error });
@@ -534,6 +710,9 @@ export const useEventListStore = defineStore("eventList", () => {
     deleteEvent,
     watchEventById,
     updateEvent,
+    duplicateEvent,
+    getEventsList,
+    getEventInfo,
     // LISTS
     createList,
     watchLists,
@@ -549,6 +728,7 @@ export const useEventListStore = defineStore("eventList", () => {
     checkIfGuestExistsInServer,
     checkIfCustomerExists,
     checkInGuest,
+    getEventGuestById,
     // PROMOTERS
     createPromoter,
     getPromoterById,

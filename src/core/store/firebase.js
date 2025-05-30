@@ -18,6 +18,8 @@ import {
   updateDoc,
   where,
   onSnapshot,
+  getAggregateFromServer,
+  sum,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 
@@ -292,23 +294,44 @@ export const useFirebaseStore = defineStore("firebase", () => {
     modifiedCallback,
     removedCallback
   ) {
-    const q = query(collection(firestore, options.path));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === "added") {
-          console.log("New doc: ", change.doc.data());
-          addedCallback(change.doc.data());
-        }
-        if (change.type === "modified") {
-          modifiedCallback(change.doc.data());
-        }
-        if (change.type === "removed") {
-          console.log("Removed city: ", change.doc.data());
-          removedCallback(change.doc.data());
-        }
+    try {
+      const q = query(collection(firestore, options.path));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            console.log("New doc: ", change.doc.data());
+            addedCallback(change.doc.data());
+          }
+          if (change.type === "modified") {
+            modifiedCallback(change.doc.data());
+          }
+          if (change.type === "removed") {
+            console.log("Removed doc: ", change.doc.data());
+            removedCallback(change.doc.data());
+          }
+        });
       });
-    });
-    return unsubscribe;
+      return unsubscribe;
+    } catch (error) {
+      console.log({ error });
+      notifyError(error);
+    }
+  }
+
+  // UPLOAD PICTURE
+  async function uploadPicture(picture) {
+    try {
+      const storageRef = ref(storage, picture.path);
+      await uploadBytes(storageRef, picture.file);
+      const url = await getDownloadURL(storageRef);
+      return {
+        // name: picture.name,
+        path: picture.path,
+        url: url,
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
   // UPLOAD PICTURES
@@ -501,6 +524,253 @@ export const useFirebaseStore = defineStore("firebase", () => {
     }
   }
 
+  async function processFileUpload(col, document) {
+    try {
+      const entries = Object.entries(document);
+
+      const fields = entries.map(async ([fieldName, fieldValue]) => {
+        if (fieldValue instanceof File) {
+          const pictureToUpload = {
+            name: fieldName,
+            path: `${col}/${document.id}/${fieldName}.${fieldValue.type
+              .split("/")
+              .pop()}`,
+            file: fieldValue,
+          };
+          const picture = await uploadPicture(pictureToUpload);
+          return [fieldName, picture];
+        } else if (Array.isArray(fieldValue)) {
+          const hasFile = fieldValue.some((f) => f instanceof File);
+          if (hasFile) {
+            const picturesMap = fieldValue.map(async (value, index) => {
+              if (value instanceof File) {
+                const pictureToUpload = {
+                  name: fieldName,
+                  path: `${col}/${
+                    document.id
+                  }/${fieldName}-${index}.${value.type.split("/").pop()}`,
+                  file: value,
+                };
+                const picture = await uploadPicture(pictureToUpload);
+                return picture;
+              }
+              return value;
+            });
+            const pictures = await Promise.all(picturesMap);
+            return [fieldName, pictures];
+          }
+          return [fieldName, fieldValue];
+        }
+        return [fieldName, fieldValue];
+      });
+
+      console.log({ fields });
+
+      const fieldArray = await Promise.all(fields);
+
+      const objMerge = fieldArray.reduce((total, [fieldName, fieldValue]) => {
+        total[fieldName] = fieldValue;
+        return total;
+      }, {});
+
+      console.log({ objMerge });
+      return objMerge;
+    } catch (error) {
+      console.log({ error });
+      return {};
+    }
+  }
+
+  async function processFileUpload2(col, document) {
+    try {
+      const entries = Object.entries(document);
+      const filesToUpload = entries.reduce((total, [fieldName, fieldValue]) => {
+        if (fieldValue instanceof File) {
+          total.push({
+            name: fieldName,
+            path: `${col}/${document.id}/${fieldName}.${fieldValue.type
+              .split("/")
+              .pop()}`,
+            file: fieldValue,
+          });
+          return total;
+        } else if (Array.isArray(fieldValue)) {
+          if (fieldValue[0] instanceof File) {
+            const fields = fieldValue.map((value, index) => {
+              return {
+                name: fieldName,
+                path: `${col}/${document.id}/${fieldName}-${index}.${value.type
+                  .split("/")
+                  .pop()}`,
+                file: value,
+              };
+            });
+
+            total.push(...fields);
+            return total;
+          }
+          return total;
+        }
+        return total;
+      }, []);
+      console.log({ filesToUpload });
+      const pictures = await uploadPictures(filesToUpload);
+      console.log({ pictures });
+      const objMerge = pictures.reduce((total, picture) => {
+        if (total[picture.name]) {
+          if (Array.isArray(total[picture.name])) {
+            total[picture.name] = [
+              ...total[picture.name],
+              { path: picture.path, url: picture.url },
+            ];
+            return total;
+          } else {
+            total[picture.name] = [
+              total[picture.name],
+              { path: picture.path, url: picture.url },
+            ];
+            return total;
+          }
+        } else {
+          total[picture.name] = { path: picture.path, url: picture.url };
+          return total;
+        }
+      }, {});
+      console.log({ objMerge });
+      return objMerge;
+    } catch (error) {
+      console.log({ error });
+      return {};
+    }
+  }
+
+  // POST DOCUMENT
+  async function postDocumentWithFile(col, docu, type = "create") {
+    let document = { ...docu };
+
+    let fireDocument = null;
+    if (document.id) {
+      fireDocument = getPostDocRefWithId(col, document.id, converter[type]);
+    } else {
+      fireDocument = getPostDocRef(col, converter[type]);
+      document.id = fireDocument.id;
+    }
+    try {
+      // search for files.
+      // PROCESS FILES IF HAVE
+
+      const objMerge = await processFileUpload(col, document);
+      document = { ...document, ...objMerge };
+
+      console.log({ document });
+      // FINISH PROCESS FILES
+      const docRef = await setDoc(fireDocument, document);
+
+      const notify = (
+        title = "Document added",
+        text = `<p>Document added to <strong>${col}</strong> collection<p><p>ID: ${document.id}`,
+        button = "OK"
+      ) => {
+        return Swal.fire({
+          title: title,
+          html: text,
+          icon: "success",
+          confirmButtonText: button,
+        });
+      };
+      return {
+        ok: true,
+        data: { id: document.id, document },
+        notify,
+      };
+    } catch (error) {
+      notifyError(error);
+
+      return {
+        ok: false,
+      };
+    }
+  }
+
+  // ADD ITEM TO AN ARRAY
+
+  async function addItemToArrayField(path, fieldName, item, type = "update") {
+    const fireDocument = doc(firestore, `${path}`).withConverter(
+      converter[type]
+    );
+    try {
+      const document = {};
+      document[fieldName] = arrayUnion(item);
+
+      const docRef = await setDoc(fireDocument, document, {
+        merge: true,
+      });
+      const notify = (
+        title = "Document Updated",
+        html = `Document <strong>${id}</strong> sucessfully updated at <strong>${col}</strong> collection`
+      ) => {
+        Swal.fire({
+          title: title,
+          html: html,
+          icon: "success",
+        });
+      };
+
+      return {
+        ok: true,
+        notify,
+      };
+    } catch (error) {
+      notifyError(error);
+
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  async function removeItemToArrayField(
+    path,
+    fieldName,
+    item,
+    type = "update"
+  ) {
+    const fireDocument = doc(firestore, `${path}`).withConverter(
+      converter[type]
+    );
+    try {
+      const document = {};
+      document[fieldName] = arrayRemove(item);
+
+      const docRef = await setDoc(fireDocument, document, {
+        merge: true,
+      });
+      const notify = (
+        title = "Document Updated",
+        html = `Document <strong>${id}</strong> sucessfully updated at <strong>${col}</strong> collection`
+      ) => {
+        Swal.fire({
+          title: title,
+          html: html,
+          icon: "success",
+        });
+      };
+
+      return {
+        ok: true,
+        notify,
+      };
+    } catch (error) {
+      notifyError(error);
+
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
   // BULK UPDATE DOCUMENTS
   async function bulkUpdateDocuments(operations, feedback = true) {
     if (Array.isArray(operations)) {
@@ -535,6 +805,9 @@ export const useFirebaseStore = defineStore("firebase", () => {
       converter[type]
     );
     try {
+      const objMerge = await processFileUpload(col, document);
+      console.log({ objMerge });
+      document = { ...document, ...objMerge };
       const docRef = await setDoc(fireDocument, document, {
         merge: true,
       });
@@ -555,7 +828,7 @@ export const useFirebaseStore = defineStore("firebase", () => {
         notify,
       };
     } catch (error) {
-      notifyError(Error);
+      notifyError(error);
 
       return {
         ok: false,
@@ -728,6 +1001,137 @@ export const useFirebaseStore = defineStore("firebase", () => {
     } catch (error) {
       notifyError(error);
 
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  // GET COUNT
+  async function getCount(data) {
+    console.log("getCount", data);
+    let queries = [];
+    let queryItems = [];
+    // QUERY EM ARRAY
+    if (data.query && Array.isArray(data.query)) {
+      queries = data.query;
+      queryItems = queries.map(([key, operator, value]) => {
+        return where(key, operator, value);
+      });
+    }
+    // QUERY EM OBJETO
+    else {
+      queries = data.query ? Object.entries(data.query) : [];
+      queryItems = queries.map((q) => {
+        const operator = /\[contains\]/.test(q[0])
+          ? "array-contains"
+          : /\[in\]/.test(q[0])
+          ? "in"
+          : /\[any\]/.test(q[0])
+          ? "array-contains-any"
+          : /\[gt\]/.test(q[0])
+          ? ">"
+          : /\[gte\]/.test(q[0])
+          ? ">="
+          : /\[lt\]/.test(q[0])
+          ? "<"
+          : /\[lte\]/.test(q[0])
+          ? "<="
+          : "==";
+        const key = q[0]
+          .replace(/\[gte\]/, "")
+          .replace(/\[lte\]/, "")
+          .replace(/\[gt\]/, "")
+          .replace(/\[lt\]/, "")
+          .replace(/\[any\]/, "")
+          .replace(/\[in\]/, "")
+          .replace(/\[contains\]/, "");
+        const value = Number(q[1]) ? Number(q[1]) : q[1];
+        // console.log({ key, operator, value });
+        return where(key, operator, value);
+      });
+    }
+    try {
+      if (data.collection) {
+        let q;
+        q = query(collection(firestore, data.collection), ...queryItems);
+        const countSnapshot = await getCountFromServer(q);
+        const totalCount = countSnapshot.data().count;
+        return {
+          ok: true,
+          data: totalCount,
+        };
+      }
+    } catch (error) {
+      notifyError(error);
+      return {
+        ok: false,
+        error,
+      };
+    }
+  }
+
+  // GET SUM
+  async function getSum(data) {
+    console.log("getSum", data);
+    let queries = [];
+    let queryItems = [];
+    // QUERY EM ARRAY
+    if (data.query && Array.isArray(data.query)) {
+      queries = data.query;
+      queryItems = queries.map(([key, operator, value]) => {
+        return where(key, operator, value);
+      });
+    }
+    // QUERY EM OBJETO
+    else {
+      queries = data.query ? Object.entries(data.query) : [];
+      queryItems = queries.map((q) => {
+        const operator = /\[contains\]/.test(q[0])
+          ? "array-contains"
+          : /\[in\]/.test(q[0])
+          ? "in"
+          : /\[any\]/.test(q[0])
+          ? "array-contains-any"
+          : /\[gt\]/.test(q[0])
+          ? ">"
+          : /\[gte\]/.test(q[0])
+          ? ">="
+          : /\[lt\]/.test(q[0])
+          ? "<"
+          : /\[lte\]/.test(q[0])
+          ? "<="
+          : "==";
+        const key = q[0]
+          .replace(/\[gte\]/, "")
+          .replace(/\[lte\]/, "")
+          .replace(/\[gt\]/, "")
+          .replace(/\[lt\]/, "")
+          .replace(/\[any\]/, "")
+          .replace(/\[in\]/, "")
+          .replace(/\[contains\]/, "");
+        const value = Number(q[1]) ? Number(q[1]) : q[1];
+        // console.log({ key, operator, value });
+        return where(key, operator, value);
+      });
+    }
+    try {
+      if (data.collection) {
+        let q;
+        q = query(collection(firestore, data.collection), ...queryItems);
+
+        const countSnapshot = await getAggregateFromServer(q, {
+          total: sum(data.field),
+        });
+        const total = countSnapshot.data().total;
+        return {
+          ok: true,
+          data: total,
+        };
+      }
+    } catch (error) {
+      notifyError(error);
       return {
         ok: false,
         error,
@@ -922,14 +1326,14 @@ export const useFirebaseStore = defineStore("firebase", () => {
 
   // DATABASE
 
-  async function addClickCountToEvent(eventId) {
-    const updateClick = update(refDatabase(database, "events/" + eventId), {
-      clickCount: incrementDatabase(1),
-    });
-    console.log({ updateClick });
-  }
+  // async function addClickCountToEvent(eventId) {
+  //   const updateClick = update(refDatabase(database, "events/" + eventId), {
+  //     clickCount: incrementDatabase(1),
+  //   });
+  //   console.log({ updateClick });
+  // }
 
-  addClickCountToEvent("25UBJKMC0NmNVYdU5ax1");
+  // addClickCountToEvent("25UBJKMC0NmNVYdU5ax1");
   console.log("firebase Store");
 
   return {
@@ -952,5 +1356,11 @@ export const useFirebaseStore = defineStore("firebase", () => {
     watchCollection,
     deleteDocument,
     watchDocument,
+    removeItemToArrayField,
+    addItemToArrayField,
+    postDocumentWithFile,
+    uploadPicture,
+    getCount,
+    getSum,
   };
 });

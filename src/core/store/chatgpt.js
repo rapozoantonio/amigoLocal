@@ -145,7 +145,7 @@ export const useChatgptStore = defineStore("chatgpt", () => {
         messages: [
           {
             role: "system",
-            content: `Atue como um especialista de eventos, receberá um listado de convidados, deve interpretar cada linha para extrair a informação de cada convidado e preencher os seguintes campos quando possivel: name, phone, instagram, email, taxId. Deve retornar uma JSON List`,
+            content: `Atue como um especialista de eventos, receberá um listado de convidados, deve interpretar cada linha para extrair a informação de cada convidado e preencher os seguintes campos quando possivel: name, phone, instagram, email, taxId. Com base nos nomes tente identificar o genero do convidado e coloque essa info no campo 'gender' (possiveis valores "Male", "Female", null). Deve retornar uma JSON List`,
           },
 
           {

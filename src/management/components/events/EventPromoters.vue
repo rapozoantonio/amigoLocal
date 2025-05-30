@@ -77,14 +77,19 @@
 
     <!-- CREATE PROMOTER DIALOG -->
     <form-dialog :schema="eventPromoterSchema" v-model:model="promoterForm" v-model:opened="showCreateDialog"
-      @submit="submitPromoter">
+      title="Adicionar promoter" @submit="submitPromoter">
       <template #prepend-inner>
         <field-user-search entity="promoters" @select="selectPromoter"></field-user-search>
+      </template>
+
+
+      <template #activator="props">
+        <v-fab v-bind="props" icon="mdi-plus" app location="right bottom" color="primary" rounded="pill"></v-fab>
       </template>
     </form-dialog>
     <!-- EDIT PROMOTER DIALOG -->
     <form-dialog :schema="eventPromoterSchema" v-model:model="promoterForm" v-model:opened="showEditDialog"
-      @submit="submitPromoterUpdate">
+      @submit="submitPromoterUpdate" title="Editar promoter">
     </form-dialog>
 
   </div>
@@ -117,10 +122,11 @@ import { useRoute } from "vue-router";
 const swal = inject("$swal");
 const props = defineProps({
   event: { type: Object, required: true },
-  promoters: { type: Array, required: true }
+  promoters: { type: Array, required: true },
+  guests: { type: Array, required: true }
 });
 
-const { event, promoters } = toRefs(props);
+const { event, promoters, guests } = toRefs(props);
 const emit = defineEmits(["update:promoters"]);
 const eventListStore = useEventListStore();
 const route = useRoute();
@@ -144,6 +150,21 @@ const tableHeaders = promoterTableHeaders;
 
 // Computed stats for cards
 
+const promoterFinal = computed(() => {
+  return promoters.value.map(promoter => {
+    return {
+      ...promoter,
+      guests: guests.value.filter(guest => guest.promoter.id === promoter.id).length,
+      checkIns: guests.value.filter(guest => guest.promoter.id === promoter.id && guest.status === "checked-in").length,
+      revenue: guests.value.reduce((sum, guest) => {
+        const price = guest.promoter.id === promoter.id && guest.status === "checked-in" ? guest.price : 0
+        sum = sum + price;
+        return sum
+      }, 0)
+    }
+  })
+})
+
 const eventId = computed(() => {
   return route.params.eventId;
 })
@@ -152,10 +173,10 @@ const activePromoters = computed(
   () => promoters.value.filter((p) => p.active).length
 );
 const totalGuests = computed(() =>
-  promoters.value.reduce((sum, p) => sum + p.guests, 0)
+  guests.value.length
 );
 const totalRevenue = computed(() =>
-  promoters.value.reduce((sum, p) => sum + p.revenue, 0)
+  guests.value.reduce((sum, guest) => sum + guest.price, 0)
 );
 
 const promoterCards = ref([
@@ -175,7 +196,7 @@ const promoterCards = ref([
   },
   {
     title: "Total Convidados",
-    value: totalGuests,
+    value: totalGuests.value,
     icon: "mdi-ticket-confirmation",
     iconColor: "info",
     accentColor: "#0288d1",
@@ -194,9 +215,9 @@ const filteredPromoters = computed(() => {
   const query = searchQuery.value.toLowerCase();
   const isStatusFiltered = statusFilter.value !== "all";
   if (!isStatusFiltered && !query) {
-    return [...promoters.value];
+    return [...promoterFinal.value];
   }
-  return promoters.value.filter((promoter) => {
+  return promoterFinal.value.filter((promoter) => {
     if (
       isStatusFiltered &&
       promoter.active !== (statusFilter.value === "active")

@@ -1,6 +1,15 @@
 <template>
     <tr>
-        <td class="num-col text-center">{{ index + 1 }}</td>
+
+        <v-hover>
+            <template v-slot:default="{ isHovering, props }">
+                <td v-bind="props" class="num-col text-center">
+                    <v-btn variant="tonal" density="compact" v-if="isHovering" icon="mdi-close"
+                        @click="removeGuest"></v-btn>
+                    <v-btn variant="tonal" v-else density="compact" icon>{{ index + 1 }}</v-btn>
+                </td>
+            </template>
+        </v-hover>
         <td class="name-col">
             <div class="editable-row">
                 <div v-if="isEditing" class="edit-input">
@@ -16,22 +25,21 @@
             </div>
         </td>
         <td class="gender-col text-center">
-            <v-btn icon @click="toggleGender" size="small" :color="guest.gender === 'Female'
-                ? 'pink'
+            <v-btn icon @click="toggleGender" variant="flat" size="small" :color="guest.gender === 'Female'
+                ? 'pink-darken-2'
                 : guest.gender === 'Male'
-                    ? 'blue'
-                    : 'grey'
+                    ? 'blue-darken-4'
+                    : 'grey-darken-3'
                 ">
                 <v-icon>
                     {{
                         guest.gender === "Female"
                             ? "mdi-gender-female"
-                            : "mdi-gender-male"
+                            : guest.gender === "Male" ? "mdi-gender-male" : "mdi-gender-male-female"
                     }}
                 </v-icon>
             </v-btn>
         </td>
-
         <td class=" text-right">
             <v-progress-circular v-if="loading" indeterminate color="primary"></v-progress-circular>
             <v-menu v-else v-model="showStatusMenu" :close-on-content-click="false" location="top">

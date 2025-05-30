@@ -33,14 +33,24 @@ const routes = [
       },
       {
         path: "events/:eventId",
-        name: "event-detail",
+        name: "event-id",
         component: () => import("@/management/views/ProdEventDetail.vue"),
         props: true,
       },
       {
         path: "profile",
+        name: "pro-profile",
+        component: () => import("@/management/views/ProdEventList.vue"), // Reuse event list as placeholder
+      },
+      {
+        path: "profile",
         name: "profile",
         component: () => import("@/management/views/ProdEventList.vue"), // Reuse event list as placeholder
+      },
+      {
+        path: "roles",
+        name: "roles",
+        component: () => import("@/management/views/RoleSettings.vue"), // Reuse event list as placeholder
       },
     ],
   },

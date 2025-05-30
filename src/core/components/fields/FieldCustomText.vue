@@ -3,6 +3,7 @@
         <v-text-field v-bind="{ ...fieldAttrs, ...$attrs }" v-model="username"
             :label="label ? typeof label === 'string' ? label : 'Username' : ''" clearable>
         </v-text-field>
+        {{ username }}
     </div>
 </template>
 
@@ -21,7 +22,7 @@ const { fieldAttrs } = inject("$helpers");
 
 watch(() => username.value, (newValue) => {
     if (/username/.test(textType)) {
-        username.value = newValue?.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
+        username.value = username.value ? username.value.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase() : username.value;
     }
     if (/instagram/.test(textType)) {
         username.value = newValue ? "@" + newValue?.replace(/ /g, "").replace(/@/g, "").toLowerCase() : newValue;
@@ -34,7 +35,8 @@ watch(() => username.value, (newValue) => {
 onMounted(() => {
     if (username.value) {
         if (/username/.test(textType)) {
-            username.value = username.value.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
+            console.log(username.value)
+            username.value = username.value ? username.value.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase() : username.value;
         }
         if (/instagram/.test(textType)) {
             username.value = username.value ? "@" + username.value.replace(/ /g, "").replace(/@/g, "").toLowerCase() : username.value;

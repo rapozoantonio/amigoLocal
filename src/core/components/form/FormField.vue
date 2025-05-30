@@ -15,7 +15,7 @@
         <v-divider opacity="0.8" thickness="2" color="grey" v-else> </v-divider>
     </v-col>
 
-    <v-col v-else-if="readOnly" :cols="col" :md="md" :sm="sm" :lg="lg" :xl="xl" class="pt-1"
+    <v-col v-else-if="readOnly && false" :cols="col" :md="md" :sm="sm" :lg="lg" :xl="xl" class="pt-1"
         :class="{ 'd-flex': labelType === 'left', required: rules.find(i => i === 'required') }">
         <!-- <p v-if="prepend" class="text-body-2">{{ prepend }}</p>
 
@@ -46,6 +46,7 @@
         </template> -->
     </v-col>
 
+
     <v-col v-else :cols="col" :md="md" :sm="sm" :lg="lg" :xl="xl" class="pt-1"
         :class="{ 'd-flex': labelType === 'left', required: rules.find(i => i === 'required') }">
         <p v-if="prepend" class="text-body-2">{{ prepend }}</p>
@@ -58,9 +59,9 @@
             <span class="ml-1" v-if="rules.find(i => i === 'required')">*</span>
             <span class="ml-1" v-else><small>(opcional)</small></span>
         </p>
-        <p v-else-if="labelType === 'left'" class="mt-3 text-caption  text-right mr-3 field-label" :for="id"> <v-icon
-                start v-if="icon">{{
-                    icon }}</v-icon><span v-if="showLabelLeft">
+        <p v-else-if="labelType === 'left'" class="mt-3 text-caption  text-right mr-3 field-label" :for="id">
+            <v-icon start v-if="icon">{{
+                icon }}</v-icon><span v-if="showLabelLeft">
                 {{ label || name
                     || id }}
             </span>
@@ -68,14 +69,32 @@
             <span class="ml-1" v-else> (opcional)</span>
         </p>
 
-
+        <!-- TEXT, DATE, TIME -->
+        <template v-if="['datetime'].includes(type)">
+            <field-date v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"></field-date>
+        </template>
 
         <!-- TEXT, DATE, TIME -->
-        <template v-if="['text', 'date', 'time', 'date+18'].includes(type)">
-            <v-text-field :type="type === 'date+18' ? 'date' : type" v-model="model[id]"
+        <template v-if="['text', 'time', 'date', 'datetime-local'].includes(type)">
+            <v-text-field :type="type === 'date+18' ? 'date' : type" v-model.trim="model[id]"
                 v-bind="{ ...fieldAttrs, ...attrs }" :max="type === 'date+18' ? minDate : null">
             </v-text-field>
         </template>
+
+
+        <!-- 
+        <template v-if="['time'].includes(type)">
+            <v-text-field v-model="model[id]" label="Picker in menu" type="time" @click="menu2 = true"
+                prepend-icon="mdi-clock-time-four-outline" v-bind="{ ...fieldAttrs, ...attrs }">
+                <v-menu v-model="menu2" :close-on-content-click="false" activator="parent"
+                    transition="scale-transition">
+                    <v-card>
+                        <v-time-picker format="24hr" v-if="menu2" v-model="model[id]" full-width></v-time-picker>
+                        <v-btn color="primary"> Close</v-btn>
+                    </v-card>
+                </v-menu>
+            </v-text-field>
+        </template> -->
 
         <!-- NUMBER -->
         <template v-if="['number'].includes(type)">
@@ -89,6 +108,8 @@
                 <template #label>
                     <span class="ml-2" v-html="label || id">
                     </span>
+                    <span class="ml-1" v-if="rules.find(i => i === 'required')">*</span>
+                    <span class="ml-1" v-else><small>(opcional)</small></span>
                 </template>
             </v-checkbox>
         </template>
@@ -96,7 +117,7 @@
 
         <!-- EMAIL -->
         <template v-else-if="type === 'email'">
-            <v-text-field type="email" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            <v-text-field type="email" v-model.trim="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </v-text-field>
         </template>
 
@@ -110,12 +131,12 @@
                     : 'mdi-eye-off'
                     " @click:append-inner="
                         showPassword = !showPassword
-                        " v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"></v-text-field>
+                        " v-model.trim="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"></v-text-field>
         </template>
 
         <!-- SWITCH -->
         <template v-else-if="type === 'switch'">
-            <v-switch class="ml-2" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            <v-switch class="ml-2" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }" color="primary">
                 <template #label>
                     <span class="ml-2" v-html="label || id">
                     </span>
@@ -127,7 +148,7 @@
 
         <!-- TEXTAREA -->
         <template v-else-if="type === 'textarea'">
-            <v-textarea auto-grow rows="2" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            <v-textarea auto-grow rows="2" v-model.trim="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </v-textarea>
         </template>
 
@@ -135,7 +156,7 @@
         <template v-else-if="type === 'autocomplete'">
             <v-autocomplete @update:focused="updateInput" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"
                 :items="items" closable-chips auto-select-first :clear-on-select="true" chips
-                :item-title="items[0].name ? 'name' : 'title'" :item-value="items[0].value ? 'value' : 'id'" multiple>
+                :item-title="items[0]?.name ? 'name' : 'title'" :item-value="items[0]?.value ? 'value' : 'id'" multiple>
             </v-autocomplete>
         </template>
 
@@ -148,8 +169,8 @@
         <!-- SELECT -->
         <template v-else-if="type === 'select'">
             <v-autocomplete @update:focused="updateInput" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"
-                :items="items" auto-select-first :clear-on-select="true" :item-title="items[0].name ? 'name' : 'title'"
-                :item-value="items[0].value ? 'value' : 'id'">
+                :items="items" auto-select-first :clear-on-select="true" :item-title="items[0]?.name ? 'name' : 'title'"
+                :item-value="items[0]?.value ? 'value' : 'id'">
             </v-autocomplete>
         </template>
 
@@ -158,7 +179,7 @@
         <template v-else-if="type === 'select-ids'">
             <v-autocomplete @update:focused="updateInput" @update:model-value="updateSelectedIds" v-model="model[id]"
                 v-bind="{ ...fieldAttrs, ...attrs }" :items="items" auto-select-first :clear-on-select="true"
-                :item-title="items[0].name ? 'name' : 'title'" :item-value="items[0].value ? 'value' : 'id'"
+                :item-title="items[0]?.name ? 'name' : 'title'" :item-value="items[0]?.value ? 'value' : 'id'"
                 return-object :multiple="true">
             </v-autocomplete>
         </template>
@@ -167,7 +188,7 @@
         <template v-else-if="type === 'select-id'">
             <v-autocomplete @update:focused="updateInput" @update:model-value="updateSelectedId" v-model="model[id]"
                 v-bind="{ ...fieldAttrs, ...attrs }" :items="items" auto-select-first :clear-on-select="true"
-                :item-title="items[0].name ? 'name' : 'title'" :item-value="items[0].value ? 'value' : 'id'"
+                :item-title="items[0]?.name ? 'name' : 'title'" :item-value="items[0]?.value ? 'value' : 'id'"
                 return-object :multiple="false">
             </v-autocomplete>
         </template>
@@ -175,9 +196,15 @@
 
         <!-- IMAGE -->
         <template v-else-if="type === 'image'">
-            <field-image v-model:model="model[id]" v-model:files="files"
+            <field-single-image v-model:model="model[id]" v-model:files="files"
                 v-bind="{ ...fieldAttrs, ...attrs, ...$attrs }">
-            </field-image>
+            </field-single-image>
+        </template>
+
+        <!-- GALLERY -->
+        <template v-else-if="type === 'gallery'">
+            <field-gallery v-model:model="model[id]" v-bind="{ ...fieldAttrs, ...attrs, ...$attrs }">
+            </field-gallery>
         </template>
 
         <!-- CUSTOM-COUNTRY -->
@@ -229,6 +256,10 @@
             </field-current-user>
         </template>
 
+        <!-- PHONE  -->
+        <template v-else-if="type === 'phone'">
+            <field-phone v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }"></field-phone>
+        </template>
 
 
 
@@ -240,9 +271,15 @@
 
         <!-- LIST -->
         <template v-else-if="type === 'list'">
-            <field-list :labelType="labelType" :children="children" v-model="model[id]"
-                v-bind="{ ...fieldAttrs, ...attrs }" :label="label"></field-list>
+            <field-list :labelType="labelType" v-bind="{ ...fieldAttrs, ...attrs }" :label="label" :children="children"
+                v-model="model[id]"></field-list>
         </template>
+
+        <!-- MATRIX -->
+        <!-- <template v-else-if="type === 'boolean-matrix'">
+            <field-matriz :labelType="labelType" :children="children" v-model="model[id]"
+                v-bind="{ ...fieldAttrs, ...attrs }" :label="label"></field-matriz>
+        </template> -->
 
         <!-- CUSTOM-USERNAME -->
         <template v-else-if="type === 'custom-username'">
@@ -250,12 +287,25 @@
             </field-username>
         </template>
 
+        <!-- COLOR -->
+        <template v-else-if="type === 'color' || type === 'color-mini'">
+            <field-color :items="items" :type="type" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            </field-color>
+        </template>
+
+        <!--ICON -->
+        <template v-else-if="type === 'icon'">
+            <field-icon :items="items" :type="type" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
+            </field-icon>
+        </template>
+
+
+
         <!-- CUSTOM-TEXT -->
         <template v-else-if="/custom-text/.test(type)">
             <field-custom-text :text-type="type" v-model="model[id]" v-bind="{ ...fieldAttrs, ...attrs }">
             </field-custom-text>
         </template>
-
     </v-col>
 
 </template>
@@ -264,6 +314,7 @@
 import {
     computed,
     inject,
+    onBeforeMount,
     onMounted,
     onUpdated,
     readonly,
@@ -286,6 +337,13 @@ import FieldList from '../fields/FieldList.vue';
 import FieldBooleanFlags from '../fields/FieldBooleanFlags.vue';
 import FieldCurrentUser from '../fields/FieldCurrentUser.vue';
 import FieldCustomText from '../fields/FieldCustomText.vue';
+import FieldPhone from '../fields/FieldPhone.vue';
+import FieldSingleImage from '../fields/FieldSingleImage.vue';
+import FieldGallery from '../fields/FieldGallery.vue';
+import FieldColor from '../fields/FieldColor.vue';
+import FieldIcon from '../fields/FieldIcon.vue';
+import FieldDate from '../fields/FieldDate.vue';
+import FieldMatriz from '../fields/FieldMatriz.vue';
 
 const { fieldAttrs, rules: fieldRules } = inject("$helpers");
 const model = defineModel("model");
@@ -313,6 +371,8 @@ const {
     items,
     label,
     labelType,
+    max,
+    min,
     messages,
     multiple,
     noGutters,
@@ -366,6 +426,12 @@ const {
     labelType: {
         type: String, default: "up"  // in out left
     },
+    max: {
+        type: [Number, String, null], default: null,
+    },
+    min: {
+        type: [Number, String, null], default: null,
+    },
     messages: {
         type: [String, null]
     },
@@ -402,6 +468,7 @@ const {
     type: {
         type: String, required: true,
     },
+
 });
 
 const col = computed(() => {
@@ -410,6 +477,9 @@ const col = computed(() => {
     }
     if (size === "auto") {
         return size
+    }
+    if (size === "fill") {
+        return false
     }
     return size === "xs" ? "6" : size === "sm" ? "12" : size === "md" ? "12" : "12"
 });
@@ -420,6 +490,9 @@ const sm = computed(() => {
     if (size === "auto") {
         return size
     }
+    if (size === "fill") {
+        return false
+    }
     return size === "xs" ? "6" : size === "sm" ? "6" : size === "md" ? "9" : "12"
 });
 const md = computed(() => {
@@ -428,6 +501,9 @@ const md = computed(() => {
     }
     if (size === "auto") {
         return size
+    }
+    if (size === "fill") {
+        return false
     }
     return size === "xs" ? "6" : size === "sm" ? "6" : size === "md" ? "9" : "12"
 });
@@ -438,6 +514,9 @@ const lg = computed(() => {
     if (size === "auto") {
         return size
     }
+    if (size === "fill") {
+        return false
+    }
     return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
 });
 const xl = computed(() => {
@@ -446,6 +525,9 @@ const xl = computed(() => {
     }
     if (size === "auto") {
         return size
+    }
+    if (size === "fill") {
+        return false
     }
     return size === "xs" ? "3" : size === "sm" ? "6" : size === "md" ? "9" : "12"
 });
@@ -495,6 +577,7 @@ const stateColor = computed(() => {
 })
 
 const attrs = computed(() => {
+    console.log("fieldParams", fieldParams);
     return {
         rules: [...rules.map(r => fieldRules[r])],
         label: labelType === 'in' ? label ? `${label}${rules.find(i => i === 'required') ? ' *' : ' (opcional)'}` : `${id}${rules.find(i => i === 'required') ? '*' : ' (opcional)'}` : null,
@@ -506,7 +589,7 @@ const attrs = computed(() => {
         rows: rows ? rows : type === "textarea" ? 2 : 1,
         required: rules.find(i => i === 'required'),
         multiple: !!multiple,
-        disabled: readOnly ? true : false,
+        // disabled: readOnly ? true : false,
         baseColor: stateColor.value.base || fieldAttrs.baseColor,
         bgColor: stateColor.value.bg || fieldAttrs.bgColor,
         color: stateColor.value.base || fieldAttrs.color || "white",
@@ -517,8 +600,13 @@ const attrs = computed(() => {
         returnObject: returnObject ? true : false,
         variant: fieldAttrs.variant,
         disabled: disabled,
+        max: max,
+        readonly: readOnly ? true : false,
+        min: min && min.includes("field") ? model.value[min.split(":")[1]] : min,
         ...fieldParams,
-        ...fieldStyle
+        ...fieldStyle,
+        fieldParams,
+        fieldStyle
     }
 })
 
@@ -549,6 +637,9 @@ onMounted(() => {
         }
         if (type === "select-id") {
             model.value[id + "Id"] = null;
+        }
+        if (type === "boolean-matrix") {
+            model.value[id] = {};
         }
     }
     initialValue.value = model.value[id];

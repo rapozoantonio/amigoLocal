@@ -15,172 +15,76 @@
       </v-toolbar>
 
       <v-card-text class="bulk-modal-content">
-        <!-- Input Step -->
-        <div v-if="step === 'input'">
-          <v-form ref="bulkForm" v-model="formValid">
-            <v-autocomplete v-model="selectedList" return-object item-value="id" item-title="name" :items="listOptions"
-              label="Lista" variant="outlined" hide-details class="mb-4" />
-            <v-textarea v-model="inputText" label="Convidados (cole os nomes ou dados em formato livre)"
-              variant="outlined" rows="10" hide-details />
-          </v-form>
-        </div>
-
-        <!-- Preview Step -->
-        <div v-else>
-          <v-row>
+        <v-row dense>
+          <!-- Input Step  -->
+          <template v-if="step === 'input'">
             <v-col cols="12">
-              <p class="preview-info mb-3">
-                Confira os convidados abaixo. Use o ícone de lápis ao lado do nome
-                para editar e toque no botão de gênero para alternar entre masculino
-                e feminino.
-              </p>
+              <v-autocomplete v-model="selectedList" clearable return-object item-value="id" item-title="name"
+                :items="listOptions" label="Lista" variant="outlined" hide-details class="mb-1" />
             </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12">
-              <v-table dense class="preview-table">
-                <thead>
-                  <tr>
-                    <th class="num-col text-center">#</th>
-                    <th class="name-col">Nome</th>
-                    <th class="gender-col text-center">Gênero</th>
-                    <th class="gender-col text-center">Status</th>
-                  </tr>
-                </thead>
-                <tbody v-if="false">
-                  <tr v-for="(guest, index) in parsedGuests" :key="index">
-                    <td class="num-col text-center">{{ index + 1 }}</td>
-                    <td class="name-col">
-                      <div class="editable-row">
-                        <div v-if="editingIndex === index" class="edit-input">
-                          <v-text-field v-model="guest.name" dense hide-details solo autofocus @blur="disableEditing"
-                            @keyup.enter="disableEditing" />
-                        </div>
-                        <div v-else class="editable-content">
-                          <span>{{ guest.name }}</span>
-                          <v-btn icon size="x-small" class="edit-icon ml-4" @click.stop="enableEditing(index)">
-                            <v-icon>mdi-pencil</v-icon>
-                          </v-btn>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="gender-col text-center">
-                      <v-btn icon @click="toggleGender(index)" size="small" :color="guest.gender === 'Feminino'
-                        ? 'pink'
-                        : guest.gender === 'Masculino'
-                          ? 'blue'
-                          : 'grey'
-                        ">
-                        <v-icon>
-                          {{
-                            guest.gender === "Feminino"
-                              ? "mdi-gender-female"
-                              : "mdi-gender-male"
-                          }}
-                        </v-icon>
-                      </v-btn>
-                    </td>
-                  </tr>
-                </tbody>
-
-                <tbody v-if="false">
-                  <tr v-for="(final, index) in finalGuests" :key="index">
-                    <td class="num-col text-center">{{ index + 1 }}</td>
-                    <td class="name-col">
-                      <div class="editable-row">
-                        <div v-if="editingIndex === index" class="edit-input">
-                          <v-text-field v-model="final.guest.name" dense hide-details solo autofocus
-                            @blur="disableEditing" @keyup.enter="disableEditing" />
-                        </div>
-                        <div v-else class="editable-content">
-                          <span>{{ final.guest.name }}</span>
-
-
-
-                          <v-chip v-if="final.existingGuest && final.existingGuest.length > 0">
-                            Convidado ja existe em outra lista
-
-                            <v-menu activator="parent" location="top">
-                              <v-card variant="tonal">
-
-                                <v-list>
-                                  <template #prepend>
-                                    <p>{{ final.existingGuest[0].name }}</p>
-                                  </template>
-                                  <v-list-item>
-                                    <v-list-item-title>ja exus</v-list-item-title>
-                                  </v-list-item>
-                                </v-list>
-                              </v-card>
-
-                            </v-menu>
-                          </v-chip>
-                          <v-chip v-if="final.existingCustomer && final.existingCustomer.length > 0">
-                            Esse convidado ja é um usuario
-
-                            <v-menu activator="parent">
-
-                              <v-list> <template #prepend>
-                                  <p>{{ final.existingCustomer[0].name }}</p>
-                                </template>
-                                <v-list-item>
-                                  <v-list-item-title>Test</v-list-item-title>
-                                </v-list-item>
-                              </v-list>
-                            </v-menu>
-                          </v-chip>
-                          <v-btn icon size="x-small" class="edit-icon ml-4" @click.stop="enableEditing(index)">
-                            <v-icon>mdi-pencil</v-icon>
-                          </v-btn>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="gender-col text-center">
-                      <v-btn icon @click="toggleGender(index)" size="small" :color="final.guest.gender === 'Feminino'
-                        ? 'pink'
-                        : final.guest.gender === 'Masculino'
-                          ? 'blue'
-                          : 'grey'
-                        ">
-                        <v-icon>
-                          {{
-                            final.guest.gender === "Feminino"
-                              ? "mdi-gender-female"
-                              : "mdi-gender-male"
-                          }}
-                        </v-icon>
-                      </v-btn>
-                    </td>
-                  </tr>
-                </tbody>
-
-                <tbody>
-                  <bulk-add-guest-item v-model:guest="finalGuests[index]" v-for="(guest, index) in finalGuests"
-                    :eventId="eventId" :key="guest.name" :index="index" v-model:status="statusOkGuests[index]"
-                    @guest:remove="removeGuest"></bulk-add-guest-item>
-                </tbody>
-
-              </v-table>
+            <v-col cols=" 12">
+              <v-textarea v-model="inputText" label="Convidados (cole os nomes ou dados em formato livre)"
+                variant="outlined" rows="10" hide-details />
             </v-col>
-          </v-row>
+          </template>
 
+          <!-- Preview Step -->
+          <v-col v-else cols="12">
+            <div>
+              <v-row>
+                <v-col cols="12">
+                  <p class="preview-info mb-3">
+                    Confira os convidados abaixo. Use o ícone de lápis ao lado do nome
+                    para editar e toque no botão de gênero para alternar entre masculino
+                    e feminino.
+                  </p>
+                </v-col>
+              </v-row>
+              <v-row>
+                <v-col cols="12">
+                  <div v-if="xs || sm">
+                    <bulk-add-guest-card v-model:guest="finalGuests[index]" v-for="(guest, index) in finalGuests"
+                      :eventId="eventId" :key="guest.name" :index="index" v-model:status="statusOkGuests[index]"
+                      @guest:remove="removeGuest"></bulk-add-guest-card>
+                  </div>
+                  <v-table v-else dense class="preview-table">
+                    <thead>
+                      <tr>
+                        <th class="num-col text-center">#</th>
+                        <th class="name-col">Nome</th>
+                        <th class="gender-col text-center">Gênero</th>
+                        <th class="gender-col text-center">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <bulk-add-guest-item v-model:guest="finalGuests[index]" v-for="(guest, index) in finalGuests"
+                        :eventId="eventId" :key="guest.name" :index="index" v-model:status="statusOkGuests[index]"
+                        @guest:remove="removeGuest"></bulk-add-guest-item>
+                    </tbody>
 
-        </div>
+                  </v-table>
+                </v-col>
+              </v-row>
+            </div>
+          </v-col>
+          <v-col cols="12" v-if="errors">
+            <v-alert type="error" density="compact" variant="tonal">{{ !errors ? "" : errors }}</v-alert>
+          </v-col>
+        </v-row>
       </v-card-text>
-
       <v-card-actions>
         <v-spacer />
         <template v-if="step === 'preview'">
           <v-btn text color="grey-darken-1" @click="backToInput">Voltar</v-btn>
-          <v-btn color="primary" :disabled="processing || !statusOkGuests.every(g => g)" @click="confirmImport">
-            <v-icon left v-if="processing" spin>mdi-loading</v-icon>
+          <v-btn color="primary" :disabled="!statusOkGuests.every(g => g) || !formValid" :loading="processing"
+            :variant="formValid ? 'elevated' : 'tonal'" @click="confirmImport">
             Confirmar Importação
           </v-btn>
         </template>
         <template v-else>
-          <v-btn text color="grey-darken-1" @click="closeModal">Cancelar</v-btn>
-          <v-btn color="primary" :disabled="!formValid || processing" @click="processInput">
-            <v-icon left v-if="processing" spin>mdi-loading</v-icon>
+          <v-btn color="grey-darken-1" @click="closeModal">Cancelar</v-btn>
+          <v-btn color="primary" :disabled="!formValid" :loading="processing" @click="processInput"
+            :variant="formValid ? 'elevated' : 'tonal'">
             Adicionar
           </v-btn>
         </template>
@@ -194,7 +98,9 @@ import { ref, computed, watch } from "vue";
 import { useChatgptStore } from "@/core/store/chatgpt";
 import { useEventListStore } from "@/management/store/eventList";
 import BulkAddGuestItem from "./BulkAddGuestItem.vue";
-
+import BulkAddGuestCard from "./BulkAddGuestCard.vue";
+import { toRefs } from "vue";
+import { useDisplay } from "vuetify/lib/framework.mjs";
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
   listOptions: { type: Array, default: () => [] },
@@ -203,10 +109,12 @@ const props = defineProps({
   eventId: { type: String, default: "" }
 });
 
+const { existingGuests } = toRefs(props);
+
 const emit = defineEmits(["update:modelValue", "guestsAdded"]);
 const chatgptStore = useChatgptStore();
 const eventListStore = useEventListStore();
-
+const { xs, sm } = useDisplay();
 const isVisible = computed({
   get: () => props.modelValue,
   set: (val) => emit("update:modelValue", val),
@@ -226,9 +134,31 @@ watch(
 
 const inputText = ref("");
 const processing = ref(false);
-const formValid = ref(false);
+// const formValid = ref(false);
 const finalGuests = ref([]);
 const statusOkGuests = ref([]);
+
+const errors = computed(() => {
+  if (!selectedList.value) {
+    return "Selecione uma lista";
+  }
+  // parsedGuests
+  const guestsFromSelectedList = existingGuests.value.filter((guest) => guest.list?.id === selectedList.value.id);
+  const quota = selectedList.value.quota;
+
+  if (!quota || quota === 0) {
+    return false;
+  }
+  if (guestsFromSelectedList.length >= quota) {
+    return "Essa lista ja atingiu a quota estabelecida";
+  }
+  if ((guestsFromSelectedList.length + parsedGuests.value.length) > quota) {
+    const spareGuests = (guestsFromSelectedList.length + parsedGuests.value.length) - quota;
+    const stayGuests = parsedGuests.value.length - spareGuests;
+    return "Não cabem todos esses convidados na lista, somente podem entrar " + stayGuests
+  }
+  return false;
+})
 
 // Array for preview: parsed guests with extra 'gender' field.
 const parsedGuests = ref([]);
@@ -237,9 +167,17 @@ const parsedGuests = ref([]);
 const editingIndex = ref(null);
 
 
-// Validate: require nonempty input and selected list.
-watch([inputText, selectedList], () => {
-  formValid.value = inputText.value.trim().length > 0 && !!selectedList.value;
+// // Validate: require nonempty input and selected list.
+// watch([inputText, selectedList], () => {
+//   formValid.value = inputText.value.trim().length > 0 && !!selectedList.value;
+// });
+
+const formValid = computed(() => {
+  if (errors.value || inputText.value.trim().length <= 0) {
+    return false;
+  }
+  return true;
+
 });
 
 /**
@@ -372,6 +310,7 @@ function removeGuest(index) {
 async function processInput() {
 
   try {
+    processing.value = true;
     const response = await chatgptStore.getGuestList(inputText.value);
     console.log("chatgpt", { response });
     if (response.choices && response.choices.length > 0) {
@@ -411,6 +350,9 @@ async function processInput() {
     }
   } catch (error) {
     console.log({ error })
+  }
+  finally {
+    processing.value = false;
   }
 
 

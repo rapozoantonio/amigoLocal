@@ -54,17 +54,17 @@
 
     <!-- ADD GUESS DIALOG -->
     <form-dialog v-model:model="guestForm" :schema="guestSchema" v-model:opened="showAddGuestDialog"
-      @submit="submitNewGuest" :items="{ list: listsItems }">
+      @submit="submitNewGuest" :items="{ list: listsItems }" title="Adicionar convidado">
     </form-dialog>
 
     <!-- EDIT GUEST DIALOG -->
     <form-dialog @submit="updateGuest" v-model:model="guestForm" v-model:opened="showEditDialog" :schema="guestSchema"
-      :items="{ list: listsItems }"></form-dialog>
+      :items="{ list: listsItems }" title="Editar convidado"></form-dialog>
 
     <!-- CHECK-IN DIALOG -->
     <form-dialog cancel="Cancelar" action="Confirmar Check-in" @submit="confirmCheckIn" :loading-btn="actionLoading"
       v-model:model="guestForm" v-model:opened="showCheckInDialog" title="Check-in de Convidado"
-      :schema="guestCheckinSchema" :items="{ list: listsItems }">
+      v-model:loading="actionLoading" :schema="guestCheckinSchema" :items="{ list: listsItems }">
       <template #prepend-inner>
         <div class="">
           <v-list-item :title="guestForm?.name" :subtitle="guestForm?.list?.name">
@@ -181,7 +181,7 @@ const filteredGuests = computed(() => {
     return true;
   });
 });
-const totalGuests = computed(() => totalItems.value);
+const totalGuests = computed(() => guests.value.length);
 const totalCheckIns = computed(() => guests.value.filter((g) => g.status === 'checked-in').length);
 const totalPending = computed(() => guests.value.filter((g) => g.status === 'pending').length);
 const totalCancelled = computed(() => guests.value.filter((g) => g.status === 'cancelled').length);
@@ -253,7 +253,7 @@ async function submitNewGuest(guest, close) {
 
   }
 }
-async function updateGuest(guest, type) {
+async function updateGuest(guest, close, type) {
   console.log({ guest })
   guestForm.value = { ...guest };
   actionLoading.value = true;
@@ -277,6 +277,7 @@ async function updateGuest(guest, type) {
     console.log({ response });
     if (response.ok) {
       console.log("guest updated");
+      close();
       closeDialog();
       await notify.toast(`<strong class="text-success">${guest.name}</strong> ${action}`, "success");
     }
@@ -313,7 +314,7 @@ async function confirmCheckIn2(guestPayload) {
     actionLoading.value = true;
 
     const user = authStore.user
-      ? { uid: authStore.user.uid, email: authStore.user.email }
+      ? { id: authStore.user.uid, email: authStore.user.email }
       : null;
     const guestDoc = { ...guestForm.value, ...guestPayload, checkInTime: Date.now(), checkInBy: user, status: "checked-in" }
     await closeDialog();
@@ -360,7 +361,9 @@ async function closeDialog() {
   return;
 }
 async function performCheckIn(guest) {
-  guestForm.value = { ...guest };
+
+  const list = lists.value.find(l => l.id === guest.list.id);
+  guestForm.value = { ...guest, price: list.price };
   showCheckInDialog.value = true;
 }
 async function editGuest(guest) {

@@ -2,9 +2,11 @@ import { readonly } from "vue";
 
 export default {
   name: "hostesses",
-  // fieldParams: {
-  //   bgColor: "purple",
-  // },
+
+  fieldParams: {
+    // variant: "solo",
+    // labelType: "in",
+  },
   // actionParams: {},
   sections: [
     {
@@ -18,19 +20,19 @@ export default {
           type: "text",
           size: "lg",
           rules: ["required"],
-          disabled: true,
+          readOnly: true,
         },
         {
           id: "email",
           label: "Email",
           type: "email",
           size: "sm",
-          disabled: true,
+          readOnly: true,
         },
         {
           id: "phone",
           label: "Telefone",
-          type: "text",
+          type: "phone",
           size: "sm",
           // fieldStyle: {
           //   bgColor: "red",

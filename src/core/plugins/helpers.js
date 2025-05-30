@@ -24,7 +24,7 @@ export default {
       rounded: "lg",
       variant: "outlined",
       density: "compact",
-      color: "white",
+      color: "primary",
       // class: "mt-1",
       hideDetails: "auto",
       listProps: { bgColor: "grey-darken-4" },
@@ -47,6 +47,34 @@ export default {
       return new Intl.DateTimeFormat("pt-BR", options)
         .format(parsedDate)
         .toUpperCase();
+    };
+
+    helpers.getRandomColor = (usedColors = []) => {
+      const defaultSwatches = [
+        "#F44336",
+        "#E91E63",
+        "#9C27B0",
+        "#673AB7",
+        "#3F51B5",
+        "#2196F3",
+        "#009688",
+        "#4CAF50",
+        "#FFC107",
+        "#FF5722",
+      ];
+      let randomIndex = getRandomIndex(defaultSwatches.length - 1);
+
+      function getRandomIndex(max) {
+        return Math.round(Math.random() * max);
+      }
+
+      if (usedColors || usedColors.length > 0) {
+        while (usedColors.includes(defaultSwatches[randomIndex])) {
+          randomIndex = getRandomIndex(defaultSwatches.length - 1);
+        }
+      }
+
+      return defaultSwatches[randomIndex];
     };
 
     helpers.rules = {
@@ -72,6 +100,25 @@ export default {
         .filter(Boolean) // remove espaços extras
         .map((word) => word.charAt(0).toUpperCase() + word.slice(1)) // capitaliza
         .join(" "); // junta de novo
+    };
+
+    helpers.formatCurrency = (value) => {
+      if (!value && value !== 0) return "R$ 0";
+
+      // Convert to number if it's not already
+      const numValue = typeof value === "number" ? value : Number(value);
+
+      // Handle invalid values
+      if (isNaN(numValue)) return "R$ 0";
+
+      // Format based on value range
+      if (numValue >= 1000000) {
+        return `R$ ${(numValue / 1000000).toFixed(1)}M`;
+      } else if (numValue >= 1000) {
+        return `R$ ${(numValue / 1000).toFixed(1)}k`;
+      } else {
+        return `R$ ${numValue}`;
+      }
     };
 
     app.provide("$helpers", helpers);

@@ -1,118 +1,129 @@
 <template>
-  <v-card class="event-card" :class="{ 'event-card--past': isPastEvent }" variant="elevated" elevation="2"
-    :ripple="true" :to="{ name: 'event-detail', params: { eventId: event.id } }">
+  <v-card class="event-card" :class="{ 'event-card--past': isPastEvent }" variant="tonal" color="grey-darken-2"
+    border="md" elevation="2" :ripple="true">
     <!-- Use flex layout with row direction by default for desktop -->
-    <div class="d-flex flex-column flex-md-row">
-      <!-- Event thumbnail with status indicator -->
-      <div class="flex-shrink-0 w-100 w-md-33 w-lg-25">
-        <v-img :src="event.thumbnail"
-          lazy-src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 200'%3E%3Crect width='300' height='200' fill='%23cccccc'/%3E%3C/svg%3E"
-          height="100%" cover class="event-thumbnail" :aspect-ratio="16 / 9">
+
+    <v-row>
+      <v-col cols="12" md="4" lg="3">
+        <v-img
+          :src="event.image?.url || 'https://formbuilder.ccavenue.com/live/uploads/company_image/488/17316704336156_Event-Image-Not-Found.jpg'"
+          :to="{ name: 'event-id', params: { eventId: event.id } }" cover class="event-thumbnail" height="100%">
           <template v-slot:placeholder>
             <v-row class="fill-height ma-0" align="center" justify="center">
-              <v-progress-circular indeterminate color="grey-lighten-3"></v-progress-circular>
+              <v-progress-circular indeterminate color="primary"></v-progress-circular>
             </v-row>
           </template>
 
-          <div class="status-chip" :class="`status-chip--${event.status}`">
+          <v-chip color="success" label class="mt-2 ml-2" variant="flat">
             {{ statusText }}
-          </div>
+          </v-chip>
         </v-img>
-      </div>
+      </v-col>
+      <v-col>
+        <div class="event-details pa-4 d-flex flex-column justify-space-between">
+          <div>
+            <div class="d-flex justify-space-between align-start">
+              <div class="event-header">
 
-      <!-- Event details -->
-      <div class="event-details pa-4 d-flex flex-column justify-space-between">
-        <div>
-          <div class="d-flex justify-space-between align-start">
-            <div class="event-header">
-              <h3 class="text-h6 font-weight-bold text-truncate mb-1">{{ event.name }}</h3>
-              <div class="d-flex align-center text-body-2 text-grey-darken-1 mb-2">
-                <v-icon size="small" icon="mdi-calendar" class="mr-1"></v-icon>
-                <span>{{ formatDate(event.date) }}</span>
-                <span class="mx-2">•</span>
-                <v-icon size="small" icon="mdi-clock" class="mr-1"></v-icon>
-                <span>{{ formatTime(event.date) }}</span>
+                <router-link :to="{ name: 'event-id', params: { eventId: event.id } }"
+                  class="text-h6 font-weight-bold text-truncate mb-1 text-decoration-none text-white">{{ event.name
+                  }}</router-link>
+                <div class="d-flex align-center text-body-2 text-grey-darken-1 mb-2">
+                  <v-icon size="small" icon="mdi-calendar" class="mr-1"></v-icon>
+                  <span>{{ formatDate(event.startDate) }}</span>
+                  <span class="mx-2">•</span>
+                  <v-icon size="small" icon="mdi-clock" class="mr-1"></v-icon>
+                  <span>{{ formatTime(event.startDate) }}</span>
+                  <!-- <span>{{ Intl.DateTimeFormat().resolvedOptions().timeZone }}</span> -->
+
+                </div>
+                <div class="d-flex align-center text-body-2 text-grey-darken-1 mb-3">
+                  <v-icon size="small" icon="mdi-map-marker" class="mr-1"></v-icon>
+                  <span class="text-truncate">{{ event.location }}</span>
+                </div>
               </div>
-              <div class="d-flex align-center text-body-2 text-grey-darken-1 mb-3">
-                <v-icon size="small" icon="mdi-map-marker" class="mr-1"></v-icon>
-                <span class="text-truncate">{{ event.location }}</span>
-              </div>
-            </div>
 
-            <v-menu location="bottom end" :close-on-content-click="true">
-              <template v-slot:activator="{ props }">
-                <v-btn v-bind="props" icon="mdi-dots-vertical" variant="text" size="small" color="grey"
-                  class="ml-2 menu-button" @click.stop></v-btn>
-              </template>
-              <v-list density="compact">
-                <v-list-item @click.stop="$emit('edit', event.id)">
-                  <template v-slot:prepend>
-                    <v-icon size="small" icon="mdi-pencil"></v-icon>
-                  </template>
-                  <v-list-item-title>Editar</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click.stop="$emit('duplicate', event)">
-                  <template v-slot:prepend>
-                    <v-icon size="small" icon="mdi-content-copy"></v-icon>
-                  </template>
-                  <v-list-item-title>Duplicar</v-list-item-title>
-                </v-list-item>
-                <v-list-item @click.stop="$emit('delete', event.id)">
-                  <template v-slot:prepend>
-                    <v-icon size="small" icon="mdi-delete"></v-icon>
-                  </template>
-                  <v-list-item-title class="text-error">Excluir</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
-
-          <v-divider class="my-3"></v-divider>
-        </div>
-
-        <!-- Event stats -->
-        <div class="event-stats">
-          <div class="stat-item">
-            <div class="text-grey text-caption">Check-ins</div>
-            <div class="d-flex align-center">
-              <span class="text-body-1 font-weight-medium">{{ event.checkInCount }}</span>
-              <span class="text-caption text-grey ml-1">/ {{ event.totalGuests }}</span>
-            </div>
-          </div>
-
-          <v-divider vertical class="mx-3 my-0 stat-divider"></v-divider>
-
-          <div class="stat-item">
-            <div class="text-grey text-caption">Listas</div>
-            <div class="text-body-1 font-weight-medium">{{ event.vipListsCount }}</div>
-          </div>
-
-          <v-divider vertical class="mx-3 my-0 stat-divider"></v-divider>
-
-          <div class="stat-item">
-            <div class="text-grey text-caption">Promotores</div>
-            <div class="text-body-1 font-weight-medium">{{ event.promotersCount }}</div>
-          </div>
-
-          <v-divider vertical class="mx-3 my-0 stat-divider"></v-divider>
-
-          <div class="stat-item revenue-stat">
-            <div class="text-grey text-caption">Receita</div>
-            <div class="d-flex align-center">
-              <span class="text-body-1 font-weight-medium">{{ formatCurrency(event.revenue) }}</span>
-              <v-tooltip v-if="isPastEvent && event.status !== 'cancelled'" location="top">
+              <v-menu location="bottom end" :close-on-content-click="true">
                 <template v-slot:activator="{ props }">
-                  <v-icon v-bind="props" size="x-small" :color="revenueIndicatorColor" :icon="revenueIndicatorIcon"
-                    class="ml-1">
-                  </v-icon>
+                  <v-btn icon="mdi-dots-vertical" variant="text" size="small" color="grey" class="ml-2 menu-button"
+                    v-bind="props" @click.stop></v-btn>
                 </template>
-                <span>{{ revenuePerformanceText }}</span>
-              </v-tooltip>
+                <v-card variant="tonal">
+                  <v-list density="compact">
+                    <v-list-item @click="$emit('edit', event)">
+                      <template v-slot:prepend>
+                        <v-icon size="small" icon="mdi-pencil"></v-icon>
+                      </template>
+                      <v-list-item-title>Editar</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="$emit('refresh', event)">
+                      <template v-slot:prepend>
+                        <v-icon size="small" icon="mdi-refresh"></v-icon>
+                      </template>
+                      <v-list-item-title>Atualizar metricas</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item disabled @click="$emit('duplicate', event)">
+                      <template v-slot:prepend>
+                        <v-icon size="small" icon="mdi-content-copy"></v-icon>
+                      </template>
+                      <v-list-item-title>Duplicar</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item base-color="error" @click="$emit('delete', event)">
+                      <template v-slot:prepend>
+                        <v-icon size="small" icon="mdi-delete"></v-icon>
+                      </template>
+                      <v-list-item-title>Excluir</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-card>
+
+              </v-menu>
             </div>
+
+            <v-divider class="mb-3"></v-divider>
           </div>
+
+          <v-row no-gutters="">
+            <v-col cols="auto" class="mx-2">
+              <div class="text-grey text-caption">Check-ins</div>
+              <div class="ml-2">
+                <span class="text-body-1">{{ event.totalCheckIn }}</span>
+                <span class="text-caption text-grey ml-1">/ {{ event.totalGuests }}</span>
+              </div>
+            </v-col>
+            <v-divider vertical class="mx-3 my-0 stat-divider"></v-divider>
+            <v-col cols="auto" class="mx-2">
+              <div class="text-grey text-caption">Listas</div>
+              <div class="text-body-1 font-weight-medium">{{ event.lists?.length || 0 }}</div>
+            </v-col>
+            <v-divider vertical class="mx-3 my-0 stat-divider"></v-divider>
+            <v-col cols="auto" class="mx-2">
+              <div class="text-grey text-caption">Promotores</div>
+              <div class="text-body-1 font-weight-medium">{{ event.promoters?.length || 0 }}</div>
+            </v-col>
+            <v-divider vertical class="mx-3 my-0 stat-divider"></v-divider>
+            <v-col cols="auto" class="mx-2">
+              <div class="text-grey text-caption">Receita</div>
+              <div class="d-flex align-center">
+                <span class="text-body-1 font-weight-medium">{{ formatCurrency(event.revenue) }}</span>
+                <v-tooltip v-if="isPastEvent && event.status !== 'cancelled'" location="top">
+                  <template v-slot:activator="{ props }">
+                    <v-icon v-bind="props" size="x-small" :color="revenueIndicatorColor" :icon="revenueIndicatorIcon"
+                      class="ml-1">
+                    </v-icon>
+                  </template>
+                  <span>{{ revenuePerformanceText }}</span>
+                </v-tooltip>
+              </div>
+            </v-col>
+
+          </v-row>
+          <!-- <v-divider class="my-3 my-0 stat-divider"></v-divider> -->
+
         </div>
-      </div>
-    </div>
+      </v-col>
+    </v-row>
+
   </v-card>
 </template>
 
@@ -132,7 +143,7 @@ const props = defineProps({
 const { xs, sm, md } = useDisplay();
 
 // Component emits
-defineEmits(['edit', 'duplicate', 'delete', 'click']);
+defineEmits(['edit', 'duplicate', 'delete', 'click', 'refresh']);
 
 // Computed properties
 const isPastEvent = computed(() => {

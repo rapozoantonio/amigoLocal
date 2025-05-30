@@ -113,14 +113,20 @@
     </div>
 
     <form-dialog :items="{ area: areaOptions }" v-model:opened="showCreateDialog" v-model:model="hostessForm"
-      @submit="submitHostess" :schema="eventHostessesSchema">
+      @submit="submitHostess" :schema="eventHostessesSchema" title="Adicionar Hostess">
       <template #prepend-inner>
-        <field-user-search entity="promoters" @select="selectHostesses"></field-user-search>
+        <field-user-search entity="promoters" @select="selectHostesses"
+          placeholder="Selecione a hostess"></field-user-search>
+      </template>
+
+      <template #activator="props">
+        <v-fab @click="addHostess" v-bind="props" icon="mdi-plus" app location="right bottom" color="primary"
+          rounded="pill"></v-fab>
       </template>
     </form-dialog>
 
     <form-dialog :items="{ area: areaOptions }" v-model:opened="showEditDialog" v-model:model="hostessForm"
-      @submit="submitHostessUpdate" :schema="eventHostessesSchema"></form-dialog>
+      title="Editar Hostess" @submit="submitHostessUpdate" :schema="eventHostessesSchema"></form-dialog>
   </div>
 </template>
 
@@ -150,10 +156,11 @@ const swal = inject("$swal");
 const props = defineProps({
   event: { type: Object, required: true },
   hostesses: { type: Array, required: true },
+  guests: { type: Array, required: true },
 });
 const emit = defineEmits(["update:hostesses"]);
 const eventListStore = useEventListStore();
-const { hostesses } = toRefs(props);
+const { hostesses, guests } = toRefs(props);
 const route = useRoute();
 
 const eventId = computed(() => {
@@ -162,6 +169,15 @@ const eventId = computed(() => {
 
 const showCreateDialog = ref(false);
 const showEditDialog = ref(false);
+
+const hostessesGrouped = computed(() => {
+  return hostesses.value.map((h) => {
+    return {
+      ...h,
+      checkIns: guests.value.filter(g => g.checkInBy?.id === h.id).length
+    }
+  })
+})
 
 // State variables (using shallowRef for complex objects)
 const loading = ref(false);
@@ -229,9 +245,9 @@ const filteredHostesses = computed(() => {
   const isAreaFiltered = areaFilter.value !== "all";
   const isSearchFiltered = query.length > 0;
   if (!isStatusFiltered && !isAreaFiltered && !isSearchFiltered) {
-    return [...hostesses.value];
+    return [...hostessesGrouped.value];
   }
-  return hostesses.value.filter((hostess) => {
+  return hostessesGrouped.value.filter((hostess) => {
     if (isStatusFiltered) {
       const isConfirmed = statusFilter.value === "confirmed";
       if (hostess.confirmed !== isConfirmed) return false;
@@ -301,7 +317,7 @@ const confirmedHostesses = computed(
   () => hostesses.value.filter((h) => h.confirmed).length
 );
 const totalCheckIns = computed(() =>
-  hostesses.value.reduce((sum, h) => sum + (h.checkIns || 0), 0)
+  guests.value.filter(g => g.status === "checked-in").length
 );
 const totalHours = computed(() =>
   hostesses.value.reduce(

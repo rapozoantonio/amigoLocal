@@ -1,6 +1,5 @@
 //management/main.js
 import "@/core/styles/fonts.css";
-import "@/core/styles/settings.scss";
 import "@vuepic/vue-datepicker/dist/main.css";
 import "flag-icons/css/flag-icons.min.css";
 
@@ -14,6 +13,7 @@ import helpers from "@/core/plugins/helpers";
 import swal from "@/core/plugins/sweetalert";
 import VueDatePicker from "@vuepic/vue-datepicker";
 
+import "@/core/styles/settings.scss";
 // Import the management router only - not the promotion router
 import router from "./router";
 

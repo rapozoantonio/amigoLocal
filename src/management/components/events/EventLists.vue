@@ -13,7 +13,6 @@
       <TabFilterComponent searchPlaceholder="Search lists..." :searchValue="searchQuery"
         :filterOptions="statusOptionsFilter" @filter-change="handleFilterChange" @reset="resetFilters" />
     </div>
-
     <!-- 4-Stat Grid for Lists Summary -->
     <FourStatCards :cards="listCards" />
 
@@ -59,7 +58,26 @@
     <form-dialog :items="{ promoters: promoters.map(p => ({ name: p.name, id: p.id })) }"
       v-model:opened="showAddListDialog" @submit="submitList" title="Criar lista
       " action="Criar lista" cancel v-model:model="listForm" :schema="listSchema">
+
+      <!-- <template #activator="props">
+       
+      </template> -->
     </form-dialog>
+
+    <v-fab icon="mdi-plus" app location="right bottom" :color="fabMenu ? 'grey' : 'primary'" rounded="pill">
+      <v-icon>{{ fabMenu ? 'mdi-close' : 'mdi-plus' }}</v-icon>
+      <v-speed-dial v-model="fabMenu" location="top center" activator="parent">
+        <v-btn @click="openAddListDialog" size="default" variant="flat" key="1" color="primary">
+          <v-icon start size="20">mdi-playlist-plus</v-icon>
+          <span>Criar nova lista</span>
+        </v-btn>
+        <v-btn @click="openBulkGuestModal(null)" size="default" variant="flat" key="1" color="primary">
+          <v-icon start size="20">mdi-account-group</v-icon>
+          <span>Add convidados</span>
+        </v-btn>
+      </v-speed-dial>
+    </v-fab>
+
 
     <BulkAddGuestsModal v-model="showBulkGuestModal" :eventId="eventId" :defaultList="selectedList"
       :existingGuests="guests" :listOptions="lists" @guestsAdded="handleGuestsAdded" />
@@ -105,6 +123,8 @@ const modalMode = ref("list");
 const modalEditMode = ref(false);
 const selectedList = ref(null);
 const listForm = ref({});
+
+const fabMenu = ref(false);
 
 // Filter options for TabFilterComponent
 const statusOptions = [
@@ -258,7 +278,7 @@ async function handleGuestsAdded(guestsPayload) {
 
 
 async function openBulkGuestModal(list) {
-  selectedList.value = list; // adjust according to your list structure
+  selectedList.value = list || null; // adjust according to your list structure
   showBulkGuestModal.value = true;
 }
 
